@@ -71,7 +71,6 @@ export type PostInput = {
   autor?: Maybe<Author>;
 };
 
-
 export function newAuthor(props: Partial<Author>): Author {
   return {
     __typename: "Author",
@@ -85,7 +84,6 @@ export function newAuthor(props: Partial<Author>): Author {
     ...props,
   };
 };
-
 
 export function newPost(props: Partial<Post>): Post {
   return {
@@ -107,6 +105,3 @@ export function newComments(props: Partial<Comments>): Comments {
     ...props,
   };
 };
-
-
-

@@ -13,5 +13,7 @@ export const plugin: PluginFunction<
   const printedSchema = printSchema(schema);
   const astNode = parse(printedSchema);
 
-  return visit(astNode, { leave: visitor }).definitions.join("\n");
+  return visit(astNode, { leave: visitor })
+    .definitions.filter(Boolean)
+    .join("\n");
 };
