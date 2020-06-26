@@ -58,8 +58,8 @@ generates:
 
 ## Documentation
 
-- [`config.factoryName`](#config.factoryName)
-- [`config.scalarDefaults`](#config.scalarDefaults)
+- [`config.factoryName`](#configfactoryName)
+- [`config.scalarDefaults`](#configscalarDefaults)
 
 ### `config.factoryName`
 
