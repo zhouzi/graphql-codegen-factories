@@ -40,6 +40,21 @@ export type Query = {
   posts?: Maybe<Array<Maybe<Post>>>;
 };
 
+export type Mutation = {
+  __typename?: 'Mutation';
+  createPost: Post;
+};
+
+
+export type MutationCreatePostArgs = {
+  post: PostInput;
+};
+
+export type PostInput = {
+  title?: Maybe<Scalars['String']>;
+  autor?: Maybe<Author>;
+};
+
 export function createAuthor(props: Partial<Author>): Author {
   return {
     __typename: "Author",
@@ -62,4 +77,6 @@ export function createPost(props: Partial<Post>): Post {
     ...props,
   };
 };
+
+
 

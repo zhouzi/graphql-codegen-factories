@@ -6,6 +6,7 @@ import {
   NamedTypeNode,
   ListTypeNode,
   NonNullTypeNode,
+  InputObjectTypeDefinitionNode,
 } from "graphql";
 import {
   BaseVisitor,
@@ -93,8 +94,12 @@ export class FactoriesVisitor extends BaseVisitor<
     return "";
   }
 
+  InputObjectTypeDefinition(node: InputObjectTypeDefinitionNode): string {
+    return "";
+  }
+
   ObjectTypeDefinition(node: ObjectTypeDefinitionNode): string {
-    if (["Query"].includes(node.name.value)) {
+    if (["Query", "Mutation"].includes(node.name.value)) {
       return "";
     }
 

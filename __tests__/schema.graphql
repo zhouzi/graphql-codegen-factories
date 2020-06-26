@@ -21,6 +21,15 @@ type Query {
   posts: [Post]
 }
 
+type Mutation {
+  createPost(post: PostInput!): Post!
+}
+
+input PostInput {
+  title: String
+  autor: Author
+}
+
 schema {
   query: Query
 }
