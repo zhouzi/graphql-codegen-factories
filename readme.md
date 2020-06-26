@@ -1,6 +1,8 @@
 # graphql-codegen-factories
 
-graphql-codegen plugin to generate factories
+graphql-codegen plugin to generate factories.
+
+Heavily inspired by [@homebound-team/graphql-typescript-factories](https://github.com/homebound-team/graphql-typescript-factories/) 🙌
 
 ## Example
 
