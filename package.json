@@ -40,6 +40,6 @@
     "build": "tsc",
     "pretest": "npm run build && rm -f ./__tests__/types.ts",
     "test": "graphql-codegen --config codegen.yml && tsc ./__tests__/types.ts --noEmit",
-    "prepublish": "npm run build"
+    "prepare": "npm run build"
   }
 }
