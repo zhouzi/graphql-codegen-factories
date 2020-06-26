@@ -5,3 +5,8 @@ generates:
     plugins:
       - typescript
       - ./build/index.js
+    config:
+      factoryName: new{Type}
+      scalarDefaults:
+        Boolean: true
+        Date: new Date()

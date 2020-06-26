@@ -1,16 +1,23 @@
+scalar Date
+
+"Post's author"
 type Author {
   id: Int!
   firstName: String!
   lastName: String
   posts(findTitle: String): [Post]!
   status: AuthorStatus!
+  createdAt: Date!
+  isAdmin: Boolean!
 }
 
+"Author's status"
 enum AuthorStatus {
   Admin
   User
 }
 
+"Post"
 type Post {
   id: Int!
   title: String!

@@ -4,9 +4,7 @@ import {
   FieldDefinitionNode,
   GraphQLEnumType,
   NamedTypeNode,
-  ListTypeNode,
   NonNullTypeNode,
-  InputObjectTypeDefinitionNode,
 } from "graphql";
 import {
   BaseVisitor,
@@ -14,11 +12,20 @@ import {
   ParsedTypesConfig,
   DeclarationBlock,
   indent,
+  getConfigValue,
 } from "@graphql-codegen/visitor-plugin-common";
 
-export interface FactoriesVisitorRawConfig extends RawTypesConfig {}
+export interface FactoriesVisitorRawConfig extends RawTypesConfig {
+  enumsAsTypes?: boolean;
+  factoryName?: string;
+  scalarDefaults?: Record<string, string>;
+}
 
-interface FactoriesVisitorParsedConfig extends ParsedTypesConfig {}
+interface FactoriesVisitorParsedConfig extends ParsedTypesConfig {
+  enumsAsTypes: boolean;
+  factoryName: string;
+  scalarDefaults: Record<string, string>;
+}
 
 interface TypeValue {
   defaultValue: string;
@@ -32,7 +39,11 @@ export class FactoriesVisitor extends BaseVisitor<
   private enums: Record<string, GraphQLEnumType>;
 
   constructor(schema: GraphQLSchema, config: FactoriesVisitorRawConfig) {
-    super(config, {} as FactoriesVisitorParsedConfig);
+    super(config, {
+      enumsAsTypes: getConfigValue(config.enumsAsTypes, false),
+      factoryName: getConfigValue(config.factoryName, "create{Type}Mock"),
+      scalarDefaults: getConfigValue(config.scalarDefaults, {}),
+    } as FactoriesVisitorParsedConfig);
 
     this.enums = Object.values(schema.getTypeMap()).reduce((acc, type) => {
       if (type instanceof GraphQLEnumType) {
@@ -52,6 +63,10 @@ export class FactoriesVisitor extends BaseVisitor<
   }
 
   private getNamedTypeDefaultValue(name: string): string {
+    if (this.config.scalarDefaults.hasOwnProperty(name)) {
+      return this.config.scalarDefaults[name];
+    }
+
     switch (name) {
       case "Int":
       case "Float":
@@ -62,14 +77,22 @@ export class FactoriesVisitor extends BaseVisitor<
       case "Boolean":
         return "false";
       default: {
-        return this.enums.hasOwnProperty(name)
-          ? `${name}.${this.enums[name].getValues()[0].name}`
-          : `create${this.convertName(name)}({})`;
+        if (this.enums.hasOwnProperty(name)) {
+          return this.config.enumsAsTypes
+            ? `"${this.enums[name].getValues()[0].value}"`
+            : `${name}.${this.enums[name].getValues()[0].name}`;
+        }
+
+        return `${this.getFactoryName(this.convertName(name))}({})`;
       }
     }
   }
 
-  ListType(node: ListTypeNode): TypeValue {
+  private getFactoryName(name: string): string {
+    return this.config.factoryName.replace("{Type}", name);
+  }
+
+  ListType(): TypeValue {
     return {
       defaultValue: "[]",
       isNullable: true,
@@ -94,7 +117,19 @@ export class FactoriesVisitor extends BaseVisitor<
     return "";
   }
 
-  InputObjectTypeDefinition(node: InputObjectTypeDefinitionNode): string {
+  InputObjectTypeDefinition(): string {
+    return "";
+  }
+
+  ScalarTypeDefinition() {
+    return "";
+  }
+
+  InterfaceTypeDefinition() {
+    return "";
+  }
+
+  UnionTypeDefinition() {
     return "";
   }
 
@@ -107,9 +142,11 @@ export class FactoriesVisitor extends BaseVisitor<
       .export()
       .asKind("function")
       .withName(
-        `create${this.convertName(node)}(props: Partial<${this.convertName(
+        `${this.getFactoryName(
+          this.convertName(node)
+        )}(props: Partial<${this.convertName(node)}>): ${this.convertName(
           node
-        )}>): ${this.convertName(node)}`
+        )}`
       )
       .withBlock(
         [

@@ -7,8 +7,11 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Date: any;
 };
 
+
+/** Post's author */
 export type Author = {
   __typename?: 'Author';
   id: Scalars['Int'];
@@ -16,18 +19,23 @@ export type Author = {
   lastName?: Maybe<Scalars['String']>;
   posts: Array<Maybe<Post>>;
   status: AuthorStatus;
+  createdAt: Scalars['Date'];
+  isAdmin: Scalars['Boolean'];
 };
 
 
+/** Post's author */
 export type AuthorPostsArgs = {
   findTitle?: Maybe<Scalars['String']>;
 };
 
+/** Author's status */
 export enum AuthorStatus {
   Admin = 'Admin',
   User = 'User'
 }
 
+/** Post */
 export type Post = {
   __typename?: 'Post';
   id: Scalars['Int'];
@@ -55,7 +63,8 @@ export type PostInput = {
   autor?: Maybe<Author>;
 };
 
-export function createAuthor(props: Partial<Author>): Author {
+
+export function newAuthor(props: Partial<Author>): Author {
   return {
     __typename: "Author",
     id: 0,
@@ -63,17 +72,19 @@ export function createAuthor(props: Partial<Author>): Author {
     lastName: null,
     posts: [],
     status: AuthorStatus.Admin,
+    createdAt: new Date(),
+    isAdmin: true,
     ...props,
   };
 };
 
 
-export function createPost(props: Partial<Post>): Post {
+export function newPost(props: Partial<Post>): Post {
   return {
     __typename: "Post",
     id: 0,
     title: "",
-    author: createAuthor({}),
+    author: newAuthor({}),
     ...props,
   };
 };
