@@ -1,0 +1,26 @@
+type Author {
+  id: Int!
+  firstName: String!
+  lastName: String
+  posts(findTitle: String): [Post]!
+  status: AuthorStatus!
+}
+
+enum AuthorStatus {
+  Admin
+  User
+}
+
+type Post {
+  id: Int!
+  title: String!
+  author: Author!
+}
+
+type Query {
+  posts: [Post]
+}
+
+schema {
+  query: Query
+}
