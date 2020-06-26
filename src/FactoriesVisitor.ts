@@ -55,13 +55,6 @@ export class FactoriesVisitor extends BaseVisitor<
     }, {});
   }
 
-  NamedType(node: NamedTypeNode): TypeValue {
-    return {
-      defaultValue: this.getNamedTypeDefaultValue(node.name.value),
-      isNullable: true,
-    };
-  }
-
   private getNamedTypeDefaultValue(name: string): string {
     if (this.config.scalarDefaults.hasOwnProperty(name)) {
       return this.config.scalarDefaults[name];
@@ -90,6 +83,13 @@ export class FactoriesVisitor extends BaseVisitor<
 
   private getFactoryName(name: string): string {
     return this.config.factoryName.replace("{Type}", name);
+  }
+
+  NamedType(node: NamedTypeNode): TypeValue {
+    return {
+      defaultValue: this.getNamedTypeDefaultValue(node.name.value),
+      isNullable: true,
+    };
   }
 
   ListType(): TypeValue {
@@ -121,15 +121,15 @@ export class FactoriesVisitor extends BaseVisitor<
     return "";
   }
 
-  ScalarTypeDefinition() {
+  ScalarTypeDefinition(): string {
     return "";
   }
 
-  InterfaceTypeDefinition() {
+  InterfaceTypeDefinition(): string {
     return "";
   }
 
-  UnionTypeDefinition() {
+  UnionTypeDefinition(): string {
     return "";
   }
 
