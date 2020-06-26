@@ -41,6 +41,14 @@ export type Post = {
   id: Scalars['Int'];
   title: Scalars['String'];
   author: Author;
+  comments: Array<Comments>;
+};
+
+export type Comments = {
+  __typename?: 'comments';
+  id: Scalars['ID'];
+  message?: Maybe<Scalars['String']>;
+  author: Author;
 };
 
 export type Query = {
@@ -84,6 +92,17 @@ export function newPost(props: Partial<Post>): Post {
     __typename: "Post",
     id: 0,
     title: "",
+    author: newAuthor({}),
+    comments: [],
+    ...props,
+  };
+};
+
+export function newComments(props: Partial<Comments>): Comments {
+  return {
+    __typename: "comments",
+    id: "",
+    message: null,
     author: newAuthor({}),
     ...props,
   };

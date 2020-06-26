@@ -151,7 +151,7 @@ export class FactoriesVisitor extends BaseVisitor<
       .withBlock(
         [
           indent("return {"),
-          indent(indent(`__typename: "${this.convertName(node)}",`)),
+          indent(indent(`__typename: "${node.name.value}",`)),
           ...(node.fields ?? []),
           indent(indent("...props,")),
           indent("};"),
