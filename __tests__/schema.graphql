@@ -13,8 +13,8 @@ type Author {
 
 "Author's status"
 enum AuthorStatus {
-  Admin
-  User
+  ADMIN
+  USER
 }
 
 "Post"

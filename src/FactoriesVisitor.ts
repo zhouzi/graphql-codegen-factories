@@ -73,7 +73,9 @@ export class FactoriesVisitor extends BaseVisitor<
         if (this.enums.hasOwnProperty(name)) {
           return this.config.enumsAsTypes
             ? `"${this.enums[name].getValues()[0].value}"`
-            : `${name}.${this.enums[name].getValues()[0].name}`;
+            : `${name}.${this.convertName(
+                this.enums[name].getValues()[0].name
+              )}`;
         }
 
         return `${this.getFactoryName(this.convertName(name))}({})`;

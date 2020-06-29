@@ -31,8 +31,8 @@ export type AuthorPostsArgs = {
 
 /** Author's status */
 export enum AuthorStatus {
-  Admin = 'Admin',
-  User = 'User'
+  Admin = 'ADMIN',
+  User = 'USER'
 }
 
 /** Post */
