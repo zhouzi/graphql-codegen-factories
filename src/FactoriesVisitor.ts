@@ -5,6 +5,8 @@ import {
   GraphQLEnumType,
   NamedTypeNode,
   NonNullTypeNode,
+  InputObjectTypeDefinitionNode,
+  InputValueDefinitionNode,
 } from "graphql";
 import {
   BaseVisitor,
@@ -55,7 +57,7 @@ export class FactoriesVisitor extends BaseVisitor<
     }, {});
   }
 
-  private getNamedTypeDefaultValue(name: string): string {
+  private getDefaultValue(name: string): string {
     if (this.config.scalarDefaults.hasOwnProperty(name)) {
       return this.config.scalarDefaults[name];
     }
@@ -78,18 +80,55 @@ export class FactoriesVisitor extends BaseVisitor<
               )}`;
         }
 
-        return `${this.getFactoryName(this.convertName(name))}({})`;
+        return `${this.convertFactoryName(this.convertName(name))}({})`;
       }
     }
   }
 
-  private getFactoryName(name: string): string {
+  private convertFactoryName(name: string): string {
     return this.config.factoryName.replace("{Type}", name);
+  }
+
+  private convertField(
+    node: FieldDefinitionNode | InputValueDefinitionNode
+  ): string {
+    const { defaultValue, isNullable } = (node.type as any) as TypeValue;
+    return indent(
+      indent(`${node.name.value}: ${isNullable ? "null" : defaultValue},`)
+    );
+  }
+
+  private convertObjectType(
+    node: ObjectTypeDefinitionNode | InputObjectTypeDefinitionNode
+  ): string {
+    return new DeclarationBlock(this._declarationBlockConfig)
+      .export()
+      .asKind("function")
+      .withName(
+        `${this.convertFactoryName(
+          this.convertName(node)
+        )}(props: Partial<${this.convertName(node)}>): ${this.convertName(
+          node
+        )}`
+      )
+      .withBlock(
+        [
+          indent("return {"),
+          node.kind === "ObjectTypeDefinition"
+            ? indent(indent(`__typename: "${node.name.value}",`))
+            : null,
+          ...(node.fields ?? []),
+          indent(indent("...props,")),
+          indent("};"),
+        ]
+          .filter(Boolean)
+          .join("\n")
+      ).string;
   }
 
   NamedType(node: NamedTypeNode): TypeValue {
     return {
-      defaultValue: this.getNamedTypeDefaultValue(node.name.value),
+      defaultValue: this.getDefaultValue(node.name.value),
       isNullable: true,
     };
   }
@@ -109,18 +148,19 @@ export class FactoriesVisitor extends BaseVisitor<
   }
 
   FieldDefinition(node: FieldDefinitionNode): string {
-    const { defaultValue, isNullable } = (node.type as any) as TypeValue;
-    return indent(
-      indent(`${node.name.value}: ${isNullable ? "null" : defaultValue},`)
-    );
+    return this.convertField(node);
   }
 
   EnumTypeDefinition(): string {
     return "";
   }
 
-  InputObjectTypeDefinition(): string {
-    return "";
+  InputObjectTypeDefinition(node: InputObjectTypeDefinitionNode): string {
+    return this.convertObjectType(node);
+  }
+
+  InputValueDefinition(node: InputValueDefinitionNode): string {
+    return this.convertField(node);
   }
 
   ScalarTypeDefinition(): string {
@@ -140,24 +180,6 @@ export class FactoriesVisitor extends BaseVisitor<
       return "";
     }
 
-    return new DeclarationBlock(this._declarationBlockConfig)
-      .export()
-      .asKind("function")
-      .withName(
-        `${this.getFactoryName(
-          this.convertName(node)
-        )}(props: Partial<${this.convertName(node)}>): ${this.convertName(
-          node
-        )}`
-      )
-      .withBlock(
-        [
-          indent("return {"),
-          indent(indent(`__typename: "${node.name.value}",`)),
-          ...(node.fields ?? []),
-          indent(indent("...props,")),
-          indent("};"),
-        ].join("\n")
-      ).string;
+    return this.convertObjectType(node);
   }
 }

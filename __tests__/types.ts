@@ -105,3 +105,11 @@ export function newComments(props: Partial<Comments>): Comments {
     ...props,
   };
 };
+
+export function newPostInput(props: Partial<PostInput>): PostInput {
+  return {
+    title: null,
+    autor: null,
+    ...props,
+  };
+};
