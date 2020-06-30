@@ -1,6 +1,6 @@
 {
   "name": "graphql-codegen-factories",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "graphql-codegen plugin to generate factories",
   "keywords": [
     "graphql",
