@@ -25,7 +25,10 @@
   "devDependencies": {
     "@graphql-codegen/cli": "1.15.4",
     "@graphql-codegen/typescript": "1.15.4",
+    "@types/jest": "^26.0.3",
     "graphql": "^15.1.0",
+    "jest": "^26.1.0",
+    "ts-jest": "^26.1.1",
     "typescript": "^3.9.5"
   },
   "peerDependencies": {
@@ -39,7 +42,7 @@
     "prebuild": "rm -rf ./build",
     "build": "tsc",
     "pretest": "npm run build && rm -f ./__tests__/types.ts",
-    "test": "graphql-codegen --config codegen.yml && tsc ./__tests__/types.ts --noEmit",
+    "test": "jest",
     "prepare": "npm run build"
   }
 }

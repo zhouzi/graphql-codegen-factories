@@ -1,0 +1,96 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`plugin should create factories for inputs 1`] = `
+"export function createPostInputMock(props: Partial<PostInput>): PostInput {
+  return {
+    id: null,
+    title: \\"\\",
+    ...props,
+  };
+};
+"
+`;
+
+exports[`plugin should create factories with built-in types 1`] = `
+"export function createUserMock(props: Partial<User>): User {
+  return {
+    __typename: \\"User\\",
+    id: \\"\\",
+    organizationId: null,
+    email: \\"\\",
+    name: null,
+    age: 0,
+    followers: null,
+    geo: createGeoMock({}),
+    isUser: false,
+    isAdmin: null,
+    status: UserStatus.Activated,
+    favouriteFruit: null,
+    posts: [],
+    subscribers: null,
+    ...props,
+  };
+};
+
+export function createGeoMock(props: Partial<Geo>): Geo {
+  return {
+    __typename: \\"Geo\\",
+    lat: 0,
+    lon: null,
+    ...props,
+  };
+};
+
+export function createPostMock(props: Partial<Post>): Post {
+  return {
+    __typename: \\"Post\\",
+    id: \\"\\",
+    ...props,
+  };
+};
+"
+`;
+
+exports[`plugin should customize the factory name 1`] = `
+"export function newUser(props: Partial<User>): User {
+  return {
+    __typename: \\"User\\",
+    id: \\"\\",
+    ...props,
+  };
+};
+"
+`;
+
+exports[`plugin should not create factories for Query and Mutation 1`] = `
+"export function createUserMock(props: Partial<User>): User {
+  return {
+    __typename: \\"User\\",
+    id: \\"\\",
+    ...props,
+  };
+};
+"
+`;
+
+exports[`plugin should use enums as types 1`] = `
+"export function createUserMock(props: Partial<User>): User {
+  return {
+    __typename: \\"User\\",
+    status: \\"Activated\\",
+    ...props,
+  };
+};
+"
+`;
+
+exports[`plugin should use the custom scalar defaults 1`] = `
+"export function createUserMock(props: Partial<User>): User {
+  return {
+    __typename: \\"User\\",
+    createdAt: new Date(),
+    ...props,
+  };
+};
+"
+`;
