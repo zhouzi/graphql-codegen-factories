@@ -1,12 +1,7 @@
 overwrite: true
-schema: ./__tests__/schema.graphql
+schema: ./src/__integration__/schema.graphql
 generates:
-  ./__tests__/types.ts:
+  ./src/__integration__/types.ts:
     plugins:
       - typescript
       - ./build/index.js
-    config:
-      factoryName: new{Type}
-      scalarDefaults:
-        Boolean: true
-        Date: new Date()

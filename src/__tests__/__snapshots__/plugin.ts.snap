@@ -7,7 +7,7 @@ exports[`plugin should create factories for inputs 1`] = `
     title: \\"\\",
     ...props,
   };
-};
+}
 "
 `;
 
@@ -30,7 +30,7 @@ exports[`plugin should create factories with built-in types 1`] = `
     subscribers: null,
     ...props,
   };
-};
+}
 
 export function createGeoMock(props: Partial<Geo>): Geo {
   return {
@@ -39,7 +39,7 @@ export function createGeoMock(props: Partial<Geo>): Geo {
     lon: null,
     ...props,
   };
-};
+}
 
 export function createPostMock(props: Partial<Post>): Post {
   return {
@@ -47,7 +47,7 @@ export function createPostMock(props: Partial<Post>): Post {
     id: \\"\\",
     ...props,
   };
-};
+}
 "
 `;
 
@@ -58,7 +58,7 @@ exports[`plugin should customize the factory name 1`] = `
     id: \\"\\",
     ...props,
   };
-};
+}
 "
 `;
 
@@ -69,7 +69,7 @@ exports[`plugin should not create factories for Query and Mutation 1`] = `
     id: \\"\\",
     ...props,
   };
-};
+}
 "
 `;
 
@@ -80,7 +80,7 @@ exports[`plugin should use enums as types 1`] = `
     status: \\"Activated\\",
     ...props,
   };
-};
+}
 "
 `;
 
@@ -91,6 +91,6 @@ exports[`plugin should use the custom scalar defaults 1`] = `
     createdAt: new Date(),
     ...props,
   };
-};
+}
 "
 `;
