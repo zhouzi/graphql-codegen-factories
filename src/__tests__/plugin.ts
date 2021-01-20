@@ -112,4 +112,17 @@ describe("plugin", () => {
       })
     ).toMatchSnapshot();
   });
+
+  it("should support enums with an underscore", () => {
+    const schema = buildSchema(`
+      enum UserRole {
+        SUPER_ADMIN
+        ADMIN
+      }
+      type User {
+        role: UserRole!
+      }
+    `);
+    expect(plugin(schema, [], {})).toMatchSnapshot();
+  });
 });

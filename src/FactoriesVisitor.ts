@@ -76,7 +76,10 @@ export class FactoriesVisitor extends BaseVisitor<
           return this.config.enumsAsTypes
             ? `"${this.enums[name].getValues()[0].value}"`
             : `${name}.${this.convertName(
-                this.enums[name].getValues()[0].name
+                this.enums[name].getValues()[0].name,
+                {
+                  transformUnderscore: true,
+                }
               )}`;
         }
 

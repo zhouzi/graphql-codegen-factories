@@ -73,6 +73,17 @@ exports[`plugin should not create factories for Query and Mutation 1`] = `
 "
 `;
 
+exports[`plugin should support enums with an underscore 1`] = `
+"export function createUserMock(props: Partial<User>): User {
+  return {
+    __typename: \\"User\\",
+    role: UserRole.SuperAdmin,
+    ...props,
+  };
+}
+"
+`;
+
 exports[`plugin should use enums as types 1`] = `
 "export function createUserMock(props: Partial<User>): User {
   return {

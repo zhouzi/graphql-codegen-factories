@@ -1,5 +1,11 @@
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+}
+
 type User {
   id: ID!
+  role: UserRole!
 }
 
 type Query {
