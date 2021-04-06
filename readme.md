@@ -116,6 +116,10 @@ generates:
         Boolean: true
 ```
 
+## Changelog
+
+[Changelog](./changelog.md)
+
 ## LICENSE
 
 [MIT](./license)
