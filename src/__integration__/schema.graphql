@@ -6,7 +6,20 @@ enum UserRole {
 type User {
   id: ID!
   role: UserRole!
+  companion: Companion!
 }
+
+type Droid {
+  id: ID!
+  codeName: String!
+}
+
+type Dog {
+  id: ID!
+  name: String!
+}
+
+union Companion = Droid | Dog
 
 type Query {
   users: [User!]!

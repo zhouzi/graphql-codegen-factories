@@ -20,7 +20,22 @@ export type User = {
   __typename?: 'User';
   id: Scalars['ID'];
   role: UserRole;
+  companion: Companion;
 };
+
+export type Droid = {
+  __typename?: 'Droid';
+  id: Scalars['ID'];
+  codeName: Scalars['String'];
+};
+
+export type Dog = {
+  __typename?: 'Dog';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+};
+
+export type Companion = Droid | Dog;
 
 export type Query = {
   __typename?: 'Query';
@@ -32,6 +47,25 @@ export function createUserMock(props: Partial<User>): User {
     __typename: "User",
     id: "",
     role: UserRole.SuperAdmin,
+    companion: createDroidMock({}),
+    ...props,
+  };
+}
+
+export function createDroidMock(props: Partial<Droid>): Droid {
+  return {
+    __typename: "Droid",
+    id: "",
+    codeName: "",
+    ...props,
+  };
+}
+
+export function createDogMock(props: Partial<Dog>): Dog {
+  return {
+    __typename: "Dog",
+    id: "",
+    name: "",
     ...props,
   };
 }

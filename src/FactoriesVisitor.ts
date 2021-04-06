@@ -7,6 +7,9 @@ import {
   NonNullTypeNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
+  isEnumType,
+  isUnionType,
+  GraphQLUnionType,
 } from "graphql";
 import {
   BaseVisitor,
@@ -39,6 +42,7 @@ export class FactoriesVisitor extends BaseVisitor<
   FactoriesVisitorParsedConfig
 > {
   private enums: Record<string, GraphQLEnumType>;
+  private unions: Record<string, GraphQLUnionType>;
 
   constructor(schema: GraphQLSchema, config: FactoriesVisitorRawConfig) {
     super(config, {
@@ -47,17 +51,26 @@ export class FactoriesVisitor extends BaseVisitor<
       scalarDefaults: getConfigValue(config.scalarDefaults, {}),
     } as FactoriesVisitorParsedConfig);
 
-    this.enums = Object.values(schema.getTypeMap()).reduce((acc, type) => {
-      if (type instanceof GraphQLEnumType) {
-        return Object.assign(acc, {
-          [type.name]: type,
-        });
+    this.enums = {};
+    this.unions = {};
+
+    Object.values(schema.getTypeMap()).forEach((type) => {
+      if (isEnumType(type)) {
+        this.enums[type.name] = type;
       }
-      return acc;
-    }, {});
+
+      if (isUnionType(type)) {
+        this.unions[type.name] = type;
+      }
+    });
   }
 
-  private getDefaultValue(name: string): string {
+  private getDefaultValue(node: NamedTypeNode): string {
+    const name = this.unions.hasOwnProperty(node.name.value)
+      ? // The default value of an union is the first type's default value
+        this.unions[node.name.value].getTypes()[0].name
+      : node.name.value;
+
     if (this.config.scalarDefaults.hasOwnProperty(name)) {
       return this.config.scalarDefaults[name];
     }
@@ -95,7 +108,7 @@ export class FactoriesVisitor extends BaseVisitor<
   private convertField(
     node: FieldDefinitionNode | InputValueDefinitionNode
   ): string {
-    const { defaultValue, isNullable } = (node.type as any) as TypeValue;
+    const { defaultValue, isNullable } = (node.type as unknown) as TypeValue;
     return indent(
       indent(`${node.name.value}: ${isNullable ? "null" : defaultValue},`)
     );
@@ -131,7 +144,7 @@ export class FactoriesVisitor extends BaseVisitor<
 
   NamedType(node: NamedTypeNode): TypeValue {
     return {
-      defaultValue: this.getDefaultValue(node.name.value),
+      defaultValue: this.getDefaultValue(node),
       isNullable: true,
     };
   }
@@ -145,7 +158,7 @@ export class FactoriesVisitor extends BaseVisitor<
 
   NonNullType(node: NonNullTypeNode): TypeValue {
     return {
-      ...((node.type as any) as TypeValue),
+      ...((node.type as unknown) as TypeValue),
       isNullable: false,
     };
   }
