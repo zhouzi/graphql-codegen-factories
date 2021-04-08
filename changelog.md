@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 0.0.10 - 2021-04-08
+
+- Add support for interfaces default value generation
+
 ## 0.0.9 - 2021-04-06
 
 ### Added
