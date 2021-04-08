@@ -16,14 +16,18 @@ export enum UserRole {
   Admin = 'ADMIN'
 }
 
-export type User = {
+export type Humanoid = {
+  id: Scalars['ID'];
+};
+
+export type User = Humanoid & {
   __typename?: 'User';
   id: Scalars['ID'];
   role: UserRole;
   companion: Companion;
 };
 
-export type Droid = {
+export type Droid = Humanoid & {
   __typename?: 'Droid';
   id: Scalars['ID'];
   codeName: Scalars['String'];
@@ -40,6 +44,17 @@ export type Companion = Droid | Dog;
 export type Query = {
   __typename?: 'Query';
   users: Array<User>;
+  searchHumanoids?: Maybe<HumanoidConnection>;
+};
+
+export type HumanoidConnection = {
+  __typename?: 'HumanoidConnection';
+  edges: Array<Maybe<HumanoidNode>>;
+};
+
+export type HumanoidNode = {
+  __typename?: 'HumanoidNode';
+  node: Humanoid;
 };
 
 export function createUserMock(props: Partial<User>): User {
@@ -66,6 +81,22 @@ export function createDogMock(props: Partial<Dog>): Dog {
     __typename: "Dog",
     id: "",
     name: "",
+    ...props,
+  };
+}
+
+export function createHumanoidConnectionMock(props: Partial<HumanoidConnection>): HumanoidConnection {
+  return {
+    __typename: "HumanoidConnection",
+    edges: [],
+    ...props,
+  };
+}
+
+export function createHumanoidNodeMock(props: Partial<HumanoidNode>): HumanoidNode {
+  return {
+    __typename: "HumanoidNode",
+    node: createUserMock({}),
     ...props,
   };
 }

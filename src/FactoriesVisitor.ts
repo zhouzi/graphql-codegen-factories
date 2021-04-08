@@ -10,6 +10,10 @@ import {
   isEnumType,
   isUnionType,
   GraphQLUnionType,
+  isInterfaceType,
+  GraphQLInterfaceType,
+  GraphQLObjectType,
+  isObjectType,
 } from "graphql";
 import {
   BaseVisitor,
@@ -43,6 +47,13 @@ export class FactoriesVisitor extends BaseVisitor<
 > {
   private enums: Record<string, GraphQLEnumType>;
   private unions: Record<string, GraphQLUnionType>;
+  private interfaces: Record<
+    string,
+    {
+      interface: GraphQLInterfaceType | null;
+      implementations: GraphQLObjectType[];
+    }
+  >;
 
   constructor(schema: GraphQLSchema, config: FactoriesVisitorRawConfig) {
     super(config, {
@@ -53,7 +64,16 @@ export class FactoriesVisitor extends BaseVisitor<
 
     this.enums = {};
     this.unions = {};
+    this.interfaces = {};
 
+    const initializeInterface = (name: string) => {
+      if (this.interfaces[name] == null) {
+        this.interfaces[name] = {
+          interface: null,
+          implementations: [],
+        };
+      }
+    };
     Object.values(schema.getTypeMap()).forEach((type) => {
       if (isEnumType(type)) {
         this.enums[type.name] = type;
@@ -62,6 +82,18 @@ export class FactoriesVisitor extends BaseVisitor<
       if (isUnionType(type)) {
         this.unions[type.name] = type;
       }
+
+      if (isInterfaceType(type)) {
+        initializeInterface(type.name);
+        this.interfaces[type.name].interface = type;
+      }
+
+      if (isObjectType(type)) {
+        type.getInterfaces().forEach((inter) => {
+          initializeInterface(inter.name);
+          this.interfaces[inter.name].implementations.push(type);
+        });
+      }
     });
   }
 
@@ -69,6 +101,9 @@ export class FactoriesVisitor extends BaseVisitor<
     const name = this.unions.hasOwnProperty(node.name.value)
       ? // The default value of an union is the first type's default value
         this.unions[node.name.value].getTypes()[0].name
+      : this.interfaces.hasOwnProperty(node.name.value)
+      ? // The default value of an interface is the first implementation's default value
+        this.interfaces[node.name.value].implementations[0].name
       : node.name.value;
 
     if (this.config.scalarDefaults.hasOwnProperty(name)) {
