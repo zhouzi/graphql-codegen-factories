@@ -28,12 +28,14 @@ export interface FactoriesVisitorRawConfig extends RawTypesConfig {
   enumsAsTypes?: boolean;
   factoryName?: string;
   scalarDefaults?: Record<string, string>;
+  namespacedImportName?: string;
 }
 
 interface FactoriesVisitorParsedConfig extends ParsedTypesConfig {
   enumsAsTypes: boolean;
   factoryName: string;
   scalarDefaults: Record<string, string>;
+  namespacedImportName?: string;
 }
 
 interface TypeValue {
@@ -60,6 +62,10 @@ export class FactoriesVisitor extends BaseVisitor<
       enumsAsTypes: getConfigValue(config.enumsAsTypes, false),
       factoryName: getConfigValue(config.factoryName, "create{Type}Mock"),
       scalarDefaults: getConfigValue(config.scalarDefaults, {}),
+      namespacedImportName: getConfigValue(
+        config.namespacedImportName,
+        undefined
+      ),
     } as FactoriesVisitorParsedConfig);
 
     this.enums = {};
@@ -123,7 +129,7 @@ export class FactoriesVisitor extends BaseVisitor<
         if (this.enums.hasOwnProperty(name)) {
           return this.config.enumsAsTypes
             ? `"${this.enums[name].getValues()[0].value}"`
-            : `${name}.${this.convertName(
+            : `${this.convertNameWithNamespace(name)}.${this.convertName(
                 this.enums[name].getValues()[0].name,
                 {
                   transformUnderscore: true,
@@ -131,13 +137,29 @@ export class FactoriesVisitor extends BaseVisitor<
               )}`;
         }
 
-        return `${this.convertFactoryName(this.convertName(name))}({})`;
+        return `${this.convertFactoryName(name)}({})`;
       }
     }
   }
 
-  private convertFactoryName(name: string): string {
-    return this.config.factoryName.replace("{Type}", name);
+  private convertFactoryName(
+    ...args: Parameters<BaseVisitor["convertName"]>
+  ): string {
+    const [node] = args;
+    return this.config.factoryName.replace("{Type}", this.convertName(node));
+  }
+
+  private convertNameWithNamespace(
+    ...args: Parameters<BaseVisitor["convertName"]>
+  ) {
+    const [node] = args;
+    const name = this.convertName(node);
+
+    if (this.config.namespacedImportName) {
+      return `${this.config.namespacedImportName}.${name}`;
+    }
+
+    return name;
   }
 
   private convertField(
@@ -157,10 +179,10 @@ export class FactoriesVisitor extends BaseVisitor<
       .asKind("function")
       .withName(
         `${this.convertFactoryName(
-          this.convertName(node)
-        )}(props: Partial<${this.convertName(node)}>): ${this.convertName(
           node
-        )}`
+        )}(props: Partial<${this.convertNameWithNamespace(
+          node
+        )}>): ${this.convertNameWithNamespace(node)}`
       )
       .withBlock(
         [

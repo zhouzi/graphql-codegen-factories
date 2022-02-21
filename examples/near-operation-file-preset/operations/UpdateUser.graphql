@@ -1,0 +1,6 @@
+mutation UpdateUserOperation($id: ID!, $name: String!, $role: UserRole!) {
+  updateUser(id: $id, name: $name, role: $role) {
+    id
+    name
+  }
+}
