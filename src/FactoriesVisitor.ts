@@ -143,7 +143,7 @@ export class FactoriesVisitor extends BaseVisitor<
   private convertField(
     node: FieldDefinitionNode | InputValueDefinitionNode
   ): string {
-    const { defaultValue, isNullable } = (node.type as unknown) as TypeValue;
+    const { defaultValue, isNullable } = node.type as unknown as TypeValue;
     return indent(
       indent(`${node.name.value}: ${isNullable ? "null" : defaultValue},`)
     );
@@ -193,7 +193,7 @@ export class FactoriesVisitor extends BaseVisitor<
 
   NonNullType(node: NonNullTypeNode): TypeValue {
     return {
-      ...((node.type as unknown) as TypeValue),
+      ...(node.type as unknown as TypeValue),
       isNullable: false,
     };
   }

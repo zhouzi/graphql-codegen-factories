@@ -2,7 +2,7 @@ import { buildSchema } from "graphql";
 import { plugin } from "../plugin";
 
 describe("plugin", () => {
-  it("should create factories with built-in types", () => {
+  it("should create factories with built-in types", async () => {
     const schema = buildSchema(`
       type User {
         id: ID!
@@ -39,10 +39,12 @@ describe("plugin", () => {
         Mango
       }
     `);
-    expect(plugin(schema, [], {})).toMatchSnapshot();
+
+    const { content } = await plugin(schema, [], {});
+    expect(content).toMatchSnapshot();
   });
 
-  it("should use enums as types", () => {
+  it("should use enums as types", async () => {
     const schema = buildSchema(`
       type User {
         status: UserStatus!
@@ -53,10 +55,12 @@ describe("plugin", () => {
         Created
       }
     `);
-    expect(plugin(schema, [], { enumsAsTypes: true })).toMatchSnapshot();
+
+    const { content } = await plugin(schema, [], { enumsAsTypes: true });
+    expect(content).toMatchSnapshot();
   });
 
-  it("should use the custom scalar defaults", () => {
+  it("should use the custom scalar defaults", async () => {
     const schema = buildSchema(`
       type User {
         createdAt: Date!
@@ -64,26 +68,26 @@ describe("plugin", () => {
       
       scalar Date
     `);
-    expect(
-      plugin(schema, [], {
-        scalarDefaults: {
-          Date: "new Date()",
-        },
-      })
-    ).toMatchSnapshot();
+
+    const { content } = await plugin(schema, [], {
+      scalarDefaults: { Date: "new Date()" },
+    });
+    expect(content).toMatchSnapshot();
   });
 
-  it("should create factories for inputs", () => {
+  it("should create factories for inputs", async () => {
     const schema = buildSchema(`
       input PostInput {
         id: ID
         title: String!
       }
     `);
-    expect(plugin(schema, [], {})).toMatchSnapshot();
+
+    const { content } = await plugin(schema, [], {});
+    expect(content).toMatchSnapshot();
   });
 
-  it("should not create factories for Query and Mutation", () => {
+  it("should not create factories for Query and Mutation", async () => {
     const schema = buildSchema(`
       type User {
         id: ID!
@@ -97,23 +101,23 @@ describe("plugin", () => {
         createUser(id: ID!): User!
       }
     `);
-    expect(plugin(schema, [], {})).toMatchSnapshot();
+
+    const { content } = await plugin(schema, [], {});
+    expect(content).toMatchSnapshot();
   });
 
-  it("should customize the factory name", () => {
+  it("should customize the factory name", async () => {
     const schema = buildSchema(`
       type User {
         id: ID!
       }
     `);
-    expect(
-      plugin(schema, [], {
-        factoryName: "new{Type}",
-      })
-    ).toMatchSnapshot();
+
+    const { content } = await plugin(schema, [], { factoryName: "new{Type}" });
+    expect(content).toMatchSnapshot();
   });
 
-  it("should support enums with an underscore", () => {
+  it("should support enums with an underscore", async () => {
     const schema = buildSchema(`
       enum UserRole {
         SUPER_ADMIN
@@ -123,6 +127,8 @@ describe("plugin", () => {
         role: UserRole!
       }
     `);
-    expect(plugin(schema, [], {})).toMatchSnapshot();
+
+    const { content } = await plugin(schema, [], {});
+    expect(content).toMatchSnapshot();
   });
 });

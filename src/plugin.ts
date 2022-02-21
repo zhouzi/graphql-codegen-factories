@@ -1,5 +1,9 @@
-import { printSchema, parse, visit } from "graphql";
-import { PluginFunction, Types } from "@graphql-codegen/plugin-helpers";
+import { printSchema, parse } from "graphql";
+import {
+  oldVisit,
+  PluginFunction,
+  Types,
+} from "@graphql-codegen/plugin-helpers";
 import {
   FactoriesVisitor,
   FactoriesVisitorRawConfig,
@@ -12,8 +16,9 @@ export const plugin: PluginFunction<
   const visitor = new FactoriesVisitor(schema, config);
   const printedSchema = printSchema(schema);
   const astNode = parse(printedSchema);
-
-  return visit(astNode, { leave: visitor })
+  const content = oldVisit(astNode, { leave: visitor })
     .definitions.filter(Boolean)
     .join("\n");
+
+  return { content };
 };
