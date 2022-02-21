@@ -42,8 +42,9 @@
     "prebuild": "rm -rf ./build",
     "build": "tsc",
     "test": "jest",
-    "prebuild:example": "npm run build",
-    "build:example": "graphql-codegen --config ./example/codegen.yml && tsc ./example/generated/**.ts --noEmit",
+    "prebuild:examples": "npm run build",
+    "build:examples": "graphql-codegen --config ./examples/basic/codegen.yml",
+    "postbuild:examples": "tsc --project ./examples/tsconfig.json",
     "prepare": "npm run build"
   }
 }

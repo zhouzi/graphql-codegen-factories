@@ -1,7 +1,7 @@
 overwrite: true
-schema: ./example/schema.graphql
+schema: ./examples/basic/schema.graphql
 generates:
-  ./example/generated/types.ts:
+  ./examples/basic/generated/types.ts:
     plugins:
       - typescript
       - ./build/index.js
