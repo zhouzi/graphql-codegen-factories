@@ -1,4 +1,5 @@
 export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -11,27 +12,7 @@ export type Scalars = {
   Float: number;
 };
 
-export enum UserRole {
-  SuperAdmin = 'SUPER_ADMIN',
-  Admin = 'ADMIN'
-}
-
-export type Humanoid = {
-  id: Scalars['ID'];
-};
-
-export type User = Humanoid & {
-  __typename?: 'User';
-  id: Scalars['ID'];
-  role: UserRole;
-  companion: Companion;
-};
-
-export type Droid = Humanoid & {
-  __typename?: 'Droid';
-  id: Scalars['ID'];
-  codeName: Scalars['String'];
-};
+export type Companion = Dog | Droid;
 
 export type Dog = {
   __typename?: 'Dog';
@@ -39,12 +20,14 @@ export type Dog = {
   name: Scalars['String'];
 };
 
-export type Companion = Droid | Dog;
+export type Droid = Humanoid & {
+  __typename?: 'Droid';
+  codeName: Scalars['String'];
+  id: Scalars['ID'];
+};
 
-export type Query = {
-  __typename?: 'Query';
-  users: Array<User>;
-  searchHumanoids?: Maybe<HumanoidConnection>;
+export type Humanoid = {
+  id: Scalars['ID'];
 };
 
 export type HumanoidConnection = {
@@ -57,23 +40,22 @@ export type HumanoidNode = {
   node: Humanoid;
 };
 
-export function createUserMock(props: Partial<User>): User {
-  return {
-    __typename: "User",
-    id: "",
-    role: UserRole.SuperAdmin,
-    companion: createDroidMock({}),
-    ...props,
-  };
-}
+export type Query = {
+  __typename?: 'Query';
+  searchHumanoids?: Maybe<HumanoidConnection>;
+  users: Array<User>;
+};
 
-export function createDroidMock(props: Partial<Droid>): Droid {
-  return {
-    __typename: "Droid",
-    id: "",
-    codeName: "",
-    ...props,
-  };
+export type User = Humanoid & {
+  __typename?: 'User';
+  companion: Companion;
+  id: Scalars['ID'];
+  role: UserRole;
+};
+
+export enum UserRole {
+  Admin = 'ADMIN',
+  SuperAdmin = 'SUPER_ADMIN'
 }
 
 export function createDogMock(props: Partial<Dog>): Dog {
@@ -81,6 +63,15 @@ export function createDogMock(props: Partial<Dog>): Dog {
     __typename: "Dog",
     id: "",
     name: "",
+    ...props,
+  };
+}
+
+export function createDroidMock(props: Partial<Droid>): Droid {
+  return {
+    __typename: "Droid",
+    codeName: "",
+    id: "",
     ...props,
   };
 }
@@ -96,7 +87,17 @@ export function createHumanoidConnectionMock(props: Partial<HumanoidConnection>)
 export function createHumanoidNodeMock(props: Partial<HumanoidNode>): HumanoidNode {
   return {
     __typename: "HumanoidNode",
-    node: createUserMock({}),
+    node: createDroidMock({}),
+    ...props,
+  };
+}
+
+export function createUserMock(props: Partial<User>): User {
+  return {
+    __typename: "User",
+    companion: createDogMock({}),
+    id: "",
+    role: UserRole.Admin,
     ...props,
   };
 }
