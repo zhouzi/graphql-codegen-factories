@@ -1,22 +1,9 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+See [releases](https://github.com/zhouzi/graphql-codegen-factories/releases) for the change log.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## 1.0.0 - Unreleased
-
-### Added
-
-- Add `config.typesPath` to generate the factories in a different file than the types
-- Add `config.importTypesNamespace` to customize the name of the import namespace
-
-### Changed
-
-- Upgrade dependencies and drop support for Node 10 in the process
-
-### Breaking change
+<details>
+ <summary>Change log prior to <code>1.0.0<code></summary>
 
 ## 0.0.10 - 2021-04-08
 
@@ -35,3 +22,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix default value generation for enums that contain an underscore in their name
+</details>
