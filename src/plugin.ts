@@ -20,5 +20,12 @@ export const plugin: PluginFunction<
     .definitions.filter(Boolean)
     .join("\n");
 
-  return { content };
+  return {
+    prepend: visitor.config.typesPath
+      ? [
+          `import * as ${visitor.config.namespacedImportName} from '${visitor.config.typesPath}';\n`,
+        ]
+      : [],
+    content,
+  };
 };
