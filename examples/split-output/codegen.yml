@@ -1,12 +1,12 @@
 overwrite: true
-schema: ./examples/splitted-output/schema.graphql
+schema: ./examples/split-output/schema.graphql
 generates:
-  ./examples/splitted-output/generated/factories.ts:
+  ./examples/split-output/generated/factories.ts:
     plugins:
       - ./build/index.js
     config:
       typesPath: ./types
       importTypesNamespace: SharedTypes
-  ./examples/splitted-output/generated/types.ts:
+  ./examples/split-output/generated/types.ts:
     plugins:
       - typescript
