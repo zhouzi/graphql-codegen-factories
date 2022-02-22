@@ -3,7 +3,7 @@
 See [releases](https://github.com/zhouzi/graphql-codegen-factories/releases) for the change log.
 
 <details>
- <summary>Change log prior to <code>1.0.0<code></summary>
+ <summary>Change log prior to <code>1.0.0</code></summary>
 
 ## 0.0.10 - 2021-04-08
 

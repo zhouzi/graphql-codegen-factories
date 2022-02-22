@@ -129,7 +129,7 @@ generates:
   ./types.ts:
     plugins:
       - typescript
-  ./factories.ts
+  ./factories.ts:
     plugins:
       - graphql-codegen-factories
     config:
@@ -153,7 +153,7 @@ generates:
   ./types.ts:
     plugins:
       - typescript
-  ./factories.ts
+  ./factories.ts:
     plugins:
       - graphql-codegen-factories
     config:
