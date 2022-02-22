@@ -25,10 +25,27 @@ import {
 } from "@graphql-codegen/visitor-plugin-common";
 
 export interface FactoriesVisitorRawConfig extends RawTypesConfig {
-  enumsAsTypes?: boolean;
   factoryName?: string;
   scalarDefaults?: Record<string, string>;
+
+  // the typescript plugin's options that we need to support explicitly:
+  enumsAsTypes?: boolean;
+
+  // injected by near-operation-file and import-types presets:
   namespacedImportName?: string;
+
+  // the "import * as Types" statement is not injected by near-operation-file and import-types
+  // without a list of documents, as reported in: https://github.com/dotansimha/graphql-code-generator/issues/5775
+  // until this is fixed, the following option prepends it and fills namespacedImportName
+  //
+  // typesPath is also the name of the option used by the import-types presets
+  // near-operation-file uses baseTypesPath but that's because it generates multiple files
+  // and it needs to generate relative paths
+  typesPath?: string;
+
+  // the following option does the same thing as namespacedImportName
+  // but it is injected automatically while this one is provided by the user
+  importTypesNamespace?: string;
 }
 
 interface FactoriesVisitorParsedConfig extends ParsedTypesConfig {
@@ -36,6 +53,8 @@ interface FactoriesVisitorParsedConfig extends ParsedTypesConfig {
   factoryName: string;
   scalarDefaults: Record<string, string>;
   namespacedImportName?: string;
+  typesPath?: string;
+  importTypesNamespace?: string;
 }
 
 interface TypeValue {
@@ -58,7 +77,7 @@ export class FactoriesVisitor extends BaseVisitor<
   >;
 
   constructor(schema: GraphQLSchema, config: FactoriesVisitorRawConfig) {
-    super(config, {
+    const parsedConfig = {
       enumsAsTypes: getConfigValue(config.enumsAsTypes, false),
       factoryName: getConfigValue(config.factoryName, "create{Type}Mock"),
       scalarDefaults: getConfigValue(config.scalarDefaults, {}),
@@ -66,7 +85,19 @@ export class FactoriesVisitor extends BaseVisitor<
         config.namespacedImportName,
         undefined
       ),
-    } as FactoriesVisitorParsedConfig);
+      typesPath: getConfigValue(config.typesPath, undefined),
+      importTypesNamespace: getConfigValue(
+        config.importTypesNamespace,
+        undefined
+      ),
+    } as FactoriesVisitorParsedConfig;
+
+    if (parsedConfig.typesPath && parsedConfig.namespacedImportName == null) {
+      parsedConfig.namespacedImportName =
+        parsedConfig.importTypesNamespace ?? "Types";
+    }
+
+    super(config, parsedConfig);
 
     this.enums = {};
     this.unions = {};

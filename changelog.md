@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 1.0.0 - Unreleased
 
+### Added
+
+- Add `config.typesPath` to generate the factories in a different file than the types
+- Add `config.importTypesNamespace` to customize the name of the import namespace
+
 ### Changed
 
 - Upgrade dependencies and drop support for Node 10 in the process

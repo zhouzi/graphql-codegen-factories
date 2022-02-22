@@ -60,6 +60,8 @@ generates:
 
 - [`config.factoryName`](#configfactoryName)
 - [`config.scalarDefaults`](#configscalarDefaults)
+- [`config.typesPath`](#typesPath)
+- [`config.importTypesNamespace`](#importTypesNamespace)
 
 ### `config.factoryName`
 
@@ -114,6 +116,49 @@ generates:
     config:
       scalarDefaults:
         Boolean: true
+```
+
+### `config.typesPath`
+
+By default the generated factories assume that the types are in the same file. If you want to have separate files, for example `types.ts` with the types and `factories.ts` for the factories, you need to provide the path to `config.typesPath`.
+
+```yml
+overwrite: true
+schema: ./schema.graphql
+generates:
+  ./types.ts:
+    plugins:
+      - typescript
+  ./factories.ts
+    plugins:
+      - graphql-codegen-factories
+    config:
+      typesPath: ./types
+```
+
+### `config.importTypesNamespace`
+
+With `config.typesPath`, an import statement is preprended to the factories file:
+
+```typescript
+import * as Types from "./types";
+```
+
+By default types are imported as `Types` but you can customize it by providing another name to `config.importTypesNamespace`.
+
+```yml
+overwrite: true
+schema: ./schema.graphql
+generates:
+  ./types.ts:
+    plugins:
+      - typescript
+  ./factories.ts
+    plugins:
+      - graphql-codegen-factories
+    config:
+      typesPath: ./types
+      importTypesNamespace: SharedTypes
 ```
 
 ## Changelog
