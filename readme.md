@@ -1,8 +1,8 @@
 # graphql-codegen-factories
 
-graphql-codegen plugin to generate factories.
+![](https://img.shields.io/github/license/zhouzi/graphql-codegen-factories?style=for-the-badge) ![](https://img.shields.io/github/workflow/status/zhouzi/graphql-codegen-factories/CI/main?style=for-the-badge) ![](https://img.shields.io/npm/v/graphql-codegen-factories?style=for-the-badge)
 
-Heavily inspired by [@homebound-team/graphql-typescript-factories](https://github.com/homebound-team/graphql-typescript-factories/) 🙌
+graphql-codegen plugin to generate factories.
 
 ## Example
 
