@@ -135,15 +135,16 @@ export class FactoriesVisitor extends BaseVisitor<
   }
 
   private getDefaultValue(node: NamedTypeNode): string {
-    const name = this.unions.hasOwnProperty(node.name.value)
-      ? // The default value of an union is the first type's default value
-        this.unions[node.name.value].getTypes()[0].name
-      : this.interfaces.hasOwnProperty(node.name.value)
-      ? // The default value of an interface is the first implementation's default value
-        this.interfaces[node.name.value].implementations[0].name
-      : node.name.value;
+    const name =
+      node.name.value in this.unions
+        ? // The default value of an union is the first type's default value
+          this.unions[node.name.value].getTypes()[0].name
+        : node.name.value in this.interfaces
+        ? // The default value of an interface is the first implementation's default value
+          this.interfaces[node.name.value].implementations[0].name
+        : node.name.value;
 
-    if (this.config.scalarDefaults.hasOwnProperty(name)) {
+    if (name in this.config.scalarDefaults) {
       return this.config.scalarDefaults[name];
     }
 
@@ -157,7 +158,7 @@ export class FactoriesVisitor extends BaseVisitor<
       case "Boolean":
         return "false";
       default: {
-        if (this.enums.hasOwnProperty(name)) {
+        if (name in this.enums) {
           return this.config.enumsAsTypes
             ? `"${this.enums[name].getValues()[0].value}"`
             : `${this.convertNameWithNamespace(name)}.${this.convertName(
