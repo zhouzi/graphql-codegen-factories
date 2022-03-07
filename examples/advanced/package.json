@@ -3,7 +3,8 @@
   "name": "graphql-codegen-factories-advanced-example",
   "description": "",
   "scripts": {
-    "generate": "graphql-codegen --config codegen.yml",
+    "start": "graphql-codegen --watch",
+    "generate": "graphql-codegen",
     "postgenerate": "tsc"
   },
   "devDependencies": {

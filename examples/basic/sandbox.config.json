@@ -1,4 +1,4 @@
 {
   "template": "node",
-  "startScript": "generate"
+  "view": "console"
 }
