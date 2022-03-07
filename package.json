@@ -52,9 +52,6 @@
     "test": "jest",
     "format:check": "prettier --check .",
     "lint": "eslint --ext .ts,.tsx .",
-    "prebuild:examples": "npm run build",
-    "build:examples": "bash ./scripts/build-examples.sh",
-    "postbuild:examples": "tsc --project ./examples/tsconfig.json",
     "prepare": "npm run build"
   }
 }
