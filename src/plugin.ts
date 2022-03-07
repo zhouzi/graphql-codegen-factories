@@ -21,11 +21,7 @@ export const plugin: PluginFunction<
     .join("\n");
 
   return {
-    prepend: visitor.config.typesPath
-      ? [
-          `import * as ${visitor.config.namespacedImportName} from '${visitor.config.typesPath}';\n`,
-        ]
-      : [],
+    prepend: visitor.getImports(),
     content,
   };
 };

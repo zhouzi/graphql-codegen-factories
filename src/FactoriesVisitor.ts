@@ -134,6 +134,18 @@ export class FactoriesVisitor extends BaseVisitor<
     });
   }
 
+  public getImports() {
+    const imports: string[] = [];
+
+    if (this.config.typesPath) {
+      imports.push(
+        `import * as ${this.config.namespacedImportName} from '${this.config.typesPath}';\n`
+      );
+    }
+
+    return imports;
+  }
+
   private getDefaultValue(node: NamedTypeNode): string {
     const name =
       node.name.value in this.unions
