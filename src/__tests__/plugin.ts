@@ -40,8 +40,8 @@ describe("plugin", () => {
       }
     `);
 
-    const { content } = await plugin(schema, [], {});
-    expect(content).toMatchSnapshot();
+    const output = await plugin(schema, [], {});
+    expect(output).toMatchSnapshot();
   });
 
   it("should use enums as types", async () => {
@@ -56,8 +56,8 @@ describe("plugin", () => {
       }
     `);
 
-    const { content } = await plugin(schema, [], { enumsAsTypes: true });
-    expect(content).toMatchSnapshot();
+    const output = await plugin(schema, [], { enumsAsTypes: true });
+    expect(output).toMatchSnapshot();
   });
 
   it("should use the custom scalar defaults", async () => {
@@ -69,10 +69,10 @@ describe("plugin", () => {
       scalar Date
     `);
 
-    const { content } = await plugin(schema, [], {
+    const output = await plugin(schema, [], {
       scalarDefaults: { Date: "new Date()" },
     });
-    expect(content).toMatchSnapshot();
+    expect(output).toMatchSnapshot();
   });
 
   it("should create factories for inputs", async () => {
@@ -83,8 +83,8 @@ describe("plugin", () => {
       }
     `);
 
-    const { content } = await plugin(schema, [], {});
-    expect(content).toMatchSnapshot();
+    const output = await plugin(schema, [], {});
+    expect(output).toMatchSnapshot();
   });
 
   it("should not create factories for Query and Mutation", async () => {
@@ -102,8 +102,8 @@ describe("plugin", () => {
       }
     `);
 
-    const { content } = await plugin(schema, [], {});
-    expect(content).toMatchSnapshot();
+    const output = await plugin(schema, [], {});
+    expect(output).toMatchSnapshot();
   });
 
   it("should customize the factory name", async () => {
@@ -113,8 +113,8 @@ describe("plugin", () => {
       }
     `);
 
-    const { content } = await plugin(schema, [], { factoryName: "new{Type}" });
-    expect(content).toMatchSnapshot();
+    const output = await plugin(schema, [], { factoryName: "new{Type}" });
+    expect(output).toMatchSnapshot();
   });
 
   it("should support enums with an underscore", async () => {
@@ -128,7 +128,21 @@ describe("plugin", () => {
       }
     `);
 
-    const { content } = await plugin(schema, [], {});
-    expect(content).toMatchSnapshot();
+    const output = await plugin(schema, [], {});
+    expect(output).toMatchSnapshot();
+  });
+
+  it("should import types from other file", async () => {
+    const schema = buildSchema(`
+      type User {
+        id: ID!
+      }
+    `);
+
+    const output = await plugin(schema, [], {
+      typesPath: "./types.ts",
+      importTypesNamespace: "SharedTypes",
+    });
+    expect(output).toMatchSnapshot();
   });
 });
