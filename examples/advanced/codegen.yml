@@ -1,12 +1,11 @@
 overwrite: true
-schema: ./examples/split-output/schema.graphql
+schema: ./src/schema.graphql
 generates:
-  ./examples/split-output/generated/factories.ts:
-    plugins:
-      - ./build/index.js
-    config:
-      typesPath: ./types
-      importTypesNamespace: SharedTypes
-  ./examples/split-output/generated/types.ts:
+  ./generated/types.ts:
     plugins:
       - typescript
+  ./generated/factories.ts:
+    plugins:
+      - graphql-codegen-factories
+    config:
+      typesPath: ./types

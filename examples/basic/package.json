@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "name": "graphql-codegen-factories-basic-example",
+  "description": "",
+  "scripts": {
+    "generate": "graphql-codegen --config codegen.yml"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^2.6.2",
+    "@graphql-codegen/typescript": "^2.4.5",
+    "graphql": "^16.3.0",
+    "graphql-codegen-factories": "latest"
+  }
+}
