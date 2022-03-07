@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
-for d in examples/*/ ; do
-    npx graphql-codegen --config "./$d/codegen.yml"
+for directory in examples/*/ ; do
+    if [[ $1 = "" || "$directory" == *$1* ]]; then
+        npx graphql-codegen --config "./$directory/codegen.yml"
+    fi
 done
