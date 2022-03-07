@@ -1,7 +1,13 @@
 {
   "private": true,
   "name": "graphql-codegen-factories-advanced-example",
-  "description": "",
+  "description": "This example showcases a more advanced usage of graphql-codegen-factories, a graphql-codegen plugin.",
+  "keywords": [
+    "graphql",
+    "graphql-codegen",
+    "plugin",
+    "factories"
+  ],
   "scripts": {
     "start": "graphql-codegen --watch",
     "generate": "graphql-codegen",
