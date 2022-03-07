@@ -2,39 +2,9 @@
 
 ![](https://img.shields.io/github/license/zhouzi/graphql-codegen-factories?style=for-the-badge) ![](https://img.shields.io/github/workflow/status/zhouzi/graphql-codegen-factories/CI/main?style=for-the-badge) ![](https://img.shields.io/npm/v/graphql-codegen-factories?style=for-the-badge)
 
-graphql-codegen plugin to generate factories.
+`graphql-codegen-factories` is a plugin for [graphql-code-generator](https://www.graphql-code-generator.com/) that generates factories based on a GraphQL schema. Those factories can then be used to create objects that match the schema, for example to mock data in tests or to seed a database.
 
-## Example
-
-This plugin generates factory functions that can be used to create objects matching your GraphQL types.
-Let's say you have the following schema:
-
-```
-type Author {
-  id: ID!
-  email: String!
-  name: String
-}
-```
-
-This plugin will generate the following function:
-
-```typescript
-export function createAuthorMock(props: Partial<Author>): Author {
-  return {
-    __typename: "Author",
-    id: "",
-    email: "",
-    name: null,
-    ...props,
-  };
-}
-```
-
-Which can be used to mock objects in your tests.
-Note that it assumes you are using the TypeScript plugin.
-
-Feel free to ping me and/or open a pull request if you would like to use this plugin without TypeScript or with something else.
+![](./example.png)
 
 ## Usage
 
@@ -55,6 +25,11 @@ generates:
       - typescript
       - graphql-codegen-factories
 ```
+
+## Examples
+
+- Basic: [Code](./examples/basic) / [Open in CodeSandbox](https://codesandbox.io/s/github/zhouzi/graphql-codegen-factories/tree/main/examples/basic?file=/src/schema.graphql)
+- Advanced: [Code](./examples/advanced) / [Open in CodeSandbox](https://codesandbox.io/s/github/zhouzi/graphql-codegen-factories/tree/main/examples/advanced?file=/src/schema.graphql)
 
 ## Documentation
 
