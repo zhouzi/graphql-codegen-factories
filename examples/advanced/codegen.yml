@@ -4,4 +4,8 @@ generates:
   ./generated/types.ts:
     plugins:
       - typescript
+  ./generated/factories.ts:
+    plugins:
       - graphql-codegen-factories
+    config:
+      typesPath: ./types

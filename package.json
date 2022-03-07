@@ -27,6 +27,7 @@
     "@graphql-codegen/near-operation-file-preset": "^2.2.6",
     "@graphql-codegen/typescript": "2.4.5",
     "@graphql-codegen/typescript-operations": "^2.3.2",
+    "@tsconfig/recommended": "^1.0.1",
     "@types/jest": "^27.4.0",
     "@typescript-eslint/eslint-plugin": "^5.13.0",
     "@typescript-eslint/parser": "^5.13.0",
@@ -51,9 +52,6 @@
     "test": "jest",
     "format:check": "prettier --check .",
     "lint": "eslint --ext .ts,.tsx .",
-    "prebuild:examples": "npm run build",
-    "build:examples": "bash ./scripts/build-examples.sh",
-    "postbuild:examples": "tsc --project ./examples/tsconfig.json",
     "prepare": "npm run build"
   }
 }

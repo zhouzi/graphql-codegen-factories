@@ -1,7 +1,6 @@
 {
   "extends": "@tsconfig/recommended/tsconfig.json",
   "compilerOptions": {
-    "outDir": "build"
-  },
-  "include": ["src"]
+    "noEmit": true
+  }
 }

@@ -1,0 +1,24 @@
+{
+  "private": true,
+  "name": "graphql-codegen-factories-basic-example",
+  "description": "This example showcases a basic usage of graphql-codegen-factories, a graphql-codegen plugin.",
+  "keywords": [
+    "graphql",
+    "graphql-codegen",
+    "plugin",
+    "factories"
+  ],
+  "scripts": {
+    "start": "graphql-codegen --watch",
+    "generate": "graphql-codegen",
+    "postgenerate": "tsc"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^2.6.2",
+    "@graphql-codegen/typescript": "^2.4.5",
+    "@tsconfig/recommended": "^1.0.1",
+    "graphql": "^16.3.0",
+    "graphql-codegen-factories": "latest",
+    "typescript": "^4.6.2"
+  }
+}
