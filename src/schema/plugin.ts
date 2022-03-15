@@ -4,18 +4,17 @@ import {
   PluginFunction,
   Types,
 } from "@graphql-codegen/plugin-helpers";
-import {
-  FactoriesSchemaVisitor,
-  FactoriesSchemaVisitorRawConfig,
-} from "./FactoriesSchemaVisitor";
+import { FactoriesBaseVisitorRawConfig } from "../FactoriesBaseVisitor";
+import { FactoriesSchemaVisitor } from "./FactoriesSchemaVisitor";
 
 export const plugin: PluginFunction<
-  FactoriesSchemaVisitorRawConfig,
+  FactoriesBaseVisitorRawConfig,
   Types.ComplexPluginOutput
 > = (schema, documents, config) => {
-  const visitor = new FactoriesSchemaVisitor(schema, config);
   const printedSchema = printSchema(schema);
   const astNode = parse(printedSchema);
+
+  const visitor = new FactoriesSchemaVisitor(schema, config);
   const content = oldVisit(astNode, { leave: visitor })
     .definitions.filter(Boolean)
     .join("\n");
