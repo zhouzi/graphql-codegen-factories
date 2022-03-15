@@ -17,7 +17,11 @@
   "files": [
     "build"
   ],
-  "main": "build/index.js",
+  "main": "./build/index.js",
+  "exports": {
+    ".": "./build/index.js",
+    "./*": "./build/*.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/zhouzi/graphql-codegen-factories.git"

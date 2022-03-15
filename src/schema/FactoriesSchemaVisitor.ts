@@ -24,7 +24,7 @@ import {
   getConfigValue,
 } from "@graphql-codegen/visitor-plugin-common";
 
-export interface FactoriesVisitorRawConfig extends RawTypesConfig {
+export interface FactoriesSchemaVisitorRawConfig extends RawTypesConfig {
   factoryName?: string;
   scalarDefaults?: Record<string, string>;
 
@@ -48,7 +48,7 @@ export interface FactoriesVisitorRawConfig extends RawTypesConfig {
   importTypesNamespace?: string;
 }
 
-interface FactoriesVisitorParsedConfig extends ParsedTypesConfig {
+interface FactoriesSchemaVisitorParsedConfig extends ParsedTypesConfig {
   enumsAsTypes: boolean;
   factoryName: string;
   scalarDefaults: Record<string, string>;
@@ -62,9 +62,9 @@ interface TypeValue {
   isNullable: boolean;
 }
 
-export class FactoriesVisitor extends BaseVisitor<
-  FactoriesVisitorRawConfig,
-  FactoriesVisitorParsedConfig
+export class FactoriesSchemaVisitor extends BaseVisitor<
+  FactoriesSchemaVisitorRawConfig,
+  FactoriesSchemaVisitorParsedConfig
 > {
   private enums: Record<string, GraphQLEnumType>;
   private unions: Record<string, GraphQLUnionType>;
@@ -76,7 +76,7 @@ export class FactoriesVisitor extends BaseVisitor<
     }
   >;
 
-  constructor(schema: GraphQLSchema, config: FactoriesVisitorRawConfig) {
+  constructor(schema: GraphQLSchema, config: FactoriesSchemaVisitorRawConfig) {
     const parsedConfig = {
       enumsAsTypes: getConfigValue(config.enumsAsTypes, false),
       factoryName: getConfigValue(config.factoryName, "create{Type}Mock"),
@@ -90,7 +90,7 @@ export class FactoriesVisitor extends BaseVisitor<
         config.importTypesNamespace,
         undefined
       ),
-    } as FactoriesVisitorParsedConfig;
+    } as FactoriesSchemaVisitorParsedConfig;
 
     if (parsedConfig.typesPath && parsedConfig.namespacedImportName == null) {
       parsedConfig.namespacedImportName =
