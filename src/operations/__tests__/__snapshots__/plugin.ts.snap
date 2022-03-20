@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`plugin should create factories for operations 1`] = `
+Object {
+  "content": "export function createCreateUserMutationMock(props: Partial<CreateUserMutation>): CreateUserMutation {
+  return {
+createUser: {
+__typename: 'User',
+  id: \\"\\",
+  username: \\"\\",
+  communications: {
+  __typename: 'UserPreferences',
+    email: null,
+
+  },
+  followers: {
+  __typename: 'User',
+    id: \\"\\",
+
+  }
+}
+    ...props,
+  };
+}
+",
+  "prepend": Array [],
+}
+`;
