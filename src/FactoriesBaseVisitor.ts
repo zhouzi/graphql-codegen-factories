@@ -3,7 +3,6 @@ import {
   ObjectTypeDefinitionNode,
   FieldDefinitionNode,
   GraphQLEnumType,
-  NamedTypeNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
   isEnumType,
@@ -51,12 +50,12 @@ export interface FactoriesBaseVisitorParsedConfig extends ParsedTypesConfig {
   enumsAsTypes: boolean;
   factoryName: string;
   scalarDefaults: Record<string, string>;
-  namespacedImportName?: string;
+  namespacedImportName: string | null;
   typesPath?: string;
   importTypesNamespace?: string;
 }
 
-interface TypeValue {
+export interface TypeValue {
   defaultValue: string;
   isNullable: boolean;
 }
@@ -145,21 +144,21 @@ export class FactoriesBaseVisitor extends BaseVisitor<
     return imports;
   }
 
-  protected getDefaultValue(node: NamedTypeNode): string {
-    const name =
-      node.name.value in this.unions
-        ? // The default value of an union is the first type's default value
-          this.unions[node.name.value].getTypes()[0].name
-        : node.name.value in this.interfaces
-        ? // The default value of an interface is the first implementation's default value
-          this.interfaces[node.name.value].implementations[0].name
-        : node.name.value;
+  protected getDefaultValue(nodeName: string): string {
+    const scalarName =
+      nodeName in this.unions
+        ? // Take the first type from an union
+          this.unions[nodeName].getTypes()[0].name
+        : nodeName in this.interfaces
+        ? // Take the first implementation from an interface
+          this.interfaces[nodeName].implementations[0].name
+        : nodeName;
 
-    if (name in this.config.scalarDefaults) {
-      return this.config.scalarDefaults[name];
+    if (scalarName in this.config.scalarDefaults) {
+      return this.config.scalarDefaults[scalarName];
     }
 
-    switch (name) {
+    switch (scalarName) {
       case "Int":
       case "Float":
         return "0";
@@ -169,34 +168,32 @@ export class FactoriesBaseVisitor extends BaseVisitor<
       case "Boolean":
         return "false";
       default: {
-        if (name in this.enums) {
+        if (scalarName in this.enums) {
           return this.config.enumsAsTypes
-            ? `"${this.enums[name].getValues()[0].value}"`
-            : `${this.convertNameWithNamespace(name)}.${this.convertName(
-                this.enums[name].getValues()[0].name,
+            ? `"${this.enums[scalarName].getValues()[0].value}"`
+            : `${this.convertNameWithNamespace(scalarName)}.${this.convertName(
+                this.enums[scalarName].getValues()[0].name,
                 {
                   transformUnderscore: true,
                 }
               )}`;
         }
 
-        return `${this.convertFactoryName(name)}({})`;
+        return `${this.convertFactoryName(scalarName)}({})`;
       }
     }
   }
 
-  private convertFactoryName(
+  protected convertFactoryName(
     ...args: Parameters<BaseVisitor["convertName"]>
   ): string {
-    const [node] = args;
-    return this.config.factoryName.replace("{Type}", this.convertName(node));
+    return this.config.factoryName.replace("{Type}", this.convertName(...args));
   }
 
   protected convertNameWithNamespace(
     ...args: Parameters<BaseVisitor["convertName"]>
   ) {
-    const [node] = args;
-    const name = this.convertName(node);
+    const name = this.convertName(...args);
 
     if (this.config.namespacedImportName) {
       return `${this.config.namespacedImportName}.${name}`;

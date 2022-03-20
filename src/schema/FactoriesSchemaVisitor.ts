@@ -6,17 +6,12 @@ import {
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
 } from "graphql";
-import { FactoriesBaseVisitor } from "../FactoriesBaseVisitor";
-
-interface TypeValue {
-  defaultValue: string;
-  isNullable: boolean;
-}
+import { FactoriesBaseVisitor, TypeValue } from "../FactoriesBaseVisitor";
 
 export class FactoriesSchemaVisitor extends FactoriesBaseVisitor {
   NamedType(node: NamedTypeNode): TypeValue {
     return {
-      defaultValue: this.getDefaultValue(node),
+      defaultValue: this.getDefaultValue(node.name.value),
       isNullable: true,
     };
   }
