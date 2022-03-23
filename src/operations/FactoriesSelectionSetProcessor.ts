@@ -64,9 +64,10 @@ export class FactoriesSelectionSetProcessor extends BaseSelectionSetProcessor<Fa
     return [
       `${fields
         .map(
-          (field) => `${field.alias ?? field.name}: {\n${field.selectionSet}\n}`
+          (field) =>
+            `${field.alias ?? field.name}: {\n${field.selectionSet}\n},\n`
         )
-        .join(",\n")}`,
+        .join("")}`,
     ];
   }
 
