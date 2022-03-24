@@ -57,6 +57,7 @@
     "test": "jest",
     "format:check": "prettier --check .",
     "lint": "eslint --ext .ts,.tsx .",
+    "build:examples": "bash ./scripts/build-examples.sh",
     "prepare": "npm run build"
   }
 }
