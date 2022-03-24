@@ -17,9 +17,9 @@
   "files": [
     "build"
   ],
-  "main": "./build/index.js",
+  "main": "./build/schema/index.js",
   "exports": {
-    ".": "./build/index.js",
+    ".": "./build/schema/index.js",
     "./*": "./build/*.js"
   },
   "repository": {
