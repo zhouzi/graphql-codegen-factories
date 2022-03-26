@@ -1,9 +1,27 @@
 # Changelog
 
-See [releases](https://github.com/zhouzi/graphql-codegen-factories/releases) for the change log.
+## Unreleased
 
-<details>
- <summary>Change log prior to <code>1.0.0</code></summary>
+## 1.0.0-beta.1 - 2022-03-26
+
+## Added
+
+- Add the `graphql-codegen-factories/operations` entry point to generate factories for operations
+
+## Fixed
+
+- Fix the factories output when the schema has directives
+
+## 1.0.0-beta.0 - 2022-02-22
+
+## Added
+
+- Add `config.typesPath` to generate the factories in a different file than the types
+- Add `config.importTypesNamespace` to customize the name of the import namespace
+
+## Removed
+
+- Upgrade dependencies and drop support for Node 10 in the process
 
 ## 0.0.10 - 2021-04-08
 
@@ -22,4 +40,3 @@ See [releases](https://github.com/zhouzi/graphql-codegen-factories/releases) for
 ### Fixed
 
 - Fix default value generation for enums that contain an underscore in their name
-</details>
