@@ -1,0 +1,11 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    # We are only interested in security updates,
+    # the following disables version updates:
+    open-pull-requests-limit: 0
+    allow:
+      - dependency-type: "production"
