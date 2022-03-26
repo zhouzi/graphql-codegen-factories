@@ -103,11 +103,11 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
       .export()
       .asKind("function")
       .withName(
-        `${this.convertFactoryName(node, {
+        `${this.convertFactoryName(name, {
           suffix: operationTypeSuffix,
-        })}(props: Partial<${this.convertName(node, {
+        })}(props: Partial<${this.convertName(name, {
           suffix: operationTypeSuffix,
-        })}>): ${this.convertName(node, {
+        })}>): ${this.convertName(name, {
           suffix: operationTypeSuffix,
         })}`
       )

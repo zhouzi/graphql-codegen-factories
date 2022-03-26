@@ -95,4 +95,22 @@ describe("plugin", () => {
     );
     expect(output).toMatchSnapshot();
   });
+
+  it("should support unnamed operations", async () => {
+    const ast = parse(/* GraphQL */ `
+      query {
+        users {
+          id
+          username
+        }
+      }
+    `);
+
+    const output = await plugin(
+      schema,
+      [{ location: "GetUsers.graphql", document: ast }],
+      {}
+    );
+    expect(output).toMatchSnapshot();
+  });
 });

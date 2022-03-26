@@ -75,3 +75,22 @@ __typename: 'User',
   "prepend": Array [],
 }
 `;
+
+exports[`plugin should support unnamed operations 1`] = `
+Object {
+  "content": "export function createUnnamed_1_QueryMock(props: Partial<Unnamed_1_Query>): Unnamed_1_Query {
+  return {
+users: {
+__typename: 'User',
+  id: \\"\\",
+  username: \\"\\",
+
+},
+
+    ...props,
+  };
+}
+",
+  "prepend": Array [],
+}
+`;
