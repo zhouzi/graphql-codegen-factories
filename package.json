@@ -29,27 +29,27 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "2.6.2",
-    "@graphql-codegen/near-operation-file-preset": "^2.2.6",
-    "@graphql-codegen/typescript": "2.4.5",
-    "@graphql-codegen/typescript-operations": "^2.3.2",
+    "@graphql-codegen/near-operation-file-preset": "^2.2.9",
+    "@graphql-codegen/typescript": "2.4.8",
+    "@graphql-codegen/typescript-operations": "^2.3.5",
     "@tsconfig/recommended": "^1.0.1",
-    "@types/jest": "^27.4.0",
-    "@typescript-eslint/eslint-plugin": "^5.13.0",
-    "@typescript-eslint/parser": "^5.13.0",
-    "eslint": "^8.10.0",
+    "@types/jest": "^27.4.1",
+    "@typescript-eslint/eslint-plugin": "^5.16.0",
+    "@typescript-eslint/parser": "^5.16.0",
+    "eslint": "^8.12.0",
     "eslint-config-prettier": "^8.5.0",
     "graphql": "^16.3.0",
     "jest": "^27.5.1",
-    "prettier": "^2.5.1",
-    "ts-jest": "^27.1.3",
-    "typescript": "^4.5.5"
+    "prettier": "^2.6.1",
+    "ts-jest": "^27.1.4",
+    "typescript": "^4.6.3"
   },
   "peerDependencies": {
     "graphql": "^16.3.0"
   },
   "dependencies": {
-    "@graphql-codegen/plugin-helpers": "^2.4.1",
-    "@graphql-codegen/visitor-plugin-common": "^2.7.1",
+    "@graphql-codegen/plugin-helpers": "^2.4.2",
+    "@graphql-codegen/visitor-plugin-common": "^2.7.4",
     "change-case-all": "^1.0.14"
   },
   "scripts": {
