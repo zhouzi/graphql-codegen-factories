@@ -65,7 +65,7 @@ describe("plugin", () => {
       type User {
         createdAt: Date!
       }
-      
+
       scalar Date
     `);
 
@@ -125,6 +125,19 @@ describe("plugin", () => {
       }
       type User {
         role: UserRole!
+      }
+    `);
+
+    const output = await plugin(schema, [], {});
+    expect(output).toMatchSnapshot();
+  });
+
+  it("should support directives", async () => {
+    const schema = buildSchema(`
+      directive @test on FIELD_DEFINITION
+
+      type User {
+        id: String
       }
     `);
 
