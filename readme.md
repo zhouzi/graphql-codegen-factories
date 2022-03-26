@@ -6,6 +6,14 @@
 
 ![](./example.png)
 
+- [Usage](#usage)
+- [Examples](#examples)
+- [How to](#how-to)
+- [Documentation](#documentation)
+- [Changelog](#changelog)
+- [License](#license)
+- [Contributors](#contributors)
+
 ## Usage
 
 Install the plugin:
@@ -170,6 +178,10 @@ generates:
 
 [Changelog](./changelog.md)
 
-## LICENSE
+## License
 
 [MIT](./license)
+
+## Contributors
+
+[![](https://github.com/zhouzi.png?size=50)](https://github.com/zhouzi) [![](https://github.com/ertrzyiks.png?size=50)](https://github.com/ertrzyiks)
