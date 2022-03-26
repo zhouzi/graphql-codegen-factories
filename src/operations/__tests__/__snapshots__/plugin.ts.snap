@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`plugin should create factories for operations 1`] = `
+exports[`plugin should generate factories for operations 1`] = `
 Object {
   "content": "export function createCreateUserMutationMock(props: Partial<CreateUserMutation>): CreateUserMutation {
   return {
@@ -18,6 +18,25 @@ __typename: 'User',
     id: \\"\\",
 
   },
+
+},
+
+    ...props,
+  };
+}
+",
+  "prepend": Array [],
+}
+`;
+
+exports[`plugin should ignore the namespace for the operations types 1`] = `
+Object {
+  "content": "export function createCreateUserMutationMock(props: Partial<CreateUserMutation>): CreateUserMutation {
+  return {
+createUser: {
+__typename: 'User',
+  id: \\"\\",
+  username: \\"\\",
 
 },
 
