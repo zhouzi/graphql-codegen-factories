@@ -122,4 +122,8 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
           .join("\n")
       ).string;
   }
+
+  FragmentDefinition() {
+    return "";
+  }
 }

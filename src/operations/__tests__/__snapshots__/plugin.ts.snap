@@ -47,3 +47,31 @@ __typename: 'User',
   "prepend": Array [],
 }
 `;
+
+exports[`plugin should support fragments 1`] = `
+Object {
+  "content": "export function createCreateUserMutationMock(props: Partial<CreateUserMutation>): CreateUserMutation {
+  return {
+createUser: {
+__typename: 'User',
+  id: \\"\\",
+  username: \\"\\",
+  preferences: {
+  __typename: 'UserPreferences',
+    email: null,
+    inApp: null,
+    sms: null,
+
+  },
+
+},
+
+    ...props,
+  };
+}
+
+
+",
+  "prepend": Array [],
+}
+`;
