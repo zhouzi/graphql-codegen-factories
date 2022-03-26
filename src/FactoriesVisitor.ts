@@ -292,6 +292,10 @@ export class FactoriesVisitor extends BaseVisitor<
     return "";
   }
 
+  DirectiveDefinition(): string {
+    return "";
+  }
+
   ObjectTypeDefinition(node: ObjectTypeDefinitionNode): string {
     if (["Query", "Mutation"].includes(node.name.value)) {
       return "";

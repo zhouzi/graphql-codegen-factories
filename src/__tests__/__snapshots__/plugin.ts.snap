@@ -102,6 +102,20 @@ Object {
 }
 `;
 
+exports[`plugin should support directives 1`] = `
+Object {
+  "content": "export function createUserMock(props: Partial<User>): User {
+  return {
+    __typename: \\"User\\",
+    id: null,
+    ...props,
+  };
+}
+",
+  "prepend": Array [],
+}
+`;
+
 exports[`plugin should support enums with an underscore 1`] = `
 Object {
   "content": "export function createUserMock(props: Partial<User>): User {
