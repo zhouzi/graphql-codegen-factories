@@ -3,8 +3,6 @@ import {
   ObjectTypeDefinitionNode,
   FieldDefinitionNode,
   GraphQLEnumType,
-  NamedTypeNode,
-  NonNullTypeNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
   isEnumType,
@@ -17,14 +15,14 @@ import {
 } from "graphql";
 import {
   BaseVisitor,
-  RawTypesConfig,
-  ParsedTypesConfig,
   DeclarationBlock,
-  indent,
   getConfigValue,
+  indent,
+  ParsedTypesConfig,
+  RawTypesConfig,
 } from "@graphql-codegen/visitor-plugin-common";
 
-export interface FactoriesVisitorRawConfig extends RawTypesConfig {
+export interface FactoriesBaseVisitorRawConfig extends RawTypesConfig {
   factoryName?: string;
   scalarDefaults?: Record<string, string>;
 
@@ -48,23 +46,23 @@ export interface FactoriesVisitorRawConfig extends RawTypesConfig {
   importTypesNamespace?: string;
 }
 
-interface FactoriesVisitorParsedConfig extends ParsedTypesConfig {
+export interface FactoriesBaseVisitorParsedConfig extends ParsedTypesConfig {
   enumsAsTypes: boolean;
   factoryName: string;
   scalarDefaults: Record<string, string>;
-  namespacedImportName?: string;
+  namespacedImportName: string | null;
   typesPath?: string;
   importTypesNamespace?: string;
 }
 
-interface TypeValue {
+export interface TypeValue {
   defaultValue: string;
   isNullable: boolean;
 }
 
-export class FactoriesVisitor extends BaseVisitor<
-  FactoriesVisitorRawConfig,
-  FactoriesVisitorParsedConfig
+export class FactoriesBaseVisitor extends BaseVisitor<
+  FactoriesBaseVisitorRawConfig,
+  FactoriesBaseVisitorParsedConfig
 > {
   private enums: Record<string, GraphQLEnumType>;
   private unions: Record<string, GraphQLUnionType>;
@@ -76,7 +74,7 @@ export class FactoriesVisitor extends BaseVisitor<
     }
   >;
 
-  constructor(schema: GraphQLSchema, config: FactoriesVisitorRawConfig) {
+  constructor(schema: GraphQLSchema, config: FactoriesBaseVisitorRawConfig) {
     const parsedConfig = {
       enumsAsTypes: getConfigValue(config.enumsAsTypes, false),
       factoryName: getConfigValue(config.factoryName, "create{Type}Mock"),
@@ -90,7 +88,7 @@ export class FactoriesVisitor extends BaseVisitor<
         config.importTypesNamespace,
         undefined
       ),
-    } as FactoriesVisitorParsedConfig;
+    } as FactoriesBaseVisitorParsedConfig;
 
     if (parsedConfig.typesPath && parsedConfig.namespacedImportName == null) {
       parsedConfig.namespacedImportName =
@@ -146,21 +144,21 @@ export class FactoriesVisitor extends BaseVisitor<
     return imports;
   }
 
-  private getDefaultValue(node: NamedTypeNode): string {
-    const name =
-      node.name.value in this.unions
-        ? // The default value of an union is the first type's default value
-          this.unions[node.name.value].getTypes()[0].name
-        : node.name.value in this.interfaces
-        ? // The default value of an interface is the first implementation's default value
-          this.interfaces[node.name.value].implementations[0].name
-        : node.name.value;
+  protected getDefaultValue(nodeName: string): string {
+    const scalarName =
+      nodeName in this.unions
+        ? // Take the first type from an union
+          this.unions[nodeName].getTypes()[0].name
+        : nodeName in this.interfaces
+        ? // Take the first implementation from an interface
+          this.interfaces[nodeName].implementations[0].name
+        : nodeName;
 
-    if (name in this.config.scalarDefaults) {
-      return this.config.scalarDefaults[name];
+    if (scalarName in this.config.scalarDefaults) {
+      return this.config.scalarDefaults[scalarName];
     }
 
-    switch (name) {
+    switch (scalarName) {
       case "Int":
       case "Float":
         return "0";
@@ -170,34 +168,32 @@ export class FactoriesVisitor extends BaseVisitor<
       case "Boolean":
         return "false";
       default: {
-        if (name in this.enums) {
+        if (scalarName in this.enums) {
           return this.config.enumsAsTypes
-            ? `"${this.enums[name].getValues()[0].value}"`
-            : `${this.convertNameWithNamespace(name)}.${this.convertName(
-                this.enums[name].getValues()[0].name,
+            ? `"${this.enums[scalarName].getValues()[0].value}"`
+            : `${this.convertNameWithNamespace(scalarName)}.${this.convertName(
+                this.enums[scalarName].getValues()[0].name,
                 {
                   transformUnderscore: true,
                 }
               )}`;
         }
 
-        return `${this.convertFactoryName(name)}({})`;
+        return `${this.convertFactoryName(scalarName)}({})`;
       }
     }
   }
 
-  private convertFactoryName(
+  protected convertFactoryName(
     ...args: Parameters<BaseVisitor["convertName"]>
   ): string {
-    const [node] = args;
-    return this.config.factoryName.replace("{Type}", this.convertName(node));
+    return this.config.factoryName.replace("{Type}", this.convertName(...args));
   }
 
-  private convertNameWithNamespace(
+  protected convertNameWithNamespace(
     ...args: Parameters<BaseVisitor["convertName"]>
   ) {
-    const [node] = args;
-    const name = this.convertName(node);
+    const name = this.convertName(...args);
 
     if (this.config.namespacedImportName) {
       return `${this.config.namespacedImportName}.${name}`;
@@ -206,7 +202,7 @@ export class FactoriesVisitor extends BaseVisitor<
     return name;
   }
 
-  private convertField(
+  protected convertField(
     node: FieldDefinitionNode | InputValueDefinitionNode
   ): string {
     const { defaultValue, isNullable } = node.type as unknown as TypeValue;
@@ -215,7 +211,7 @@ export class FactoriesVisitor extends BaseVisitor<
     );
   }
 
-  private convertObjectType(
+  protected convertObjectType(
     node: ObjectTypeDefinitionNode | InputObjectTypeDefinitionNode
   ): string {
     return new DeclarationBlock(this._declarationBlockConfig)
@@ -241,66 +237,5 @@ export class FactoriesVisitor extends BaseVisitor<
           .filter(Boolean)
           .join("\n")
       ).string;
-  }
-
-  NamedType(node: NamedTypeNode): TypeValue {
-    return {
-      defaultValue: this.getDefaultValue(node),
-      isNullable: true,
-    };
-  }
-
-  ListType(): TypeValue {
-    return {
-      defaultValue: "[]",
-      isNullable: true,
-    };
-  }
-
-  NonNullType(node: NonNullTypeNode): TypeValue {
-    return {
-      ...(node.type as unknown as TypeValue),
-      isNullable: false,
-    };
-  }
-
-  FieldDefinition(node: FieldDefinitionNode): string {
-    return this.convertField(node);
-  }
-
-  EnumTypeDefinition(): string {
-    return "";
-  }
-
-  InputObjectTypeDefinition(node: InputObjectTypeDefinitionNode): string {
-    return this.convertObjectType(node);
-  }
-
-  InputValueDefinition(node: InputValueDefinitionNode): string {
-    return this.convertField(node);
-  }
-
-  ScalarTypeDefinition(): string {
-    return "";
-  }
-
-  InterfaceTypeDefinition(): string {
-    return "";
-  }
-
-  UnionTypeDefinition(): string {
-    return "";
-  }
-
-  DirectiveDefinition(): string {
-    return "";
-  }
-
-  ObjectTypeDefinition(node: ObjectTypeDefinitionNode): string {
-    if (["Query", "Mutation"].includes(node.name.value)) {
-      return "";
-    }
-
-    return this.convertObjectType(node);
   }
 }

@@ -17,7 +17,12 @@
   "files": [
     "build"
   ],
-  "main": "build/index.js",
+  "main": "./build/schema/index.js",
+  "exports": {
+    ".": "./build/schema/index.js",
+    "./schema": "./build/schema/index.js",
+    "./operations": "./build/operations/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/zhouzi/graphql-codegen-factories.git"
@@ -44,7 +49,8 @@
   },
   "dependencies": {
     "@graphql-codegen/plugin-helpers": "^2.4.1",
-    "@graphql-codegen/visitor-plugin-common": "^2.7.1"
+    "@graphql-codegen/visitor-plugin-common": "^2.7.1",
+    "change-case-all": "^1.0.14"
   },
   "scripts": {
     "prebuild": "rm -rf ./build",
@@ -52,6 +58,7 @@
     "test": "jest",
     "format:check": "prettier --check .",
     "lint": "eslint --ext .ts,.tsx .",
+    "build:examples": "bash ./scripts/build-examples.sh",
     "prepare": "npm run build"
   }
 }
