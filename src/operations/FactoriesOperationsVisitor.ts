@@ -105,9 +105,9 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
       .withName(
         `${this.convertFactoryName(node, {
           suffix: operationTypeSuffix,
-        })}(props: Partial<${this.convertNameWithNamespace(node, {
+        })}(props: Partial<${this.convertName(node, {
           suffix: operationTypeSuffix,
-        })}>): ${this.convertNameWithNamespace(node, {
+        })}>): ${this.convertName(node, {
           suffix: operationTypeSuffix,
         })}`
       )
