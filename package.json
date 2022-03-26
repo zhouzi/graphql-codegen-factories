@@ -20,7 +20,8 @@
   "main": "./build/schema/index.js",
   "exports": {
     ".": "./build/schema/index.js",
-    "./*": "./build/*.js"
+    "./schema": "./build/schema/index.js",
+    "./operations": "./build/operations/index.js"
   },
   "repository": {
     "type": "git",
