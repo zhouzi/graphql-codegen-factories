@@ -31,6 +31,36 @@ generates:
 - Basic: [Code](./examples/basic) / [Open in CodeSandbox](https://codesandbox.io/s/github/zhouzi/graphql-codegen-factories/tree/main/examples/basic?file=/src/schema.graphql)
 - Advanced: [Code](./examples/advanced) / [Open in CodeSandbox](https://codesandbox.io/s/github/zhouzi/graphql-codegen-factories/tree/main/examples/advanced?file=/src/schema.graphql)
 
+Note: due to CodeSandbox's file system limitations, you might need to fork the sandbox for the generated files to be shown.
+
+## How to
+
+<details>
+<summary>How can I use it with <code>near-operation-file-preset</code>?</summary>
+
+By default the plugin only generates factories based on the schema. To generate factories for operations, you need to use the `graphql-codegen-factories/operations` entry point.
+
+```yml
+overwrite: true
+schema: ./schema.graphql
+documents: ./src/**/*.graphql
+generates:
+  ./src/types.ts:
+    plugins:
+      - typescript
+      - graphql-codegen-factories
+  ./src/:
+    preset: near-operation-file
+    presetConfig:
+      extension: .generated.ts
+      baseTypesPath: types.ts
+    plugins:
+      - typescript-operations
+      - graphql-codegen-factories/operations
+```
+
+</details>
+
 ## Documentation
 
 - [`config.factoryName`](#configfactoryName)
