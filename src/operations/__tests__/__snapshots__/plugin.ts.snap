@@ -81,7 +81,8 @@ exports[`plugin should support lists 1`] = `
 Object {
   "content": "export function createGetUsersQueryMock(props: Partial<GetUsersQuery>): GetUsersQuery {
   return {
-users: []
+users: [],
+
     ...props,
   };
 }
@@ -94,7 +95,8 @@ exports[`plugin should support unnamed operations 1`] = `
 Object {
   "content": "export function createUnnamed_1_QueryMock(props: Partial<Unnamed_1_Query>): Unnamed_1_Query {
   return {
-me: null
+me: null,
+
     ...props,
   };
 }

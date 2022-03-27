@@ -36,12 +36,12 @@ export class FactoriesSelectionSetProcessor extends BaseSelectionSetProcessor<Fa
       wrapTypeWithModifiers: (baseType, type) => {
         if (type instanceof GraphQLNonNull) {
           if (type.ofType instanceof GraphQLList) {
-            return "[]";
+            return "[],\n";
           }
 
           return `{\n${baseType}\n},\n`;
         }
-        return "null";
+        return "null,\n";
       },
     });
   }
