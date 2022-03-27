@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## Fixed
+
+- Fix support for unnamed operations
+- Fix support for lists and nullable fields
+- Fix fragments support by stripping them from the output
+- Fix support for aliased primitive fields
+
 ## 1.0.0-beta.1 - 2022-03-26
 
 ## Added

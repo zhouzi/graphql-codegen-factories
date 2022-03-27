@@ -26,16 +26,10 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
 
     this.selectionSetToObject = new SelectionSetToObject(
       new FactoriesSelectionSetProcessor({
-        namespacedImportName: null,
+        namespacedImportName: config.namespacedImportName ?? null,
         convertName: this.convertName.bind(this),
-        enumPrefix: null,
+        enumPrefix: config.enumPrefix ?? null,
         scalars: this.scalars,
-        formatNamedField(name) {
-          return name;
-        },
-        wrapTypeWithModifiers(baseType) {
-          return baseType;
-        },
         getDefaultValue: this.getDefaultValue.bind(this),
       }),
       this.scalars,
@@ -103,11 +97,11 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
       .export()
       .asKind("function")
       .withName(
-        `${this.convertFactoryName(node, {
+        `${this.convertFactoryName(name, {
           suffix: operationTypeSuffix,
-        })}(props: Partial<${this.convertName(node, {
+        })}(props: Partial<${this.convertName(name, {
           suffix: operationTypeSuffix,
-        })}>): ${this.convertName(node, {
+        })}>): ${this.convertName(name, {
           suffix: operationTypeSuffix,
         })}`
       )
@@ -121,5 +115,9 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
           .filter(Boolean)
           .join("\n")
       ).string;
+  }
+
+  FragmentDefinition() {
+    return "";
   }
 }

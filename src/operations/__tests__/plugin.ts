@@ -2,23 +2,11 @@ import { buildSchema, parse } from "graphql";
 import { plugin } from "../plugin";
 
 describe("plugin", () => {
-  it("should generate factories for operations", async () => {
+  it("should generate factory for a simple operation", async () => {
     const schema = buildSchema(/* GraphQL */ `
       type User {
         id: ID!
         username: String!
-        preferences: UserPreferences!
-        followers: [User!]!
-      }
-
-      type UserPreferences {
-        email: Boolean
-        inApp: Boolean
-        sms: Boolean
-      }
-
-      type Query {
-        users: [User!]!
       }
 
       type Mutation {
@@ -30,12 +18,34 @@ describe("plugin", () => {
         createUser(username: $username) {
           id
           username
-          communications: preferences {
-            email
-          }
-          followers {
-            id
-          }
+        }
+      }
+    `);
+
+    const output = await plugin(
+      schema,
+      [{ location: "CreateUser.graphql", document: ast }],
+      {}
+    );
+    expect(output).toMatchSnapshot();
+  });
+
+  it("should support aliases", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      type User {
+        id: ID!
+        username: String!
+      }
+
+      type Mutation {
+        createUser(username: String): User!
+      }
+    `);
+    const ast = parse(/* GraphQL */ `
+      mutation CreateUser($username: String) {
+        createUser(username: $username) {
+          id
+          email: username
         }
       }
     `);
@@ -55,10 +65,6 @@ describe("plugin", () => {
         username: String!
       }
 
-      type Query {
-        users: [User!]!
-      }
-
       type Mutation {
         createUser(username: String): User!
       }
@@ -76,6 +82,93 @@ describe("plugin", () => {
       schema,
       [{ location: "CreateUser.graphql", document: ast }],
       { namespacedImportName: "types.ts" }
+    );
+    expect(output).toMatchSnapshot();
+  });
+
+  it("should support fragments", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      type User {
+        id: ID!
+        username: String!
+      }
+
+      type Query {
+        me: User!
+      }
+    `);
+    const ast = parse(/* GraphQL */ `
+      query GetMe {
+        me {
+          ...UserFragment
+        }
+      }
+      fragment UserFragment on User {
+        id
+        username
+      }
+    `);
+
+    const output = await plugin(
+      schema,
+      [{ location: "GetMe.graphql", document: ast }],
+      {}
+    );
+    expect(output).toMatchSnapshot();
+  });
+
+  it("should support unnamed operations", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      type User {
+        id: ID!
+        username: String!
+      }
+
+      type Query {
+        me: User
+      }
+    `);
+    const ast = parse(/* GraphQL */ `
+      query {
+        me {
+          id
+          username
+        }
+      }
+    `);
+
+    const output = await plugin(
+      schema,
+      [{ location: "GetMe.graphql", document: ast }],
+      {}
+    );
+    expect(output).toMatchSnapshot();
+  });
+
+  it("should support lists", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      type User {
+        id: ID!
+        username: String!
+      }
+
+      type Query {
+        users: [User!]!
+      }
+    `);
+    const ast = parse(/* GraphQL */ `
+      query GetUsers {
+        users {
+          id
+          username
+        }
+      }
+    `);
+
+    const output = await plugin(
+      schema,
+      [{ location: "GetUsers.graphql", document: ast }],
+      {}
     );
     expect(output).toMatchSnapshot();
   });

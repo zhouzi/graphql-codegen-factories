@@ -1,6 +1,7 @@
 import {
   BaseSelectionSetProcessor,
   LinkField,
+  PrimitiveAliasedFields,
   PrimitiveField,
   ProcessResult,
   SelectionSetProcessorConfig,
@@ -13,12 +14,38 @@ import {
   GraphQLOutputType,
 } from "graphql";
 
-interface FactoriesSelectionSetProcessorConfig
-  extends SelectionSetProcessorConfig {
+interface FactoriesSelectionSetProcessorRawConfig
+  extends Pick<
+    SelectionSetProcessorConfig,
+    "namespacedImportName" | "convertName" | "enumPrefix" | "scalars"
+  > {
   getDefaultValue: (nodeName: string) => string;
 }
 
+interface FactoriesSelectionSetProcessorConfig
+  extends FactoriesSelectionSetProcessorRawConfig,
+    SelectionSetProcessorConfig {}
+
 export class FactoriesSelectionSetProcessor extends BaseSelectionSetProcessor<FactoriesSelectionSetProcessorConfig> {
+  constructor(config: FactoriesSelectionSetProcessorRawConfig) {
+    super({
+      ...config,
+      formatNamedField(name) {
+        return name;
+      },
+      wrapTypeWithModifiers: (baseType, type) => {
+        if (type instanceof GraphQLNonNull) {
+          if (type.ofType instanceof GraphQLList) {
+            return "[],\n";
+          }
+
+          return `{\n${baseType}\n},\n`;
+        }
+        return "null,\n";
+      },
+    });
+  }
+
   private getDefaultValue(type: GraphQLOutputType): string {
     if (type instanceof GraphQLNonNull) {
       if (type.ofType instanceof GraphQLNonNull) {
@@ -52,21 +79,24 @@ export class FactoriesSelectionSetProcessor extends BaseSelectionSetProcessor<Fa
     );
   }
 
-  transformAliasesPrimitiveFields(): ProcessResult {
-    return [];
+  transformAliasesPrimitiveFields(
+    schemaType: GraphQLObjectType | GraphQLInterfaceType,
+    queriedFields: PrimitiveAliasedFields[]
+  ): ProcessResult {
+    const schemaTypeFields = schemaType.getFields();
+    return queriedFields.map(
+      ({ alias, fieldName }) =>
+        `${alias}: ${this.getDefaultValue(schemaTypeFields[fieldName].type)},\n`
+    );
   }
 
   transformLinkFields(fields: LinkField[]): ProcessResult {
     if (fields.length === 0) {
       return [];
     }
-
     return [
       `${fields
-        .map(
-          (field) =>
-            `${field.alias ?? field.name}: {\n${field.selectionSet}\n},\n`
-        )
+        .map((field) => `${field.alias ?? field.name}: ${field.selectionSet}`)
         .join("")}`,
     ];
   }
