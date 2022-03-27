@@ -26,16 +26,10 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
 
     this.selectionSetToObject = new SelectionSetToObject(
       new FactoriesSelectionSetProcessor({
-        namespacedImportName: null,
+        namespacedImportName: config.namespacedImportName ?? null,
         convertName: this.convertName.bind(this),
-        enumPrefix: null,
+        enumPrefix: config.enumPrefix ?? null,
         scalars: this.scalars,
-        formatNamedField(name) {
-          return name;
-        },
-        wrapTypeWithModifiers(baseType) {
-          return baseType;
-        },
         getDefaultValue: this.getDefaultValue.bind(this),
       }),
       this.scalars,

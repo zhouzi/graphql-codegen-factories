@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`plugin should generate factories for operations 1`] = `
+exports[`plugin should generate factory for a simple operation 1`] = `
 Object {
   "content": "export function createCreateUserMutationMock(props: Partial<CreateUserMutation>): CreateUserMutation {
   return {
@@ -8,16 +8,6 @@ createUser: {
 __typename: 'User',
   id: \\"\\",
   username: \\"\\",
-  communications: {
-  __typename: 'UserPreferences',
-    email: null,
-
-  },
-  followers: {
-  __typename: 'User',
-    id: \\"\\",
-
-  },
 
 },
 
@@ -48,21 +38,33 @@ __typename: 'User',
 }
 `;
 
-exports[`plugin should support fragments 1`] = `
+exports[`plugin should support aliases 1`] = `
 Object {
   "content": "export function createCreateUserMutationMock(props: Partial<CreateUserMutation>): CreateUserMutation {
   return {
 createUser: {
 __typename: 'User',
   id: \\"\\",
-  username: \\"\\",
-  preferences: {
-  __typename: 'UserPreferences',
-    email: null,
-    inApp: null,
-    sms: null,
+  email: \\"\\",
 
-  },
+},
+
+    ...props,
+  };
+}
+",
+  "prepend": Array [],
+}
+`;
+
+exports[`plugin should support fragments 1`] = `
+Object {
+  "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery>): GetMeQuery {
+  return {
+me: {
+__typename: 'User',
+  id: \\"\\",
+  username: \\"\\",
 
 },
 
@@ -70,7 +72,19 @@ __typename: 'User',
   };
 }
 
+",
+  "prepend": Array [],
+}
+`;
 
+exports[`plugin should support lists 1`] = `
+Object {
+  "content": "export function createGetUsersQueryMock(props: Partial<GetUsersQuery>): GetUsersQuery {
+  return {
+users: []
+    ...props,
+  };
+}
 ",
   "prepend": Array [],
 }
@@ -80,13 +94,7 @@ exports[`plugin should support unnamed operations 1`] = `
 Object {
   "content": "export function createUnnamed_1_QueryMock(props: Partial<Unnamed_1_Query>): Unnamed_1_Query {
   return {
-users: {
-__typename: 'User',
-  id: \\"\\",
-  username: \\"\\",
-
-},
-
+me: null
     ...props,
   };
 }
