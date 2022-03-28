@@ -36,10 +36,8 @@ generates:
 
 ## Examples
 
-- Basic: [Code](./examples/basic) / [Open in CodeSandbox](https://codesandbox.io/s/github/zhouzi/graphql-codegen-factories/tree/main/examples/basic?file=/src/schema.graphql)
-- Advanced: [Code](./examples/advanced) / [Open in CodeSandbox](https://codesandbox.io/s/github/zhouzi/graphql-codegen-factories/tree/main/examples/advanced?file=/src/schema.graphql)
-
-Note: due to CodeSandbox's file system limitations, you might need to fork the sandbox for the generated files to be shown.
+- Basic: [Code](./examples/basic) / [Open in StackBlitz](https://stackblitz.com/github/zhouzi/graphql-codegen-factories/tree/main/examples/basic?file=/src/schema.graphql)
+- Advanced: [Code](./examples/advanced) / [Open in StackBlitz](https://stackblitz.com/github/zhouzi/graphql-codegen-factories/tree/main/examples/advanced?file=/src/schema.graphql)
 
 ## How to
 

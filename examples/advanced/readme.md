@@ -4,4 +4,4 @@ This example showcases a more advanced usage of [`graphql-codegen-factories`](ht
 
 It generates factories in `generated/factories.ts`, separated from `generated/types.ts`, based on the schema in `src/schema.graphql`.
 
-- [Open in CodeSandbox](https://codesandbox.io/s/github/zhouzi/graphql-codegen-factories/tree/main/examples/advanced?file=/src/schema.graphql)
+- [Open in StackBlitz](https://stackblitz.com/github/zhouzi/graphql-codegen-factories/tree/main/examples/advanced?file=/src/schema.graphql)
