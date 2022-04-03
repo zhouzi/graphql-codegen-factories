@@ -1,7 +1,8 @@
 {
   "private": true,
-  "name": "graphql-codegen-factories-advanced-example",
-  "description": "This example showcases a more advanced usage of graphql-codegen-factories, a graphql-codegen plugin.",
+  "name": "real-world-example",
+  "version": "0.0.0",
+  "description": "This is a demonstration of a real world usage of the graphql-codegen-factories plugin.",
   "keywords": [
     "graphql",
     "graphql-codegen",
@@ -11,14 +12,16 @@
   "scripts": {
     "start": "graphql-codegen --watch",
     "generate": "graphql-codegen",
-    "postgenerate": "tsc"
+    "postgenerate": "tsc",
+    "test": "echo 'ok'",
+    "build": "echo 'ok'"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.6.2",
     "@graphql-codegen/typescript": "^2.4.5",
     "@tsconfig/recommended": "^1.0.1",
     "graphql": "^16.3.0",
-    "graphql-codegen-factories": "latest",
+    "graphql-codegen-factories": "1.0.0-beta.2",
     "typescript": "^4.6.2"
   }
 }

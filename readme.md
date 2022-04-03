@@ -36,8 +36,7 @@ generates:
 
 ## Examples
 
-- Basic: [Code](./examples/basic) / [Open in StackBlitz](https://stackblitz.com/github/zhouzi/graphql-codegen-factories/tree/main/examples/basic?file=/src/schema.graphql)
-- Advanced: [Code](./examples/advanced) / [Open in StackBlitz](https://stackblitz.com/github/zhouzi/graphql-codegen-factories/tree/main/examples/advanced?file=/src/schema.graphql)
+- Real World: [Code](./packages/real-world-example) / [Open in StackBlitz](https://stackblitz.com/github/zhouzi/graphql-codegen-factories/tree/main/packages/real-world-example?file=/src/schema.graphql)
 
 ## How to
 
