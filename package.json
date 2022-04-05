@@ -1,64 +1,17 @@
 {
-  "name": "graphql-codegen-factories",
-  "version": "1.0.0-beta.2",
-  "description": "graphql-codegen plugin to generate factories",
-  "keywords": [
-    "graphql",
-    "graphql-codegen",
-    "plugin",
-    "factories"
+  "private": true,
+  "workspaces": [
+    "packages/*"
   ],
-  "homepage": "https://github.com/zhouzi/graphql-codegen-factories#readme",
-  "bugs": {
-    "url": "https://github.com/zhouzi/graphql-codegen-factories/issues",
-    "email": "hello@gabinaureche.com"
-  },
-  "license": "MIT",
-  "files": [
-    "build"
-  ],
-  "main": "./build/schema/index.js",
-  "exports": {
-    ".": "./build/schema/index.js",
-    "./schema": "./build/schema/index.js",
-    "./operations": "./build/operations/index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/zhouzi/graphql-codegen-factories.git"
+  "scripts": {
+    "format": "prettier --check .",
+    "lint": "eslint --ext .ts,.tsx ."
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "2.6.2",
-    "@graphql-codegen/near-operation-file-preset": "^2.2.9",
-    "@graphql-codegen/typescript": "2.4.8",
-    "@graphql-codegen/typescript-operations": "^2.3.5",
-    "@tsconfig/recommended": "^1.0.1",
-    "@types/jest": "^27.4.1",
     "@typescript-eslint/eslint-plugin": "^5.16.0",
     "@typescript-eslint/parser": "^5.16.0",
     "eslint": "^8.12.0",
     "eslint-config-prettier": "^8.5.0",
-    "graphql": "^16.3.0",
-    "jest": "^27.5.1",
-    "prettier": "^2.6.1",
-    "ts-jest": "^27.1.4",
-    "typescript": "^4.6.3"
-  },
-  "peerDependencies": {
-    "graphql": "^16.3.0"
-  },
-  "dependencies": {
-    "@graphql-codegen/plugin-helpers": "^2.4.2",
-    "@graphql-codegen/visitor-plugin-common": "^2.7.4",
-    "change-case-all": "^1.0.14"
-  },
-  "scripts": {
-    "prebuild": "rm -rf ./build",
-    "build": "tsc",
-    "test": "jest",
-    "format:check": "prettier --check .",
-    "lint": "eslint --ext .ts,.tsx .",
-    "build:examples": "bash ./scripts/build-examples.sh",
-    "prepare": "npm run build"
+    "prettier": "^2.6.1"
   }
 }

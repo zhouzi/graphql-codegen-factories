@@ -11,7 +11,8 @@ jobs:
         with:
           node-version: "16.x"
           registry-url: "https://registry.npmjs.org"
-      - run: npm ci
-      - run: npm publish
+      - run: yarn
+      - run: yarn publish
+        working-directory: packages/graphql-codegen-factories
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

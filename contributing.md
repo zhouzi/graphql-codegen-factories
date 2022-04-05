@@ -8,9 +8,6 @@ Here is how you can get a copy of this project running on your computer:
 
 1. Fork the repository.
 2. Clone the repository.
-3. Install the dependencies by running `npm install`.
+3. Install the dependencies by running `yarn`.
 
-## Available scripts
-
-- `npm test` runs the tests.
-- `npm run build:examples` build the examples, also a good way to test the plugin in real conditions.
+This project uses yarn's workspaces so the code for the package is in `packages/graphql-codegen-factories`.
