@@ -18,14 +18,17 @@ export const plugin: PluginFunction<
   const fragmentDefinitions = allAst.definitions.filter(
     (d) => d.kind === Kind.FRAGMENT_DEFINITION
   ) as FragmentDefinitionNode[];
-  const allFragments: LoadedFragment[] = fragmentDefinitions.map(
-    (fragmentDefinition) => ({
-      node: fragmentDefinition,
-      name: fragmentDefinition.name.value,
-      onType: fragmentDefinition.typeCondition.name.value,
-      isExternal: false,
-    })
-  );
+  const allFragments: LoadedFragment[] = [
+    ...fragmentDefinitions.map(
+      (fragmentDefinition) => ({
+        node: fragmentDefinition,
+        name: fragmentDefinition.name.value,
+        onType: fragmentDefinition.typeCondition.name.value,
+        isExternal: false,
+      })
+    ),
+    ...(config.externalFragments || [])
+  ];
 
   const visitor = new FactoriesOperationsVisitor(schema, allFragments, config);
   const content = oldVisit(allAst, { leave: visitor }).definitions.join("\n");
