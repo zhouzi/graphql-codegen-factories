@@ -1,4 +1,4 @@
-import { buildSchema, parse } from "graphql";
+import { buildSchema, parse, FragmentDefinitionNode } from "graphql";
 import { plugin } from "../plugin";
 
 describe("plugin", () => {
@@ -116,6 +116,54 @@ describe("plugin", () => {
     );
     expect(output).toMatchSnapshot();
   });
+
+  it("should support external fragments", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      type User {
+        id: ID!
+        username: String!
+      }
+
+      type Query {
+        me: User!
+      }
+    `);
+
+    const externalFragment = parse(/* GraphQL */ `
+      fragment UserFragment on User {
+        id
+        username
+      }
+    `).definitions[0] as unknown as FragmentDefinitionNode;
+
+    const ast = parse(/* GraphQL */ `
+      query GetMe {
+        me {
+          ...UserFragment
+        }
+      }
+    `);
+
+    console.log({
+      externalFragment
+    })
+
+    const output = await plugin(
+      schema,
+      [{ location: "GetMe.graphql", document: ast }],
+      {
+        externalFragments: [
+          {
+            node: externalFragment,
+            name: externalFragment.name.value,
+            onType: externalFragment.typeCondition.name.value,
+            isExternal: true,
+          }
+        ]
+      }
+    );
+    expect(output).toMatchSnapshot();
+  })
 
   it("should support unnamed operations", async () => {
     const schema = buildSchema(/* GraphQL */ `
