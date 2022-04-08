@@ -145,8 +145,8 @@ describe("plugin", () => {
     `);
 
     console.log({
-      externalFragment
-    })
+      externalFragment,
+    });
 
     const output = await plugin(
       schema,
@@ -158,12 +158,12 @@ describe("plugin", () => {
             name: externalFragment.name.value,
             onType: externalFragment.typeCondition.name.value,
             isExternal: true,
-          }
-        ]
+          },
+        ],
       }
     );
     expect(output).toMatchSnapshot();
-  })
+  });
 
   it("should support unnamed operations", async () => {
     const schema = buildSchema(/* GraphQL */ `
