@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+## Fixed
+- Fix support for external fragments
+
 ## 1.0.0-beta.2 - 2022-03-27
 
 ## Fixed
