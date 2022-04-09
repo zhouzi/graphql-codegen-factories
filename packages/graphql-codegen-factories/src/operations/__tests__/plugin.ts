@@ -1,4 +1,4 @@
-import { buildSchema, parse, FragmentDefinitionNode } from "graphql";
+import { buildSchema, parse, FragmentDefinitionNode, Kind } from "graphql";
 import { plugin } from "../plugin";
 
 describe("plugin", () => {
@@ -129,12 +129,24 @@ describe("plugin", () => {
       }
     `);
 
-    const externalFragment = parse(/* GraphQL */ `
+    const fragments = parse(/* GraphQL */ `
       fragment UserFragment on User {
         id
         username
       }
-    `).definitions[0] as unknown as FragmentDefinitionNode;
+    `);
+
+    const allFragment = fragments.definitions.filter(
+      (d) => d.kind === Kind.FRAGMENT_DEFINITION
+    ) as FragmentDefinitionNode[];
+
+    const externalFragments = allFragment.map((frag) => ({
+      isExternal: true,
+      importFrom: frag.name.value,
+      name: frag.name.value,
+      onType: frag.typeCondition.name.value,
+      node: frag,
+    }));
 
     const ast = parse(/* GraphQL */ `
       query GetMe {
@@ -144,22 +156,11 @@ describe("plugin", () => {
       }
     `);
 
-    console.log({
-      externalFragment,
-    });
-
     const output = await plugin(
       schema,
       [{ location: "GetMe.graphql", document: ast }],
       {
-        externalFragments: [
-          {
-            node: externalFragment,
-            name: externalFragment.name.value,
-            onType: externalFragment.typeCondition.name.value,
-            isExternal: true,
-          },
-        ],
+        externalFragments,
       }
     );
     expect(output).toMatchSnapshot();
