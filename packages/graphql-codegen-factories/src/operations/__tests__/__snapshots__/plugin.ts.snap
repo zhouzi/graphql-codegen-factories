@@ -57,6 +57,25 @@ __typename: 'User',
 }
 `;
 
+exports[`plugin should support external fragments 1`] = `
+Object {
+  "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery>): GetMeQuery {
+  return {
+me: {
+__typename: 'User',
+  id: \\"\\",
+  username: \\"\\",
+
+},
+
+    ...props,
+  };
+}
+",
+  "prepend": Array [],
+}
+`;
+
 exports[`plugin should support fragments 1`] = `
 Object {
   "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery>): GetMeQuery {
