@@ -136,11 +136,11 @@ describe("plugin", () => {
       }
     `);
 
-    const allFragment = fragments.definitions.filter(
+    const allFragments = fragments.definitions.filter(
       (d) => d.kind === Kind.FRAGMENT_DEFINITION
     ) as FragmentDefinitionNode[];
 
-    const externalFragments = allFragment.map((frag) => ({
+    const externalFragments = allFragments.map((frag) => ({
       isExternal: true,
       importFrom: frag.name.value,
       name: frag.name.value,

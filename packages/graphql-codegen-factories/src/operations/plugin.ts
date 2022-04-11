@@ -25,6 +25,8 @@ export const plugin: PluginFunction<
       onType: fragmentDefinition.typeCondition.name.value,
       isExternal: false,
     })),
+    // `externalFragments` config is passed by the near-operation-file preset.
+    // It is an array of fragments declared outside of the operation file.
     ...(config.externalFragments || []),
   ];
 
