@@ -96,6 +96,25 @@ __typename: 'User',
 }
 `;
 
+exports[`plugin should support inline fragments 1`] = `
+Object {
+  "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery>): GetMeQuery {
+  return {
+me: {
+__typename: 'User',
+  id: \\"\\",
+  username: \\"\\",
+
+},
+
+    ...props,
+  };
+}
+",
+  "prepend": Array [],
+}
+`;
+
 exports[`plugin should support lists 1`] = `
 Object {
   "content": "export function createGetUsersQueryMock(props: Partial<GetUsersQuery>): GetUsersQuery {

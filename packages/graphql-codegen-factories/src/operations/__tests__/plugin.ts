@@ -117,6 +117,36 @@ describe("plugin", () => {
     expect(output).toMatchSnapshot();
   });
 
+  it("should support inline fragments", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      type User {
+        id: ID!
+        username: String!
+      }
+
+      type Query {
+        me: User!
+      }
+    `);
+    const ast = parse(/* GraphQL */ `
+      query GetMe {
+        me {
+          ... on User {
+            id
+            username
+          }
+        }
+      }
+    `);
+
+    const output = await plugin(
+      schema,
+      [{ location: "GetMe.graphql", document: ast }],
+      {}
+    );
+    expect(output).toMatchSnapshot();
+  });
+
   it("should support external fragments", async () => {
     const schema = buildSchema(/* GraphQL */ `
       type User {
