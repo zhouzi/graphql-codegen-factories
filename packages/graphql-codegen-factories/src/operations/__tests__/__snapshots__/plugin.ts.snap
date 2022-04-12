@@ -95,7 +95,6 @@ __typename: 'User',
     ...props,
   };
 }
-
 ",
   "prepend": Array [],
 }

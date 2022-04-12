@@ -31,7 +31,11 @@ export const plugin: PluginFunction<
   ];
 
   const visitor = new FactoriesOperationsVisitor(schema, allFragments, config);
-  const content = oldVisit(allAst, { leave: visitor }).definitions.join("\n");
+  const content = (
+    oldVisit(allAst, { leave: visitor }) as DocumentNode
+  ).definitions
+    .filter((definition) => typeof definition === "string")
+    .join("\n");
 
   return {
     prepend: visitor.getImports(),

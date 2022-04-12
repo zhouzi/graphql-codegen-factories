@@ -1,4 +1,4 @@
-import { printSchema, parse } from "graphql";
+import { printSchema, parse, DocumentNode } from "graphql";
 import {
   oldVisit,
   PluginFunction,
@@ -15,8 +15,10 @@ export const plugin: PluginFunction<
   const astNode = parse(printedSchema);
 
   const visitor = new FactoriesSchemaVisitor(schema, config);
-  const content = oldVisit(astNode, { leave: visitor })
-    .definitions.filter(Boolean)
+  const content = (
+    oldVisit(astNode, { leave: visitor }) as DocumentNode
+  ).definitions
+    .filter((definition) => typeof definition === "string")
     .join("\n");
 
   return {

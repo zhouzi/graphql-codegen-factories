@@ -34,10 +34,6 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor {
     return this.convertField(node);
   }
 
-  EnumTypeDefinition(): string {
-    return "";
-  }
-
   InputObjectTypeDefinition(node: InputObjectTypeDefinitionNode): string {
     return this.convertObjectType(node);
   }
@@ -46,25 +42,9 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor {
     return this.convertField(node);
   }
 
-  ScalarTypeDefinition(): string {
-    return "";
-  }
-
-  InterfaceTypeDefinition(): string {
-    return "";
-  }
-
-  UnionTypeDefinition(): string {
-    return "";
-  }
-
-  DirectiveDefinition(): string {
-    return "";
-  }
-
-  ObjectTypeDefinition(node: ObjectTypeDefinitionNode): string {
+  ObjectTypeDefinition(node: ObjectTypeDefinitionNode): string | undefined {
     if (["Query", "Mutation"].includes(node.name.value)) {
-      return "";
+      return undefined;
     }
 
     return this.convertObjectType(node);
