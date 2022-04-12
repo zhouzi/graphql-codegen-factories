@@ -161,4 +161,5 @@ dist
 # End of https://www.toptal.com/developers/gitignore/api/node,yarn
 
 build/
-packages/demo/generated
+packages/demo/generated/
+packages/demo/**/*.generated.ts

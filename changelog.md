@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## Added
+
+- Add `__typename` to operations' root
+
 ## 1.0.0-beta.3 - 2022-04-11
 
 ## Fixed

@@ -4,6 +4,7 @@ exports[`plugin should generate factory for a simple operation 1`] = `
 Object {
   "content": "export function createCreateUserMutationMock(props: Partial<CreateUserMutation>): CreateUserMutation {
   return {
+    __typename: \\"Mutation\\",
 createUser: {
 __typename: 'User',
   id: \\"\\",
@@ -23,6 +24,7 @@ exports[`plugin should ignore the namespace for the operations types 1`] = `
 Object {
   "content": "export function createCreateUserMutationMock(props: Partial<CreateUserMutation>): CreateUserMutation {
   return {
+    __typename: \\"Mutation\\",
 createUser: {
 __typename: 'User',
   id: \\"\\",
@@ -42,6 +44,7 @@ exports[`plugin should support aliases 1`] = `
 Object {
   "content": "export function createCreateUserMutationMock(props: Partial<CreateUserMutation>): CreateUserMutation {
   return {
+    __typename: \\"Mutation\\",
 createUser: {
 __typename: 'User',
   id: \\"\\",
@@ -61,6 +64,7 @@ exports[`plugin should support external fragments 1`] = `
 Object {
   "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery>): GetMeQuery {
   return {
+    __typename: \\"Query\\",
 me: {
 __typename: 'User',
   id: \\"\\",
@@ -80,6 +84,7 @@ exports[`plugin should support fragments 1`] = `
 Object {
   "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery>): GetMeQuery {
   return {
+    __typename: \\"Query\\",
 me: {
 __typename: 'User',
   id: \\"\\",
@@ -100,6 +105,7 @@ exports[`plugin should support inline fragments 1`] = `
 Object {
   "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery>): GetMeQuery {
   return {
+    __typename: \\"Query\\",
 me: {
 __typename: 'User',
   id: \\"\\",
@@ -119,6 +125,7 @@ exports[`plugin should support lists 1`] = `
 Object {
   "content": "export function createGetUsersQueryMock(props: Partial<GetUsersQuery>): GetUsersQuery {
   return {
+    __typename: \\"Query\\",
 users: [],
 
     ...props,
@@ -133,6 +140,7 @@ exports[`plugin should support unnamed operations 1`] = `
 Object {
   "content": "export function createUnnamed_1_QueryMock(props: Partial<Unnamed_1_Query>): Unnamed_1_Query {
   return {
+    __typename: \\"Query\\",
 me: null,
 
     ...props,

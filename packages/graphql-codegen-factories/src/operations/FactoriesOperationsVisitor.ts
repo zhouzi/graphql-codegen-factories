@@ -108,6 +108,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
       .withBlock(
         [
           indent("return {"),
+          indent(indent(`__typename: "${operationType}",`)),
           selectionSet.transformSelectionSet(),
           indent(indent("...props,")),
           indent("};"),
