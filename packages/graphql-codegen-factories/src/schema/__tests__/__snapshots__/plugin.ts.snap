@@ -14,6 +14,38 @@ Object {
 }
 `;
 
+exports[`plugin should create factories for unions 1`] = `
+Object {
+  "content": "export function createUserMock(props: Partial<User>): User {
+  return {
+    __typename: \\"User\\",
+    firstName: \\"\\",
+    lastName: \\"\\",
+    ...props,
+  };
+}
+
+export function createDroidMock(props: Partial<Droid>): Droid {
+  return {
+    __typename: \\"Droid\\",
+    codeName: \\"\\",
+    ...props,
+  };
+}
+
+export function createHumanoidMock({ __typename = \\"User\\", ...props }: Partial<Humanoid>): Humanoid {
+  switch(__typename) {
+    case \\"User\\":
+      return createUserMock({ __typename, ...props });
+    case \\"Droid\\":
+      return createDroidMock({ __typename, ...props });
+  }
+}
+",
+  "prepend": Array [],
+}
+`;
+
 exports[`plugin should create factories with built-in types 1`] = `
 Object {
   "content": "export function createUserMock(props: Partial<User>): User {

@@ -5,6 +5,8 @@ import {
   NonNullTypeNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
+  UnionTypeDefinitionNode,
+  ListTypeNode,
 } from "graphql";
 import {
   DeclarationBlock,
@@ -13,6 +15,7 @@ import {
 import { FactoriesBaseVisitor } from "../FactoriesBaseVisitor";
 
 interface VisitedTypeNode {
+  typename: string;
   defaultValue: string;
   isNullable: boolean;
 }
@@ -28,6 +31,15 @@ interface UnvisitedInputValueDefinitionNode
 }
 
 interface UnvisitedNonNullTypeNode extends Omit<NonNullTypeNode, "type"> {
+  type: VisitedTypeNode;
+}
+
+interface UnvisitedUnionTypeDefinitionNode
+  extends Omit<UnionTypeDefinitionNode, "types"> {
+  types: VisitedTypeNode[];
+}
+
+interface UnvisitedListTypeNode extends Omit<ListTypeNode, "type"> {
   type: VisitedTypeNode;
 }
 
@@ -71,13 +83,15 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor {
 
   NamedType(node: NamedTypeNode): VisitedTypeNode {
     return {
+      typename: node.name.value,
       defaultValue: this.getDefaultValue(node.name.value),
       isNullable: true,
     };
   }
 
-  ListType(): VisitedTypeNode {
+  ListType(node: UnvisitedListTypeNode): VisitedTypeNode {
     return {
+      typename: node.type.typename,
       defaultValue: "[]",
       isNullable: true,
     };
@@ -108,5 +122,51 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor {
     }
 
     return this.convertObjectType(node);
+  }
+
+  UnionTypeDefinition(
+    node: UnvisitedUnionTypeDefinitionNode
+  ): string | undefined {
+    const types = node.types ?? [];
+
+    if (types.length <= 0) {
+      // Creating an union that represents nothing is valid
+      // So this is valid:
+      // union Humanoid = Human | Droid
+      // But this is also valid:
+      // union Humanoid
+      return undefined;
+    }
+
+    return new DeclarationBlock(this._declarationBlockConfig)
+      .export()
+      .asKind("function")
+      .withName(
+        `${this.convertFactoryName(node.name.value)}({ __typename = "${
+          types[0].typename
+        }", ...props }: Partial<${this.convertNameWithNamespace(
+          node.name.value
+        )}>): ${this.convertNameWithNamespace(node.name.value)}`
+      )
+      .withBlock(
+        [
+          indent("switch(__typename) {"),
+          ...types.flatMap((type) => [
+            indent(indent(`case "${type.typename}":`)),
+            indent(
+              indent(
+                indent(
+                  `return ${this.convertFactoryName(
+                    type.typename
+                  )}({ __typename, ...props });`
+                )
+              )
+            ),
+          ]),
+          indent("}"),
+        ]
+          .filter(Boolean)
+          .join("\n")
+      ).string;
   }
 }
