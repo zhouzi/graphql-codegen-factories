@@ -12,9 +12,23 @@ import {
 } from "@graphql-codegen/visitor-plugin-common";
 import { FactoriesBaseVisitor } from "../FactoriesBaseVisitor";
 
-interface TypeValue {
+interface VisitedTypeNode {
   defaultValue: string;
   isNullable: boolean;
+}
+
+interface UnvisitedFieldDefinitionNode
+  extends Omit<FieldDefinitionNode, "type"> {
+  type: VisitedTypeNode;
+}
+
+interface UnvisitedInputValueDefinitionNode
+  extends Omit<InputValueDefinitionNode, "type"> {
+  type: VisitedTypeNode;
+}
+
+interface UnvisitedNonNullTypeNode extends Omit<NonNullTypeNode, "type"> {
+  type: VisitedTypeNode;
 }
 
 export class FactoriesSchemaVisitor extends FactoriesBaseVisitor {
@@ -47,36 +61,36 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor {
   }
 
   protected convertField(
-    node: FieldDefinitionNode | InputValueDefinitionNode
+    node: UnvisitedFieldDefinitionNode | UnvisitedInputValueDefinitionNode
   ): string {
-    const { defaultValue, isNullable } = node.type as unknown as TypeValue;
+    const { defaultValue, isNullable } = node.type;
     return indent(
       indent(`${node.name.value}: ${isNullable ? "null" : defaultValue},`)
     );
   }
 
-  NamedType(node: NamedTypeNode): TypeValue {
+  NamedType(node: NamedTypeNode): VisitedTypeNode {
     return {
       defaultValue: this.getDefaultValue(node.name.value),
       isNullable: true,
     };
   }
 
-  ListType(): TypeValue {
+  ListType(): VisitedTypeNode {
     return {
       defaultValue: "[]",
       isNullable: true,
     };
   }
 
-  NonNullType(node: NonNullTypeNode): TypeValue {
+  NonNullType(node: UnvisitedNonNullTypeNode): VisitedTypeNode {
     return {
-      ...(node.type as unknown as TypeValue),
+      ...node.type,
       isNullable: false,
     };
   }
 
-  FieldDefinition(node: FieldDefinitionNode): string {
+  FieldDefinition(node: UnvisitedFieldDefinitionNode): string {
     return this.convertField(node);
   }
 
@@ -84,7 +98,7 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor {
     return this.convertObjectType(node);
   }
 
-  InputValueDefinition(node: InputValueDefinitionNode): string {
+  InputValueDefinition(node: UnvisitedInputValueDefinitionNode): string {
     return this.convertField(node);
   }
 
