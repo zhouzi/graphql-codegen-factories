@@ -1,10 +1,6 @@
 import {
   GraphQLSchema,
-  ObjectTypeDefinitionNode,
-  FieldDefinitionNode,
   GraphQLEnumType,
-  InputObjectTypeDefinitionNode,
-  InputValueDefinitionNode,
   isEnumType,
   isUnionType,
   GraphQLUnionType,
@@ -15,9 +11,7 @@ import {
 } from "graphql";
 import {
   BaseVisitor,
-  DeclarationBlock,
   getConfigValue,
-  indent,
   ParsedTypesConfig,
   RawTypesConfig,
 } from "@graphql-codegen/visitor-plugin-common";
@@ -53,11 +47,6 @@ export interface FactoriesBaseVisitorParsedConfig extends ParsedTypesConfig {
   namespacedImportName: string | null;
   typesPath?: string;
   importTypesNamespace?: string;
-}
-
-export interface TypeValue {
-  defaultValue: string;
-  isNullable: boolean;
 }
 
 export class FactoriesBaseVisitor extends BaseVisitor<
@@ -200,42 +189,5 @@ export class FactoriesBaseVisitor extends BaseVisitor<
     }
 
     return name;
-  }
-
-  protected convertField(
-    node: FieldDefinitionNode | InputValueDefinitionNode
-  ): string {
-    const { defaultValue, isNullable } = node.type as unknown as TypeValue;
-    return indent(
-      indent(`${node.name.value}: ${isNullable ? "null" : defaultValue},`)
-    );
-  }
-
-  protected convertObjectType(
-    node: ObjectTypeDefinitionNode | InputObjectTypeDefinitionNode
-  ): string {
-    return new DeclarationBlock(this._declarationBlockConfig)
-      .export()
-      .asKind("function")
-      .withName(
-        `${this.convertFactoryName(
-          node
-        )}(props: Partial<${this.convertNameWithNamespace(
-          node
-        )}>): ${this.convertNameWithNamespace(node)}`
-      )
-      .withBlock(
-        [
-          indent("return {"),
-          node.kind === "ObjectTypeDefinition"
-            ? indent(indent(`__typename: "${node.name.value}",`))
-            : null,
-          ...(node.fields ?? []),
-          indent(indent("...props,")),
-          indent("};"),
-        ]
-          .filter(Boolean)
-          .join("\n")
-      ).string;
   }
 }

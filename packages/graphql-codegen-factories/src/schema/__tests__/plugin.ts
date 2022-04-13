@@ -158,4 +158,22 @@ describe("plugin", () => {
     });
     expect(output).toMatchSnapshot();
   });
+
+  it("should create factories for unions", async () => {
+    const schema = buildSchema(`
+      type User {
+        firstName: String!
+        lastName: String!
+      }
+
+      type Droid {
+        codeName: String!
+      }
+
+      union Humanoid = User | Droid
+    `);
+
+    const output = await plugin(schema, [], {});
+    expect(output).toMatchSnapshot();
+  });
 });
