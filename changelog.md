@@ -5,6 +5,7 @@
 ## Added
 
 - Add `__typename` to operations' root
+- Add support for unions
 
 ## 1.0.0-beta.3 - 2022-04-11
 
