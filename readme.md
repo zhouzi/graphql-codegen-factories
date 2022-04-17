@@ -26,9 +26,4 @@ export function createUserMock(props: Partial<User>): User {
 
 ## Contributors
 
-<a href="https://github.com/zhouzi">
-<img src="https://github.com/zhouzi.png?size=50" alt="zhouzi" style="border-radius: 50%;" />
-</a>
-<a href="https://github.com/ertrzyiks">
-<img src="https://github.com/ertrzyiks.png?size=50" alt="ertrzyiks" style="border-radius: 50%;" />
-</a>
+[![](https://github.com/zhouzi.png?size=50)](https://github.com/zhouzi) [![](https://github.com/ertrzyiks.png?size=50)](https://github.com/ertrzyiks)
