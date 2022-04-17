@@ -1,29 +1,21 @@
 {
   "private": true,
-  "name": "demo",
+  "name": "usage-with-near-operation-file-preset",
   "version": "0.0.0",
-  "description": "This is a demonstration of a real world usage of the graphql-codegen-factories plugin.",
-  "keywords": [
-    "graphql",
-    "graphql-codegen",
-    "plugin",
-    "factories"
-  ],
   "scripts": {
     "start": "graphql-codegen --watch",
-    "generate": "graphql-codegen",
-    "postgenerate": "tsc",
-    "test": "echo 'ok'",
-    "build": "echo 'ok'"
+    "build": "graphql-codegen",
+    "test": "yarn build",
+    "posttest": "tsc"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.6.2",
     "@graphql-codegen/near-operation-file-preset": "^2.2.9",
-    "@graphql-codegen/typescript": "^2.4.5",
+    "@graphql-codegen/typescript": "^2.4.8",
     "@graphql-codegen/typescript-operations": "^2.3.5",
     "@tsconfig/recommended": "^1.0.1",
     "graphql": "^16.3.0",
     "graphql-codegen-factories": "1.0.0-beta.3",
-    "typescript": "^4.6.2"
+    "typescript": "^4.6.3"
   }
 }

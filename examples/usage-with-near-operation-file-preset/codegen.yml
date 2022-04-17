@@ -1,20 +1,20 @@
 overwrite: true
-schema: ./src/schema.graphql
-documents: ./src/**/*.graphql
+schema: ./schema.graphql
+documents: ./*.graphql
 generates:
   ./generated/types.ts:
     plugins:
       - typescript
   ./generated/factories.ts:
     plugins:
-      - graphql-codegen-factories
+      - graphql-codegen-factories/schema
     config:
       typesPath: ./types
-  ./src/:
+  ./:
     preset: near-operation-file
     presetConfig:
       extension: .generated.ts
-      baseTypesPath: ../generated/types.ts
+      baseTypesPath: ./generated/types.ts
     plugins:
       - typescript-operations
       - graphql-codegen-factories/operations

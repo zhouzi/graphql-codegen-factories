@@ -22,7 +22,11 @@ export function createUserMock(props: Partial<User>): User {
 }
 ```
 
+<p style="text-align: center;">
+
 [Documentation](https://gabinaureche.com/graphql-codegen-factories/) · [Examples](https://gabinaureche.com/graphql-codegen-factories/#examples) · [Changelog](./changelog.md) · License: [MIT](./license)
+
+</p>
 
 ## Contributors
 

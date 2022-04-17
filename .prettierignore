@@ -1,2 +1,4 @@
-build
-packages/demo/generated
+build/
+generated/
+*.generated.ts
+.docusaurus/

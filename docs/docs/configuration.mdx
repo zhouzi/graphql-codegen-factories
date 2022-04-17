@@ -1,0 +1,320 @@
+---
+sidebar_position: 3
+---
+
+# Configuration
+
+Although the examples on this page uses the `graphql-codegen-factories/schema` plugin, the options documented are also compatible with `graphql-codegen-factories/operations`.
+
+## `config.factoryName`
+
+By default, this plugin generates factories named `create{Type}Mock`.
+So for a type `User`, the corresponding factory will be named `createUserMock`.
+
+<details>
+<summary>Example</summary>
+
+<div className="codeBlocks">
+
+```graphql title="schema.graphql"
+type User {
+  id: ID!
+  username: String!
+}
+```
+
+```typescript title="types.ts"
+// highlight-start
+export function createUserMock(props: Partial<User>): User {
+  // highlight-end
+  return {
+    id: "",
+    username: "",
+    ...props,
+  };
+}
+```
+
+</div>
+
+</details>
+
+You can customize the factories' name by configuring `factoryName`:
+
+```yml title="codegen.yml"
+overwrite: true
+schema: ./schema.graphql
+generates:
+  ./types.ts:
+    plugins:
+      - typescript
+      - graphql-codegen-factories/schema
+    config:
+      # highlight-start
+      factoryName: new{Type}
+      # highlight-end
+```
+
+<details>
+<summary>Example</summary>
+
+<div className="codeBlocks">
+
+```graphql title="schema.graphql"
+type User {
+  id: ID!
+  username: String!
+}
+```
+
+```typescript title="types.ts"
+// highlight-start
+export function newUser(props: Partial<User>): User {
+  // highlight-end
+  return {
+    id: "",
+    username: "",
+    ...props,
+  };
+}
+```
+
+</div>
+
+</details>
+
+## `config.scalarDefaults`
+
+By default, this plugin infers the default values based on the properties' type.
+For example, a property whose type is `Boolean` will have a value of `false`.
+
+<details>
+<summary>Example</summary>
+
+<div className="codeBlocks">
+
+```graphql title="schema.graphql"
+type User {
+  isAdmin: Boolean!
+}
+```
+
+```typescript title="types.ts"
+export function createUserMock(props: Partial<User>): User {
+  return {
+    // highlight-start
+    isAdmin: false,
+    // highlight-end
+    ...props,
+  };
+}
+```
+
+</div>
+
+</details>
+
+You can customize the default values by configuring `scalarDefaults`:
+
+```yml title="codegen.yml"
+overwrite: true
+schema: ./schema.graphql
+generates:
+  ./types.ts:
+    plugins:
+      - typescript
+      - graphql-codegen-factories/schema
+    config:
+      scalarDefaults:
+        # highlight-start
+        Boolean: true
+        # highlight-end
+```
+
+<details>
+<summary>Example</summary>
+
+<div className="codeBlocks">
+
+```graphql title="schema.graphql"
+type User {
+  isAdmin: Boolean!
+}
+```
+
+```typescript title="types.ts"
+export function createUserMock(props: Partial<User>): User {
+  return {
+    // highlight-start
+    isAdmin: true,
+    // highlight-end
+    ...props,
+  };
+}
+```
+
+</div>
+
+</details>
+
+:::caution
+
+This plugin only infers default values for built-in scalars.
+You will probably need to use this option to define the values of custom scalars, e.g `Date`.
+
+<details>
+<summary>Example</summary>
+
+```yml title="codegen.yml"
+overwrite: true
+schema: ./schema.graphql
+generates:
+  ./types.ts:
+    plugins:
+      - typescript
+      - graphql-codegen-factories/schema
+    config:
+      scalarDefaults:
+        # highlight-start
+        Date: new Date()
+        # highlight-end
+```
+
+<div className="codeBlocks">
+
+```graphql title="schema.graphql"
+scalar Date
+
+type User {
+  createdAt: Date!
+}
+```
+
+```typescript title="types.ts"
+export function createUserMock(props: Partial<User>): User {
+  return {
+    // highlight-start
+    createdAt: new Date(),
+    // highlight-end
+    ...props,
+  };
+}
+```
+
+</div>
+
+</details>
+
+:::
+
+## `config.typesPath`
+
+By default, this plugin assumes that the types and factories are generated in the same file.
+The factories reference types without importing them.
+
+If you want to generate types and factories in different files, you need to provide the `typesPath`:
+
+```yml title="codegen.yml"
+overwrite: true
+schema: ./schema.graphql
+generates:
+  ./types.ts:
+    plugins:
+      - typescript
+  ./factories.ts:
+    plugins:
+      - graphql-codegen-factories/schema
+    config:
+      # highlight-start
+      typesPath: ./types
+      # highlight-end
+```
+
+<details>
+<summary>Example</summary>
+<div className="codeBlocks">
+
+```graphql title="schema.graphql"
+type User {
+  id: ID!
+  username: String!
+}
+```
+
+```typescript title="factories.ts"
+// highlight-start
+import * as Types from "./types";
+// highlight-end
+
+export function createUserMock(props: Partial<Types.User>): Types.User {
+  return {
+    id: "",
+    username: "",
+    ...props,
+  };
+}
+```
+
+</div>
+
+</details>
+
+:::info
+
+You don't need to configure this option when using [@graphql-codegen/near-operation-file-preset](https://www.graphql-code-generator.com/plugins/near-operation-file-preset).
+
+:::
+
+## `config.importTypesNamespace`
+
+By default, the import types namespace when using `config.typesPath` is `Types`.
+
+You can customize this namespace by configuring `importTypesNamespace`:
+
+```yml
+overwrite: true
+schema: ./schema.graphql
+generates:
+  ./types.ts:
+    plugins:
+      - typescript
+  ./factories.ts:
+    plugins:
+      - graphql-codegen-factories/schema
+    config:
+      typesPath: ./types
+      # highlight-start
+      importTypesNamespace: SharedTypes
+      # highlight-end
+```
+
+<details>
+<summary>Example</summary>
+<div className="codeBlocks">
+
+```graphql title="schema.graphql"
+type User {
+  id: ID!
+  username: String!
+}
+```
+
+```typescript title="factories.ts"
+// highlight-start
+import * as SharedTypes from "./types";
+// highlight-end
+
+export function createUserMock(
+  props: Partial<SharedTypes.User>
+): SharedTypes.User {
+  return {
+    id: "",
+    username: "",
+    ...props,
+  };
+}
+```
+
+</div>
+
+</details>

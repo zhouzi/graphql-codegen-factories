@@ -1,6 +1,8 @@
 {
   "private": true,
   "workspaces": [
+    "docs",
+    "examples/*",
     "packages/*"
   ],
   "scripts": {
