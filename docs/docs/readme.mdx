@@ -1,0 +1,43 @@
+---
+sidebar_position: 1
+---
+
+# Introduction
+
+`graphql-codegen-factories` is a plugin for [GraphQL Code Generator](https://www.graphql-code-generator.com/) that generates factories based on a GraphQL schema and operations.
+Those factories can then be used to create objects that match the schema, for example to mock data in tests or to seed a database.
+
+<div className="codeBlocks">
+
+```graphql title="schema.graphql"
+type User {
+  id: ID!
+  username: String!
+}
+
+type Query {
+  loggedInUser: User!
+}
+```
+
+```typescript title="factories.ts"
+export function createUserMock(props: Partial<User>): User {
+  return {
+    id: "",
+    username: "",
+    ...props,
+  };
+}
+```
+
+</div>
+
+You can [play around with a demo in your browser](https://stackblitz.com/github/zhouzi/graphql-codegen-factories/blob/main/packages/demo?file=/src/schema.graphql).
+
+## Real world examples
+
+Here is a list of projects using `graphql-codegen-factories`:
+
+- [yummy-recipes/yummy](https://github.com/yummy-recipes/yummy)
+
+Are you using this plugin? [Let us know!](https://github.com/zhouzi/graphql-codegen-factories/issues/new?title=Add%20my%20project%20to%20the%20real%20world%20examples)
