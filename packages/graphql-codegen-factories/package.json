@@ -47,6 +47,6 @@
     "prebuild": "rm -rf ./build",
     "build": "tsc",
     "test": "jest",
-    "prepare": "npm run build"
+    "prepare": "yarn build"
   }
 }
