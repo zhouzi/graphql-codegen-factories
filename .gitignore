@@ -163,3 +163,6 @@ dist
 build/
 generated/
 *.generated.ts
+
+# The package's readme is automatically copied from the root one when publishing
+packages/graphql-codegen-factories/readme.md

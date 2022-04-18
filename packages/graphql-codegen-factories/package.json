@@ -46,6 +46,7 @@
   "scripts": {
     "prebuild": "rm -rf ./build",
     "build": "tsc",
+    "postbuild": "cp ../../readme.md .",
     "test": "jest",
     "prepare": "yarn build"
   }
