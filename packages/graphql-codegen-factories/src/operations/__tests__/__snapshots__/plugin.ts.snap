@@ -135,6 +135,39 @@ users: [],
 }
 `;
 
+exports[`plugin should support nested selections 1`] = `
+Object {
+  "content": "export function Query({ __typename = \\"Query\\", ...props }: DeepPartial<Query>) {
+  switch(__typename) {
+    case \\"Query\\": {
+      const { me } = factories.createQueryMock(props);
+      return { me };
+    }
+  }
+}
+
+export function Query_me({ __typename = \\"User\\", ...props }: DeepPartial<User>) {
+  switch(__typename) {
+    case \\"User\\": {
+      const { id, username, followers } = factories.createUserMock(props);
+      return { id, username, followers };
+    }
+  }
+}
+
+export function Query_me_followers({ __typename = \\"User\\", ...props }: DeepPartial<User>) {
+  switch(__typename) {
+    case \\"User\\": {
+      const { id, username } = factories.createUserMock(props);
+      return { id, username };
+    }
+  }
+}
+",
+  "prepend": Array [],
+}
+`;
+
 exports[`plugin should support unnamed operations 1`] = `
 Object {
   "content": "export function createUnnamed_1_QueryMock(props: Partial<Unnamed_1_Query>): Unnamed_1_Query {

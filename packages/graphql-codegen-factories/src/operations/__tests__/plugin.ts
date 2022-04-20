@@ -251,4 +251,36 @@ describe("plugin", () => {
     );
     expect(output).toMatchSnapshot();
   });
+
+  it("should support nested selections", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      type User {
+        id: ID!
+        username: String!
+        followers: [User!]!
+      }
+
+      type Query {
+        me: User!
+      }
+    `);
+    const ast = parse(/* GraphQL */ `
+      query GetMe {
+        me {
+          id
+          username
+          followers {
+            id
+          }
+        }
+      }
+    `);
+
+    const output = await plugin(
+      schema,
+      [{ location: "GetUsers.graphql", document: ast }],
+      {}
+    );
+    expect(output).toMatchSnapshot();
+  });
 });
