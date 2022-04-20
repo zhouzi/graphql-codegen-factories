@@ -33,12 +33,15 @@ export function createDroidMock(props: Partial<Droid>): Droid {
   };
 }
 
-export function createHumanoidMock({ __typename = \\"User\\", ...props }: Partial<Humanoid>): Humanoid {
-  switch(__typename) {
+export function createHumanoidMock(props: Partial<Humanoid>): Humanoid {
+  switch(props.__typename) {
     case \\"User\\":
-      return createUserMock({ __typename, ...props });
+      return createUserMock(props);
     case \\"Droid\\":
-      return createDroidMock({ __typename, ...props });
+      return createDroidMock(props);
+    case undefined:
+    default:
+      return createHumanoidMock({ __typename: \\"User\\", ...props });
   }
 }
 ",

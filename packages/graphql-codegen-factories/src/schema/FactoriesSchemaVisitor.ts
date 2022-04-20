@@ -142,27 +142,36 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor {
       .export()
       .asKind("function")
       .withName(
-        `${this.convertFactoryName(node.name.value)}({ __typename = "${
-          types[0].typename
-        }", ...props }: Partial<${this.convertNameWithNamespace(
+        `${this.convertFactoryName(
+          node.name.value
+        )}(props: Partial<${this.convertNameWithNamespace(
           node.name.value
         )}>): ${this.convertNameWithNamespace(node.name.value)}`
       )
       .withBlock(
         [
-          indent("switch(__typename) {"),
+          indent("switch(props.__typename) {"),
           ...types.flatMap((type) => [
             indent(indent(`case "${type.typename}":`)),
             indent(
               indent(
                 indent(
-                  `return ${this.convertFactoryName(
-                    type.typename
-                  )}({ __typename, ...props });`
+                  `return ${this.convertFactoryName(type.typename)}(props);`
                 )
               )
             ),
           ]),
+          indent(indent(`case undefined:`)),
+          indent(indent(`default:`)),
+          indent(
+            indent(
+              indent(
+                `return ${this.convertFactoryName(
+                  node.name.value
+                )}({ __typename: "${types[0].typename}", ...props });`
+              )
+            )
+          ),
           indent("}"),
         ]
           .filter(Boolean)
