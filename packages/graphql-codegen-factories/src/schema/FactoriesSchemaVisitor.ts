@@ -117,10 +117,6 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor {
   }
 
   ObjectTypeDefinition(node: ObjectTypeDefinitionNode): string | undefined {
-    if (["Query", "Mutation"].includes(node.name.value)) {
-      return undefined;
-    }
-
     return this.convertObjectType(node);
   }
 

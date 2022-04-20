@@ -6,6 +6,7 @@
 
 - Add `__typename` to operations' root
 - Add support for unions
+- Generate factories for the root types: Query, Mutation and Subscription
 
 ## 1.0.0-beta.3 - 2022-04-11
 
