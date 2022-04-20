@@ -3,6 +3,17 @@ type User {
   username: String!
 }
 
+type Image {
+  src: String!
+}
+
+type Video {
+  url: String!
+}
+
+union Media = Image | Video
+
 type Query {
   loggedInUser: User!
+  media: Media!
 }
