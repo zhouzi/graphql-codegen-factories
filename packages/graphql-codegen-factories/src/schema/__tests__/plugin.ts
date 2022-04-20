@@ -87,7 +87,7 @@ describe("plugin", () => {
     expect(output).toMatchSnapshot();
   });
 
-  it("should not create factories for Query and Mutation", async () => {
+  it("should create factories for Query and Mutation", async () => {
     const schema = buildSchema(`
       type User {
         id: ID!

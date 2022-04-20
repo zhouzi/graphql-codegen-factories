@@ -1,5 +1,35 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`plugin should create factories for Query and Mutation 1`] = `
+Object {
+  "content": "export function createUserMock(props: Partial<User>): User {
+  return {
+    __typename: \\"User\\",
+    id: \\"\\",
+    ...props,
+  };
+}
+
+export function createQueryMock(props: Partial<Query>): Query {
+  return {
+    __typename: \\"Query\\",
+    users: [],
+    ...props,
+  };
+}
+
+export function createMutationMock(props: Partial<Mutation>): Mutation {
+  return {
+    __typename: \\"Mutation\\",
+    createUser: createUserMock({}),
+    ...props,
+  };
+}
+",
+  "prepend": Array [],
+}
+`;
+
 exports[`plugin should create factories for inputs 1`] = `
 Object {
   "content": "export function createPostInputMock(props: Partial<PostInput>): PostInput {
@@ -120,20 +150,6 @@ Object {
     "import * as SharedTypes from './types.ts';
 ",
   ],
-}
-`;
-
-exports[`plugin should not create factories for Query and Mutation 1`] = `
-Object {
-  "content": "export function createUserMock(props: Partial<User>): User {
-  return {
-    __typename: \\"User\\",
-    id: \\"\\",
-    ...props,
-  };
-}
-",
-  "prepend": Array [],
 }
 `;
 
