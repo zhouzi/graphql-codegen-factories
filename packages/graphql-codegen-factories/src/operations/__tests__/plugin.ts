@@ -257,11 +257,11 @@ describe("plugin", () => {
       type User {
         id: ID!
         username: String!
-        followers: [User!]!
+        followers: [User]
       }
 
       type Query {
-        me: User!
+        me: User
       }
     `);
     const ast = parse(/* GraphQL */ `
@@ -278,7 +278,57 @@ describe("plugin", () => {
 
     const output = await plugin(
       schema,
-      [{ location: "GetUsers.graphql", document: ast }],
+      [{ location: "GetMe.graphql", document: ast }],
+      {}
+    );
+    expect(output).toMatchSnapshot();
+  });
+
+  it.only("should support unions", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      type ImageDimensions {
+        width: Int!
+        height: Int!
+      }
+
+      type Image {
+        src: String!
+        dimensions: ImageDimensions
+      }
+
+      type Video {
+        href: String!
+        dimensions: ImageDimensions
+      }
+
+      union Media = Image | Video
+
+      type Query {
+        medias: [Media!]!
+      }
+    `);
+    const ast = parse(/* GraphQL */ `
+      query GetMedias {
+        medias {
+          ... on Image {
+            src
+            dimensions {
+              width
+            }
+          }
+          ... on Video {
+            href
+            dimensions {
+              height
+            }
+          }
+        }
+      }
+    `);
+
+    const output = await plugin(
+      schema,
+      [{ location: "GetMedias.graphql", document: ast }],
       {}
     );
     expect(output).toMatchSnapshot();

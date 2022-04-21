@@ -168,6 +168,52 @@ export function Query_me_followers({ __typename = \\"User\\", ...props }: DeepPa
 }
 `;
 
+exports[`plugin should support unions 1`] = `
+Object {
+  "content": "export function createGetMediasQueryMock(props: Partial<GetMediasQuery>): GetMediasQuery {
+  switch(props.__typename) {
+    case \\"Query\\": {
+      const {  } = factories.createQueryMock({  });
+      return { medias: createGetMediasQueryMock_medias(props.medias ?? {}) };
+    }
+    case undefined:
+    default:
+      return createGetMediasQueryMock({ ...props, __typename: \\"Query\\" });
+  }
+}
+
+export function createGetMediasQueryMock_medias(props: Partial<GetMediasQuery[\\"medias\\"][number]>): GetMediasQuery[\\"medias\\"][number] {
+  switch(props.__typename) {
+    case \\"Image\\": {
+      const { src } = factories.createImageMock({ src: props.src });
+      return { src, dimensions: createGetMediasQueryMock_medias_dimensions(props.dimensions ?? {}) };
+    }
+    case \\"Video\\": {
+      const { href } = factories.createVideoMock({ href: props.href });
+      return { href };
+    }
+    case undefined:
+    default:
+      return createGetMediasQueryMock_medias({ ...props, __typename: \\"Image\\" });
+  }
+}
+
+export function createGetMediasQueryMock_medias_dimensions(props: Partial<NonNull<GetMediasQuery[\\"medias\\"][number][\\"dimensions\\"]>>): NonNull<GetMediasQuery[\\"medias\\"][number][\\"dimensions\\"]> {
+  switch(props.__typename) {
+    case \\"ImageDimensions\\": {
+      const { width } = factories.createImageDimensionsMock({ width: props.width });
+      return { width };
+    }
+    case undefined:
+    default:
+      return createGetMediasQueryMock_medias_dimensions({ ...props, __typename: \\"ImageDimensions\\" });
+  }
+}
+",
+  "prepend": Array [],
+}
+`;
+
 exports[`plugin should support unnamed operations 1`] = `
 Object {
   "content": "export function createUnnamed_1_QueryMock(props: Partial<Unnamed_1_Query>): Unnamed_1_Query {

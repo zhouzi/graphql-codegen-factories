@@ -4,14 +4,19 @@ import {
   getPossibleTypes,
   indent,
 } from "@graphql-codegen/visitor-plugin-common";
+import { pascalCase } from "change-case-all";
 import {
   FieldNode,
   FragmentDefinitionNode,
   GraphQLCompositeType,
   GraphQLInterfaceType,
   GraphQLObjectType,
+  GraphQLOutputType,
   GraphQLSchema,
   isInterfaceType,
+  isListType,
+  isNonNullType,
+  isUnionType,
   Kind,
   OperationDefinitionNode,
   SelectionNode,
@@ -23,6 +28,11 @@ interface FieldSelection {
   field: FieldNode;
   conditions: Array<GraphQLInterfaceType | GraphQLObjectType>;
 }
+
+type Modifier =
+  | { kind: "List" }
+  | { kind: "Nullable" }
+  | { kind: "Extract"; __typename: string };
 
 export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
   private schema: GraphQLSchema;
@@ -100,30 +110,105 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
     });
   }
 
+  private getModifiers(
+    type: GraphQLOutputType,
+    onType: GraphQLInterfaceType | GraphQLObjectType | undefined,
+    modifiers: Modifier[] = [],
+    isNullable = true
+  ): Modifier[] {
+    if (isNonNullType(type)) {
+      return this.getModifiers(type.ofType, onType, modifiers, false);
+    }
+
+    const updatedModifiers = isNullable
+      ? modifiers.concat([{ kind: "Nullable" }])
+      : modifiers;
+
+    if (isListType(type)) {
+      return this.getModifiers(
+        type.ofType,
+        onType,
+        updatedModifiers.concat([{ kind: "List" }])
+      );
+    }
+
+    if (isUnionType(type)) {
+      return updatedModifiers.concat([
+        { kind: "Extract", __typename: onType!.name },
+      ]);
+    }
+
+    return updatedModifiers.slice().reverse();
+  }
+
+  private wrapWithModifiers(
+    parent: string,
+    type: GraphQLOutputType,
+    onType: GraphQLInterfaceType | GraphQLObjectType | undefined
+  ) {
+    return this.getModifiers(type, onType).reduce((acc, modifier) => {
+      switch (modifier.kind) {
+        case "Nullable":
+          return `NonNull<${acc}>`;
+        case "List":
+          return `${acc}[number]`;
+        case "Extract":
+          return `Extract<${acc}, { __typename: "${modifier.__typename}" }>`;
+        default:
+          return acc;
+      }
+    }, parent);
+  }
+
+  private getReturnType([head, ...tail]: Array<{
+    name: string;
+    type: GraphQLOutputType;
+    onType: GraphQLInterfaceType | GraphQLObjectType | undefined;
+  }>): string {
+    return tail.reduce(
+      (acc, field) =>
+        this.wrapWithModifiers(
+          `${acc}["${field.name}"]`,
+          field.type,
+          field.onType
+        ),
+      head.name
+    );
+  }
+
   private generateFactories(
-    fields: Array<{ name: string; type: GraphQLCompositeType }>,
+    fields: Array<{
+      name: string;
+      type: GraphQLOutputType;
+      onType: GraphQLInterfaceType | GraphQLObjectType | undefined;
+    }>,
     selections: readonly SelectionNode[]
   ): string[] {
     const field = fields[fields.length - 1];
-    const possibleTypes = getPossibleTypes(this.schema, field.type);
+    const baseType = getBaseType(field.type) as GraphQLCompositeType;
+    const possibleTypes = getPossibleTypes(this.schema, baseType);
     const flatSelections = this.flattenSelections(selections);
+
+    // the conditions must appear in the names
+    // to disambiguate unions with shared properties
+    const factoryName = fields
+      .map((otherField, index) =>
+        index === 0 ? this.convertFactoryName(otherField.name) : otherField.name
+      )
+      .join("_");
+
+    const returnType = this.getReturnType(fields);
 
     return [
       new DeclarationBlock(this._declarationBlockConfig)
         .export()
         .asKind("function")
         .withName(
-          `${fields
-            .map((otherField) => otherField.name)
-            .join("_")}({ __typename = "${
-            possibleTypes[0].name
-          }", ...props }: ${possibleTypes
-            .map((possibleType) => `DeepPartial<${possibleType.name}>`)
-            .join(" | ")})`
+          `${factoryName}(props: Partial<${returnType}>): ${returnType}`
         )
         .withBlock(
           [
-            indent(`switch(__typename) {`),
+            indent(`switch(props.__typename) {`),
             ...possibleTypes.flatMap((possibleType) => {
               const flatSelectionsForType = flatSelections.filter((selection) =>
                 selection.conditions.every((condition) => {
@@ -155,7 +240,18 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
                         )
                         .join(", ")} } = factories.${this.convertFactoryName(
                         possibleType.name
-                      )}(props);`
+                      )}({ ${flatSelectionsForType
+                        .filter(
+                          (selection) => selection.field.selectionSet == null
+                        )
+                        .map(
+                          (selection) =>
+                            `${selection.field.name.value}: props.${
+                              selection.field.alias?.value ??
+                              selection.field.name.value
+                            }`
+                        )
+                        .join(", ")} });`
                     )
                   )
                 ),
@@ -164,16 +260,15 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
                     indent(
                       `return { ${flatSelectionsForType
                         .map((selection) => {
-                          const name =
+                          const fieldName =
                             selection.field.alias?.value ??
                             selection.field.name.value;
 
                           return selection.field.selectionSet
-                            ? `${name}: ${fields
-                                .map((otherField) => otherField.name)
-                                .concat([name])
-                                .join("_")}(props.${name} ?? {})`
-                            : name;
+                            ? `${fieldName}: ${[factoryName, fieldName].join(
+                                "_"
+                              )}(props.${fieldName} ?? {})`
+                            : fieldName;
                         })
                         .join(", ")} };`
                     )
@@ -182,6 +277,15 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
                 indent(indent(`}`)),
               ];
             }),
+            indent(indent(`case undefined:`)),
+            indent(indent(`default:`)),
+            indent(
+              indent(
+                indent(
+                  `return ${factoryName}({ ...props, __typename: "${possibleTypes[0].name}" });`
+                )
+              )
+            ),
             indent(`}`),
           ]
             .filter(Boolean)
@@ -194,14 +298,14 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
             selection.conditions[selection.conditions.length - 1] ??
             possibleTypes[0];
           const fieldType = type.getFields()[selection.field.name.value];
-          const baseType = getBaseType(fieldType.type) as GraphQLCompositeType;
 
           return acc.concat(
             this.generateFactories(
               fields.concat({
                 name:
                   selection.field.alias?.value ?? selection.field.name.value,
-                type: baseType,
+                type: fieldType.type,
+                onType: type,
               }),
               selection.field.selectionSet.selections
             )
@@ -220,11 +324,18 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
       throw new Error(`Operation root type not found for "${node.operation}"`);
     }
 
+    const name = this.handleAnonymousOperation(node);
+    const operationType = pascalCase(node.operation);
+    const operationTypeSuffix = this.getOperationSuffix(name, operationType);
+
     return this.generateFactories(
       [
         {
-          name: type.name,
-          type: type,
+          name: this.convertName(name, {
+            suffix: operationTypeSuffix,
+          }),
+          type,
+          onType: undefined,
         },
       ],
       node.selectionSet.selections
