@@ -5,8 +5,8 @@ import {
   FragmentDefinitionNode,
   GraphQLInterfaceType,
   GraphQLObjectType,
+  GraphQLOutputType,
   GraphQLSchema,
-  GraphQLUnionType,
   Kind,
   OperationDefinitionNode,
   SelectionNode,
@@ -41,7 +41,7 @@ interface NormalizedObjectField {
   name: string;
   alias: string | undefined;
   factoryName: string;
-  type: GraphQLObjectType | GraphQLInterfaceType | GraphQLUnionType;
+  type: GraphQLOutputType;
   selections: NormalizedSelection[];
 }
 
@@ -50,7 +50,7 @@ interface NormalizedScalarField {
   name: string;
   alias: string | undefined;
   factoryName: string;
-  type: undefined;
+  type: GraphQLOutputType;
   selections: undefined;
 }
 
@@ -178,10 +178,8 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
       }
       case Kind.FIELD:
       default: {
+        const type = parent.getFields()[selection.name.value].type;
         if (selection.selectionSet) {
-          const type = getBaseType(
-            parent.getFields()[selection.name.value].type
-          ) as GraphQLObjectType | GraphQLInterfaceType;
           return {
             kind: Kind.FIELD,
             name: selection.name.value,
@@ -190,7 +188,10 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
             type: type,
             selections: selection.selectionSet.selections.map(
               (childSelection) =>
-                this.normalizeSelectionNode(type, childSelection)
+                this.normalizeSelectionNode(
+                  getBaseType(type) as GraphQLObjectType | GraphQLInterfaceType,
+                  childSelection
+                )
             ),
           };
         }
@@ -199,7 +200,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
           name: selection.name.value,
           alias: selection.alias?.value,
           factoryName: selection.alias?.value ?? selection.name.value,
-          type: undefined,
+          type: type,
           selections: undefined,
         };
       }
@@ -212,7 +213,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
   ): GraphQLObjectType[] {
     if (node.selections) {
       if (node.kind === Kind.FIELD || node.kind === Kind.OPERATION_DEFINITION) {
-        return getPossibleTypes(this.schema, node.type);
+        return getPossibleTypes(this.schema, getBaseType(node.type));
       }
 
       if (node.typeCondition) {
