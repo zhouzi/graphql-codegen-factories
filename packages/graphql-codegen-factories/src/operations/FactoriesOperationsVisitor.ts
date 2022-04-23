@@ -208,41 +208,38 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
   }
 
   private getPossibleTypes(
-    node: NormalizedSelection,
-    parents: NormalizedSelection[]
+    selections: NormalizedSelection[]
   ): GraphQLObjectType[] {
-    if (node.selections) {
-      if (node.kind === Kind.FIELD || node.kind === Kind.OPERATION_DEFINITION) {
-        return getPossibleTypes(this.schema, getBaseType(node.type));
+    const selection = selections[selections.length - 1];
+    const parents = selections.slice(0, -1);
+
+    if (selection.selections) {
+      if (
+        selection.kind === Kind.FIELD ||
+        selection.kind === Kind.OPERATION_DEFINITION
+      ) {
+        return getPossibleTypes(this.schema, getBaseType(selection.type));
       }
 
-      if (node.typeCondition) {
-        return getPossibleTypes(this.schema, node.typeCondition);
+      if (selection.typeCondition) {
+        return getPossibleTypes(this.schema, selection.typeCondition);
       }
     }
 
-    return this.getPossibleTypes(
-      parents[parents.length - 1],
-      parents.slice(0, -1)
-    );
+    return this.getPossibleTypes(parents);
   }
 
-  private generateFactories(
-    node: NormalizedSelection,
-    parents: NormalizedSelection[] = []
-  ): string[] {
-    if (node.selections == null) {
+  private generateFactories(selections: NormalizedSelection[] = []): string[] {
+    const selection = selections[selections.length - 1];
+
+    if (selection.selections == null) {
       return [];
     }
 
-    const futureParents = parents.concat(node);
-    const factoryName = futureParents
-      .map(
-        (otherNormalizedSelectionNode) =>
-          otherNormalizedSelectionNode.factoryName
-      )
+    const factoryName = selections
+      .map(({ factoryName }) => factoryName)
       .join("_");
-    const possibleTypes = this.getPossibleTypes(node, parents);
+    const possibleTypes = this.getPossibleTypes(selections);
 
     return [
       print([
@@ -251,7 +248,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
           `switch(props.__typename) {`,
           ...possibleTypes.map((possibleType) => {
             const selectionsForType = (
-              node.selections as Array<
+              selection.selections as Array<
                 Exclude<
                   NormalizedSelection,
                   { kind: Kind.OPERATION_DEFINITION }
@@ -283,14 +280,14 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
                       if (childSelection.selections == null) {
                         return childSelection.name;
                       }
-                      return `${childSelection.name}: ${futureParents
+                      return `${childSelection.name}: ${selections
                         .concat(childSelection)
-                        .map((futureParent) => futureParent.factoryName)
+                        .map(({ factoryName }) => factoryName)
                         .join("_")}({})`;
                     }
-                    return `...${futureParents
+                    return `...${selections
                       .concat(childSelection)
-                      .map((futureParent) => futureParent.factoryName)
+                      .map(({ factoryName }) => factoryName)
                       .join("_")}({})`;
                   })
                   .concat([`...props`])
@@ -310,8 +307,8 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
         ],
         `}`,
       ]),
-      ...node.selections.flatMap((childSelection) =>
-        this.generateFactories(childSelection, futureParents)
+      ...selection.selections.flatMap((childSelection) =>
+        this.generateFactories(selections.concat(childSelection))
       ),
     ];
   }
@@ -323,8 +320,8 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
       throw new Error(`Operation root type not found for "${node.operation}"`);
     }
 
-    return this.generateFactories(this.normalizeSelectionNode(type, node)).join(
-      "\n"
-    );
+    return this.generateFactories([
+      this.normalizeSelectionNode(type, node),
+    ]).join("\n");
   }
 }
