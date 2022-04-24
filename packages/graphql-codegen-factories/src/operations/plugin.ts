@@ -4,11 +4,13 @@ import {
   PluginFunction,
   Types,
 } from "@graphql-codegen/plugin-helpers";
-import { FactoriesBaseVisitorRawConfig } from "../FactoriesBaseVisitor";
-import { FactoriesOperationsVisitor } from "./FactoriesOperationsVisitor";
+import {
+  FactoriesOperationsVisitor,
+  FactoriesOperationsVisitorRawConfig,
+} from "./FactoriesOperationsVisitor";
 
 export const plugin: PluginFunction<
-  FactoriesBaseVisitorRawConfig,
+  FactoriesOperationsVisitorRawConfig,
   Types.ComplexPluginOutput
 > = (schema, documents, config) => {
   const allAst = concatAST(

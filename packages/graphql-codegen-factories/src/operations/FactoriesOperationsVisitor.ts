@@ -14,9 +14,20 @@ import {
   OperationDefinitionNode,
   SelectionNode,
 } from "graphql";
-import { FactoriesBaseVisitorRawConfig } from "../FactoriesBaseVisitor";
-import { FactoriesBaseVisitor } from "../FactoriesBaseVisitor";
+import {
+  FactoriesBaseVisitor,
+  FactoriesBaseVisitorParsedConfig,
+  FactoriesBaseVisitorRawConfig,
+} from "../FactoriesBaseVisitor";
 import { print } from "../print";
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface FactoriesOperationsVisitorRawConfig
+  extends FactoriesBaseVisitorRawConfig {}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface FactoriesOperationsVisitorParsedConfig
+  extends FactoriesBaseVisitorParsedConfig {}
 
 interface NormalizedOperation {
   kind: Kind.OPERATION_DEFINITION;
@@ -64,7 +75,10 @@ type NormalizedSelection =
   | NormalizedObjectField
   | NormalizedScalarField;
 
-export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
+export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
+  FactoriesOperationsVisitorRawConfig,
+  FactoriesOperationsVisitorParsedConfig
+> {
   private schema: GraphQLSchema;
   private fragments: FragmentDefinitionNode[];
   private unnamedCounter = 1;
@@ -72,9 +86,11 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
   constructor(
     schema: GraphQLSchema,
     fragments: FragmentDefinitionNode[],
-    config: FactoriesBaseVisitorRawConfig
+    config: FactoriesOperationsVisitorRawConfig
   ) {
-    super(schema, config);
+    const parsedConfig = {} as FactoriesOperationsVisitorParsedConfig;
+
+    super(config, parsedConfig);
 
     this.schema = schema;
     this.fragments = fragments;
