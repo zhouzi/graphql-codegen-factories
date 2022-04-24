@@ -114,10 +114,13 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
         process.cwd(),
         parsedConfig.factoriesPath
       );
-      parsedConfig.factoriesPath = path.relative(
+      const relativeFactoriesPath = path.relative(
         outputDirectory,
         factoriesPath
       );
+      parsedConfig.factoriesPath = relativeFactoriesPath.startsWith(".")
+        ? relativeFactoriesPath
+        : `./${relativeFactoriesPath}`;
     }
 
     super(config, parsedConfig);
