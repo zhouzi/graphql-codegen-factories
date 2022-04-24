@@ -189,7 +189,7 @@ Object {
   switch(props.__typename) {
     case \\"Query\\": {
       const {  } = factories.createQueryMock({  });
-      return { users: createGetUsersQueryMock_users({}), ...props };
+      return { users: [], ...props };
     }
     case undefined:
     default:
@@ -230,7 +230,7 @@ export function createGetMeQueryMock_me(props: Partial<NonNull<GetMeQuery[\\"me\
   switch(props.__typename) {
     case \\"User\\": {
       const { id, username } = factories.createUserMock({ id: props.id, username: props.username });
-      return { id, username, followers: [], ...props };
+      return { id, username, followers: null, ...props };
     }
     case undefined:
     default:
@@ -260,7 +260,7 @@ Object {
   switch(props.__typename) {
     case \\"Query\\": {
       const {  } = factories.createQueryMock({  });
-      return { medias: createGetMediasQueryMock_medias({}), ...props };
+      return { medias: [], ...props };
     }
     case undefined:
     default:

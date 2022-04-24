@@ -405,15 +405,17 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
                         return childSelection.alias ?? childSelection.name;
                       }
                       if (isNonNullType(childSelection.type)) {
-                        return `${
-                          childSelection.name
-                        }: ${this.convertOperationFactoryName(
-                          selections.concat(childSelection)
-                        )}({})`;
+                        return `${childSelection.name}: ${
+                          isListType(childSelection.type.ofType)
+                            ? "[]"
+                            : `${this.convertOperationFactoryName(
+                                selections.concat(childSelection)
+                              )}({})`
+                        }`;
                       }
-                      return `${childSelection.alias ?? childSelection.name}: ${
-                        isListType(childSelection.type) ? "[]" : "null"
-                      }`;
+                      return `${
+                        childSelection.alias ?? childSelection.name
+                      }: null`;
                     }
                     return `...${this.convertOperationFactoryName(
                       selections.concat(childSelection)
