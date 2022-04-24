@@ -1,0 +1,20 @@
+---
+sidebar_position: 2
+---
+
+# Operations
+
+## `config.factoryName`
+
+By default, this plugin generates factories named `create{Type}Mock`.
+So for a query `GetUserQuery`, the corresponding factory will be named `createGetUserQueryMock`.
+
+## `config.factoriesPath`
+
+The operations' factories leverage the schema plugin's factories.
+So the path to the file containing the schema factories must be passed through this option.
+
+## `config.namespacedFactoriesImportName`
+
+By default, the import factories namespace when using `config.factoriesPath` is `factories`.
+You can customize this namespace by configuring `namespacedFactoriesImportName`:
