@@ -53,9 +53,9 @@ export class FactoriesBaseVisitor extends BaseVisitor<
   FactoriesBaseVisitorRawConfig,
   FactoriesBaseVisitorParsedConfig
 > {
-  private enums: Record<string, GraphQLEnumType>;
-  private unions: Record<string, GraphQLUnionType>;
-  private interfaces: Record<
+  protected enums: Record<string, GraphQLEnumType>;
+  protected unions: Record<string, GraphQLUnionType>;
+  protected interfaces: Record<
     string,
     {
       interface: GraphQLInterfaceType | null;
@@ -131,46 +131,6 @@ export class FactoriesBaseVisitor extends BaseVisitor<
     }
 
     return imports;
-  }
-
-  protected getDefaultValue(nodeName: string): string {
-    const scalarName =
-      nodeName in this.unions
-        ? // Take the first type from an union
-          this.unions[nodeName].getTypes()[0].name
-        : nodeName in this.interfaces
-        ? // Take the first implementation from an interface
-          this.interfaces[nodeName].implementations[0].name
-        : nodeName;
-
-    if (scalarName in this.config.scalarDefaults) {
-      return this.config.scalarDefaults[scalarName];
-    }
-
-    switch (scalarName) {
-      case "Int":
-      case "Float":
-        return "0";
-      case "ID":
-      case "String":
-        return '""';
-      case "Boolean":
-        return "false";
-      default: {
-        if (scalarName in this.enums) {
-          return this.config.enumsAsTypes
-            ? `"${this.enums[scalarName].getValues()[0].value}"`
-            : `${this.convertNameWithNamespace(scalarName)}.${this.convertName(
-                this.enums[scalarName].getValues()[0].name,
-                {
-                  transformUnderscore: true,
-                }
-              )}`;
-        }
-
-        return `${this.convertFactoryName(scalarName)}({})`;
-      }
-    }
   }
 
   protected convertFactoryName(
