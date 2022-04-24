@@ -44,6 +44,25 @@ interface UnvisitedListTypeNode extends Omit<ListTypeNode, "type"> {
 }
 
 export class FactoriesSchemaVisitor extends FactoriesBaseVisitor {
+  public getImports() {
+    const imports: string[] = [];
+
+    if (this.config.typesPath) {
+      imports.push(
+        `import * as ${this.config.namespacedImportName} from '${this.config.typesPath}';\n`
+      );
+    }
+
+    return imports;
+  }
+
+  protected convertNameWithTypesNamespace(name: string) {
+    return this.convertNameWithNamespace(
+      name,
+      this.config.namespacedImportName ?? undefined
+    );
+  }
+
   protected convertObjectType(
     node: ObjectTypeDefinitionNode | InputObjectTypeDefinitionNode
   ): string {
@@ -53,9 +72,9 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor {
       .withName(
         `${this.convertFactoryName(
           node
-        )}(props: Partial<${this.convertNameWithNamespace(
-          node
-        )}>): ${this.convertNameWithNamespace(node)}`
+        )}(props: Partial<${this.convertNameWithTypesNamespace(
+          node.name.value
+        )}>): ${this.convertNameWithTypesNamespace(node.name.value)}`
       )
       .withBlock(
         [
@@ -108,7 +127,9 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor {
         if (scalarName in this.enums) {
           return this.config.enumsAsTypes
             ? `"${this.enums[scalarName].getValues()[0].value}"`
-            : `${this.convertNameWithNamespace(scalarName)}.${this.convertName(
+            : `${this.convertNameWithTypesNamespace(
+                scalarName
+              )}.${this.convertName(
                 this.enums[scalarName].getValues()[0].name,
                 {
                   transformUnderscore: true,
@@ -180,9 +201,9 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor {
       .withName(
         `${this.convertFactoryName(
           node.name.value
-        )}(props: Partial<${this.convertNameWithNamespace(
+        )}(props: Partial<${this.convertNameWithTypesNamespace(
           node.name.value
-        )}>): ${this.convertNameWithNamespace(node.name.value)}`
+        )}>): ${this.convertNameWithTypesNamespace(node.name.value)}`
       )
       .withBlock(
         [

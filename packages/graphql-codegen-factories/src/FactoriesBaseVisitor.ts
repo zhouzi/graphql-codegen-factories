@@ -121,18 +121,6 @@ export class FactoriesBaseVisitor extends BaseVisitor<
     });
   }
 
-  public getImports() {
-    const imports: string[] = [];
-
-    if (this.config.typesPath) {
-      imports.push(
-        `import * as ${this.config.namespacedImportName} from '${this.config.typesPath}';\n`
-      );
-    }
-
-    return imports;
-  }
-
   protected convertFactoryName(
     ...args: Parameters<BaseVisitor["convertName"]>
   ): string {
@@ -140,14 +128,10 @@ export class FactoriesBaseVisitor extends BaseVisitor<
   }
 
   protected convertNameWithNamespace(
-    ...args: Parameters<BaseVisitor["convertName"]>
+    name: string,
+    namespace: string | undefined
   ) {
-    const name = this.convertName(...args);
-
-    if (this.config.namespacedImportName) {
-      return `${this.config.namespacedImportName}.${name}`;
-    }
-
-    return name;
+    const convertedName = this.convertName(name);
+    return namespace ? `${namespace}.${convertedName}` : convertedName;
   }
 }

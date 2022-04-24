@@ -100,6 +100,11 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
     });
   }
 
+  public getImports() {
+    const imports: string[] = [];
+    return imports;
+  }
+
   private convertOperationFactoryName([
     operation,
     ...selections
