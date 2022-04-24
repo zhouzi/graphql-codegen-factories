@@ -12,7 +12,7 @@ import {
 export const plugin: PluginFunction<
   FactoriesOperationsVisitorRawConfig,
   Types.ComplexPluginOutput
-> = (schema, documents, config) => {
+> = (schema, documents, config, info) => {
   const allAst = concatAST(
     documents.map(({ document }) => document as DocumentNode)
   );
@@ -26,7 +26,12 @@ export const plugin: PluginFunction<
     ...(config.externalFragments || []).map(({ node }) => node),
   ];
 
-  const visitor = new FactoriesOperationsVisitor(schema, allFragments, config);
+  const visitor = new FactoriesOperationsVisitor(
+    schema,
+    allFragments,
+    config,
+    info?.outputFile
+  );
   const content = (
     oldVisit(allAst, { leave: visitor }) as DocumentNode
   ).definitions

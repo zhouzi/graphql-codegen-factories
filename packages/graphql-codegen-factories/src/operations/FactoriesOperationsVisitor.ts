@@ -1,5 +1,9 @@
+import path from "path";
 import { getBaseType } from "@graphql-codegen/plugin-helpers";
-import { getPossibleTypes } from "@graphql-codegen/visitor-plugin-common";
+import {
+  getConfigValue,
+  getPossibleTypes,
+} from "@graphql-codegen/visitor-plugin-common";
 import { pascalCase } from "change-case-all";
 import {
   FragmentDefinitionNode,
@@ -20,13 +24,17 @@ import {
   FactoriesBaseVisitorRawConfig,
 } from "../FactoriesBaseVisitor";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface FactoriesOperationsVisitorRawConfig
-  extends FactoriesBaseVisitorRawConfig {}
+  extends FactoriesBaseVisitorRawConfig {
+  factoriesPath?: string;
+  namespacedFactoriesImportName?: string;
+}
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface FactoriesOperationsVisitorParsedConfig
-  extends FactoriesBaseVisitorParsedConfig {}
+  extends FactoriesBaseVisitorParsedConfig {
+  factoriesPath: string;
+  namespacedFactoriesImportName: string;
+}
 
 interface NormalizedOperation {
   kind: Kind.OPERATION_DEFINITION;
@@ -85,9 +93,32 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
   constructor(
     schema: GraphQLSchema,
     fragments: FragmentDefinitionNode[],
-    config: FactoriesOperationsVisitorRawConfig
+    config: FactoriesOperationsVisitorRawConfig,
+    outputFile: string | undefined
   ) {
-    const parsedConfig = {} as FactoriesOperationsVisitorParsedConfig;
+    const parsedConfig = {
+      factoriesPath: getConfigValue(config.factoriesPath, undefined),
+      namespacedFactoriesImportName: getConfigValue(
+        config.namespacedFactoriesImportName,
+        "factories"
+      ),
+    } as FactoriesOperationsVisitorParsedConfig;
+
+    if (!parsedConfig.factoriesPath) {
+      throw new Error(`The config factoriesPath is required.`);
+    }
+
+    if (outputFile) {
+      const outputDirectory = path.dirname(outputFile);
+      const factoriesPath = path.resolve(
+        process.cwd(),
+        parsedConfig.factoriesPath
+      );
+      parsedConfig.factoriesPath = path.relative(
+        outputDirectory,
+        factoriesPath
+      );
+    }
 
     super(config, parsedConfig);
 
@@ -117,6 +148,13 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
 
   public getImports() {
     const imports: string[] = [];
+
+    imports.push(
+      `import * as ${
+        this.config.namespacedFactoriesImportName
+      } from "${this.config.factoriesPath.replace(/\.(js|ts|d.ts)$/, "")}";`
+    );
+
     return imports;
   }
 
@@ -352,9 +390,9 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
               [
                 `const { ${scalars
                   .map((n) => (n.alias ? `${n.name}: ${n.alias}` : n.name))
-                  .join(", ")} } = factories.${this.convertFactoryName(
-                  possibleType.name
-                )}({ ${scalars
+                  .join(", ")} } = ${
+                  this.config.namespacedFactoriesImportName
+                }.${this.convertFactoryName(possibleType.name)}({ ${scalars
                   .map((n) => `${n.name}: props.${n.alias ?? n.name}`)
                   .join(", ")} });`,
                 `return { ${childSelections
