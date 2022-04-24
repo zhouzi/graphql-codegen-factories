@@ -24,7 +24,9 @@ export function createCreateUserMutationMock_createUser(props: Partial<CreateUse
       return createCreateUserMutationMock_createUser({ ...props, __typename: \\"User\\" });
   }
 }",
-  "prepend": Array [],
+  "prepend": Array [
+    "import * as factories from \\"./factories\\";",
+  ],
 }
 `;
 
@@ -52,7 +54,9 @@ export function createCreateUserMutationMock_createUser(props: Partial<CreateUse
       return createCreateUserMutationMock_createUser({ ...props, __typename: \\"User\\" });
   }
 }",
-  "prepend": Array [],
+  "prepend": Array [
+    "import * as factories from \\"./factories\\";",
+  ],
 }
 `;
 
@@ -91,7 +95,9 @@ export function createGetMeQueryMock_me_User(props: Partial<Extract<GetMeQuery[\
       return createGetMeQueryMock_me_User({ ...props, __typename: \\"User\\" });
   }
 }",
-  "prepend": Array [],
+  "prepend": Array [
+    "import * as factories from \\"./factories\\";",
+  ],
 }
 `;
 
@@ -130,7 +136,9 @@ export function createGetMeQueryMock_me_User(props: Partial<Extract<GetMeQuery[\
       return createGetMeQueryMock_me_User({ ...props, __typename: \\"User\\" });
   }
 }",
-  "prepend": Array [],
+  "prepend": Array [
+    "import * as factories from \\"./factories\\";",
+  ],
 }
 `;
 
@@ -169,7 +177,9 @@ export function createGetMeQueryMock_me_User(props: Partial<Extract<GetMeQuery[\
       return createGetMeQueryMock_me_User({ ...props, __typename: \\"User\\" });
   }
 }",
-  "prepend": Array [],
+  "prepend": Array [
+    "import * as factories from \\"./factories\\";",
+  ],
 }
 `;
 
@@ -197,7 +207,9 @@ export function createGetUsersQueryMock_users(props: Partial<GetUsersQuery[\\"us
       return createGetUsersQueryMock_users({ ...props, __typename: \\"User\\" });
   }
 }",
-  "prepend": Array [],
+  "prepend": Array [
+    "import * as factories from \\"./factories\\";",
+  ],
 }
 `;
 
@@ -236,7 +248,9 @@ export function createGetMeQueryMock_me_followers(props: Partial<NonNull<NonNull
       return createGetMeQueryMock_me_followers({ ...props, __typename: \\"User\\" });
   }
 }",
-  "prepend": Array [],
+  "prepend": Array [
+    "import * as factories from \\"./factories\\";",
+  ],
 }
 `;
 
@@ -312,7 +326,9 @@ export function createGetMediasQueryMock_medias_Video_dimensions(props: Partial<
       return createGetMediasQueryMock_medias_Video_dimensions({ ...props, __typename: \\"ImageDimensions\\" });
   }
 }",
-  "prepend": Array [],
+  "prepend": Array [
+    "import * as factories from \\"./factories\\";",
+  ],
 }
 `;
 
@@ -340,6 +356,8 @@ export function createUnnamed_1_QueryMock_me(props: Partial<NonNull<Unnamed_1_Qu
       return createUnnamed_1_QueryMock_me({ ...props, __typename: \\"User\\" });
   }
 }",
-  "prepend": Array [],
+  "prepend": Array [
+    "import * as factories from \\"./factories\\";",
+  ],
 }
 `;

@@ -25,7 +25,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "CreateUser.graphql", document: ast }],
-      {}
+      { factoriesPath: "./factories" }
     );
     expect(output).toMatchSnapshot();
   });
@@ -53,7 +53,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "CreateUser.graphql", document: ast }],
-      {}
+      { factoriesPath: "./factories" }
     );
     expect(output).toMatchSnapshot();
   });
@@ -84,7 +84,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMe.graphql", document: ast }],
-      {}
+      { factoriesPath: "./factories" }
     );
     expect(output).toMatchSnapshot();
   });
@@ -114,7 +114,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMe.graphql", document: ast }],
-      {}
+      { factoriesPath: "./factories" }
     );
     expect(output).toMatchSnapshot();
   });
@@ -162,6 +162,7 @@ describe("plugin", () => {
       schema,
       [{ location: "GetMe.graphql", document: ast }],
       {
+        factoriesPath: "./factories",
         externalFragments,
       }
     );
@@ -191,7 +192,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMe.graphql", document: ast }],
-      {}
+      { factoriesPath: "./factories" }
     );
     expect(output).toMatchSnapshot();
   });
@@ -219,7 +220,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetUsers.graphql", document: ast }],
-      {}
+      { factoriesPath: "./factories" }
     );
     expect(output).toMatchSnapshot();
   });
@@ -251,7 +252,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMe.graphql", document: ast }],
-      {}
+      { factoriesPath: "./factories" }
     );
     expect(output).toMatchSnapshot();
   });
@@ -301,7 +302,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMedias.graphql", document: ast }],
-      {}
+      { factoriesPath: "./factories" }
     );
     expect(output).toMatchSnapshot();
   });
