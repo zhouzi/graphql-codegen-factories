@@ -340,15 +340,15 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
                       if (childSelection.selections == null) {
                         return childSelection.name;
                       }
-                      return `${childSelection.name}: ${selections
-                        .concat(childSelection)
-                        .map(({ factoryName }) => factoryName)
-                        .join("_")}({})`;
+                      return `${
+                        childSelection.name
+                      }: ${this.convertOperationFactoryName(
+                        selections.concat(childSelection)
+                      )}({})`;
                     }
-                    return `...${selections
-                      .concat(childSelection)
-                      .map(({ factoryName }) => factoryName)
-                      .join("_")}({})`;
+                    return `...${this.convertOperationFactoryName(
+                      selections.concat(childSelection)
+                    )}({})`;
                   })
                   .concat([`...props`])
                   .join(", ")} };`,
