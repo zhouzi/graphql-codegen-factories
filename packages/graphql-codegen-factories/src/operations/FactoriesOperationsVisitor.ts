@@ -7,6 +7,9 @@ import {
   GraphQLObjectType,
   GraphQLOutputType,
   GraphQLSchema,
+  isListType,
+  isNonNullType,
+  isObjectType,
   Kind,
   OperationDefinitionNode,
   SelectionNode,
@@ -97,6 +100,16 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
     });
   }
 
+  private convertOperationFactoryName([
+    operation,
+    ...selections
+  ]: NormalizedSelection[]): string {
+    return [
+      super.convertFactoryName(operation.factoryName),
+      ...selections.map(({ factoryName }) => factoryName),
+    ].join("_");
+  }
+
   private normalizeSelectionNode(
     parent: GraphQLObjectType | GraphQLInterfaceType,
     selection: OperationDefinitionNode | SelectionNode
@@ -167,7 +180,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
 
         return {
           kind: Kind.OPERATION_DEFINITION,
-          factoryName: this.convertFactoryName(name, {
+          factoryName: this.convertName(name, {
             suffix: operationTypeSuffix,
           }),
           type: parent as GraphQLObjectType,
@@ -229,6 +242,54 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
     return this.getPossibleTypes(parents);
   }
 
+  private wrapWithModifiers(
+    returnType: string,
+    type: GraphQLOutputType,
+    isNullable = true
+  ): string {
+    if (isNonNullType(type)) {
+      return this.wrapWithModifiers(returnType, type.ofType, false);
+    }
+
+    const updatedReturnType = isNullable
+      ? `NonNull<${returnType}>`
+      : returnType;
+
+    if (isListType(type)) {
+      return this.wrapWithModifiers(
+        `${updatedReturnType}[number]`,
+        type.ofType
+      );
+    }
+
+    return returnType;
+  }
+
+  private getReturnType([
+    operation,
+    ...selections
+  ]: NormalizedSelection[]): string {
+    return selections.reduce((acc, selection) => {
+      if (
+        selection.kind === Kind.INLINE_FRAGMENT ||
+        selection.kind === Kind.FRAGMENT_SPREAD
+      ) {
+        if (isObjectType(selection.typeCondition)) {
+          return `Extract<${acc}, { __typename: "${selection.typeCondition.name}" }>`;
+        }
+      }
+
+      if (selection.kind === Kind.FIELD) {
+        return this.wrapWithModifiers(
+          `${acc}["${selection.factoryName}"]`,
+          selection.type
+        );
+      }
+
+      return acc;
+    }, operation.factoryName);
+  }
+
   private generateFactories(selections: NormalizedSelection[] = []): string[] {
     const selection = selections[selections.length - 1];
 
@@ -236,18 +297,17 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
       return [];
     }
 
-    const factoryName = selections
-      .map(({ factoryName }) => factoryName)
-      .join("_");
+    const factoryName = this.convertOperationFactoryName(selections);
     const possibleTypes = this.getPossibleTypes(selections);
+    const returnType = this.getReturnType(selections);
 
     return [
       print([
-        `export function ${factoryName}(props) {`,
+        `export function ${factoryName}(props: Partial<${returnType}>): ${returnType} {`,
         [
           `switch(props.__typename) {`,
           ...possibleTypes.map((possibleType) => {
-            const selectionsForType = (
+            const childSelections = (
               selection.selections as Array<
                 Exclude<
                   NormalizedSelection,
@@ -255,12 +315,12 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
                 >
               >
             ).filter(
-              (childSelection) =>
-                childSelection.kind === Kind.FIELD ||
-                childSelection.typeCondition == null ||
-                childSelection.typeCondition.name === possibleType.name
+              (selection) =>
+                selection.kind === Kind.FIELD ||
+                selection.typeCondition == null ||
+                selection.typeCondition.name === possibleType.name
             );
-            const scalars = selectionsForType.filter(
+            const scalars = childSelections.filter(
               (childSelection): childSelection is NormalizedScalarField =>
                 childSelection.selections == null
             );
@@ -274,7 +334,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor {
                 )}({ ${scalars
                   .map((n) => `${n.name}: props.${n.alias ?? n.name}`)
                   .join(", ")} });`,
-                `return { ${selectionsForType
+                `return { ${childSelections
                   .map((childSelection) => {
                     if (childSelection.kind === Kind.FIELD) {
                       if (childSelection.selections == null) {
