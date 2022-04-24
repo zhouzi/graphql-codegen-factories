@@ -4,33 +4,34 @@ import {
   PluginFunction,
   Types,
 } from "@graphql-codegen/plugin-helpers";
-import { LoadedFragment } from "@graphql-codegen/visitor-plugin-common";
-import { FactoriesBaseVisitorRawConfig } from "../FactoriesBaseVisitor";
-import { FactoriesOperationsVisitor } from "./FactoriesOperationsVisitor";
+import {
+  FactoriesOperationsVisitor,
+  FactoriesOperationsVisitorRawConfig,
+} from "./FactoriesOperationsVisitor";
 
 export const plugin: PluginFunction<
-  FactoriesBaseVisitorRawConfig,
+  FactoriesOperationsVisitorRawConfig,
   Types.ComplexPluginOutput
-> = (schema, documents, config) => {
+> = (schema, documents, config, info) => {
   const allAst = concatAST(
     documents.map(({ document }) => document as DocumentNode)
   );
-  const fragmentDefinitions = allAst.definitions.filter(
+  const fragments = allAst.definitions.filter(
     (d) => d.kind === Kind.FRAGMENT_DEFINITION
   ) as FragmentDefinitionNode[];
-  const allFragments: LoadedFragment[] = [
-    ...fragmentDefinitions.map((fragmentDefinition) => ({
-      node: fragmentDefinition,
-      name: fragmentDefinition.name.value,
-      onType: fragmentDefinition.typeCondition.name.value,
-      isExternal: false,
-    })),
+  const allFragments: FragmentDefinitionNode[] = [
+    ...fragments,
     // `externalFragments` config is passed by the near-operation-file preset.
     // It is an array of fragments declared outside of the operation file.
-    ...(config.externalFragments || []),
+    ...(config.externalFragments || []).map(({ node }) => node),
   ];
 
-  const visitor = new FactoriesOperationsVisitor(schema, allFragments, config);
+  const visitor = new FactoriesOperationsVisitor(
+    schema,
+    allFragments,
+    config,
+    info?.outputFile
+  );
   const content = (
     oldVisit(allAst, { leave: visitor }) as DocumentNode
   ).definitions
