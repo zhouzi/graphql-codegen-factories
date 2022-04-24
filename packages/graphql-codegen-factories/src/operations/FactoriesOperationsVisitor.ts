@@ -19,7 +19,6 @@ import {
   FactoriesBaseVisitorParsedConfig,
   FactoriesBaseVisitorRawConfig,
 } from "../FactoriesBaseVisitor";
-import { print } from "../print";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface FactoriesOperationsVisitorRawConfig
@@ -323,7 +322,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
     const returnType = this.getReturnType(selections);
 
     return [
-      print([
+      this.print([
         `export function ${factoryName}(props: Partial<${returnType}>): ${returnType} {`,
         [
           `switch(props.__typename) {`,

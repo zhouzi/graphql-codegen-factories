@@ -1,6 +1,7 @@
 import {
   BaseVisitor,
   getConfigValue,
+  indent,
   ParsedTypesConfig,
   RawTypesConfig,
 } from "@graphql-codegen/visitor-plugin-common";
@@ -12,6 +13,8 @@ export interface FactoriesBaseVisitorRawConfig extends RawTypesConfig {
 export interface FactoriesBaseVisitorParsedConfig extends ParsedTypesConfig {
   factoryName: string;
 }
+
+type PrintLines = Array<string | PrintLines>;
 
 export class FactoriesBaseVisitor<
   RawConfig extends FactoriesBaseVisitorRawConfig,
@@ -36,5 +39,16 @@ export class FactoriesBaseVisitor<
   ) {
     const convertedName = this.convertName(name);
     return namespace ? `${namespace}.${convertedName}` : convertedName;
+  }
+
+  protected print(lines: PrintLines, count = 0): string {
+    return lines
+      .map((line) => {
+        if (Array.isArray(line)) {
+          return this.print(line, count + 1);
+        }
+        return indent(line, count);
+      })
+      .join("\n");
   }
 }
