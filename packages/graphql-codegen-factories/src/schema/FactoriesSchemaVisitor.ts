@@ -107,7 +107,6 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
   constructor(schema: GraphQLSchema, config: FactoriesSchemaVisitorRawConfig) {
     const parsedConfig = {
       enumsAsTypes: getConfigValue(config.enumsAsTypes, false),
-      factoryName: getConfigValue(config.factoryName, "create{Type}Mock"),
       scalarDefaults: getConfigValue(config.scalarDefaults, {}),
       namespacedImportName: getConfigValue(
         config.namespacedImportName,

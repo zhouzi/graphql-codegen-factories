@@ -1,5 +1,6 @@
 import {
   BaseVisitor,
+  getConfigValue,
   ParsedTypesConfig,
   RawTypesConfig,
 } from "@graphql-codegen/visitor-plugin-common";
@@ -16,6 +17,13 @@ export class FactoriesBaseVisitor<
   RawConfig extends FactoriesBaseVisitorRawConfig,
   ParsedConfig extends FactoriesBaseVisitorParsedConfig
 > extends BaseVisitor<RawConfig, ParsedConfig> {
+  constructor(config: RawConfig, parsedConfig: ParsedConfig) {
+    super(config, {
+      ...parsedConfig,
+      factoryName: getConfigValue(config.factoryName, "create{Type}Mock"),
+    });
+  }
+
   protected convertFactoryName(
     ...args: Parameters<BaseVisitor["convertName"]>
   ): string {
