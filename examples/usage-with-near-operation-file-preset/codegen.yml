@@ -16,7 +16,7 @@ generates:
       extension: .generated.ts
       baseTypesPath: ./generated/types.ts
     config:
-      factoriesPath: ./generated/factories.ts
+      schemaFactoriesPath: ./generated/factories.ts
     plugins:
       - typescript-operations
       - graphql-codegen-factories/operations

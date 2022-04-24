@@ -26,14 +26,14 @@ import {
 
 export interface FactoriesOperationsVisitorRawConfig
   extends FactoriesBaseVisitorRawConfig {
-  factoriesPath?: string;
-  namespacedFactoriesImportName?: string;
+  schemaFactoriesPath?: string;
+  namespacedSchemaFactoriesImportName?: string;
 }
 
 export interface FactoriesOperationsVisitorParsedConfig
   extends FactoriesBaseVisitorParsedConfig {
-  factoriesPath: string;
-  namespacedFactoriesImportName: string;
+  schemaFactoriesPath: string;
+  namespacedSchemaFactoriesImportName: string;
 }
 
 interface NormalizedOperation {
@@ -97,28 +97,31 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
     outputFile: string | undefined
   ) {
     const parsedConfig = {
-      factoriesPath: getConfigValue(config.factoriesPath, undefined),
-      namespacedFactoriesImportName: getConfigValue(
-        config.namespacedFactoriesImportName,
-        "factories"
+      schemaFactoriesPath: getConfigValue(
+        config.schemaFactoriesPath,
+        undefined
+      ),
+      namespacedSchemaFactoriesImportName: getConfigValue(
+        config.namespacedSchemaFactoriesImportName,
+        "schemaFactories"
       ),
     } as FactoriesOperationsVisitorParsedConfig;
 
-    if (!parsedConfig.factoriesPath) {
-      throw new Error(`The config factoriesPath is required.`);
+    if (!parsedConfig.schemaFactoriesPath) {
+      throw new Error(`The config schemaFactoriesPath is required.`);
     }
 
     if (outputFile) {
       const outputDirectory = path.dirname(outputFile);
-      const factoriesPath = path.resolve(
+      const schemaFactoriesPath = path.resolve(
         process.cwd(),
-        parsedConfig.factoriesPath
+        parsedConfig.schemaFactoriesPath
       );
       const relativeFactoriesPath = path.relative(
         outputDirectory,
-        factoriesPath
+        schemaFactoriesPath
       );
-      parsedConfig.factoriesPath = relativeFactoriesPath.startsWith(".")
+      parsedConfig.schemaFactoriesPath = relativeFactoriesPath.startsWith(".")
         ? relativeFactoriesPath
         : `./${relativeFactoriesPath}`;
     }
@@ -154,8 +157,11 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
 
     imports.push(
       `import * as ${
-        this.config.namespacedFactoriesImportName
-      } from "${this.config.factoriesPath.replace(/\.(js|ts|d.ts)$/, "")}";`
+        this.config.namespacedSchemaFactoriesImportName
+      } from "${this.config.schemaFactoriesPath.replace(
+        /\.(js|ts|d.ts)$/,
+        ""
+      )}";`
     );
 
     return imports;
@@ -394,7 +400,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
                 `const { ${scalars
                   .map((n) => (n.alias ? `${n.name}: ${n.alias}` : n.name))
                   .join(", ")} } = ${
-                  this.config.namespacedFactoriesImportName
+                  this.config.namespacedSchemaFactoriesImportName
                 }.${this.convertFactoryName(possibleType.name)}({ ${scalars
                   .map((n) => `${n.name}: props.${n.alias ?? n.name}`)
                   .join(", ")} });`,
