@@ -58,34 +58,6 @@ describe("plugin", () => {
     expect(output).toMatchSnapshot();
   });
 
-  it("should ignore the namespace for the operations types", async () => {
-    const schema = buildSchema(/* GraphQL */ `
-      type User {
-        id: ID!
-        username: String!
-      }
-
-      type Mutation {
-        createUser(username: String): User!
-      }
-    `);
-    const ast = parse(/* GraphQL */ `
-      mutation CreateUser($username: String) {
-        createUser(username: $username) {
-          id
-          username
-        }
-      }
-    `);
-
-    const output = await plugin(
-      schema,
-      [{ location: "CreateUser.graphql", document: ast }],
-      { namespacedImportName: "types.ts" }
-    );
-    expect(output).toMatchSnapshot();
-  });
-
   it("should support fragments", async () => {
     const schema = buildSchema(/* GraphQL */ `
       type User {
@@ -284,7 +256,7 @@ describe("plugin", () => {
     expect(output).toMatchSnapshot();
   });
 
-  it.only("should support unions", async () => {
+  it("should support unions", async () => {
     const schema = buildSchema(/* GraphQL */ `
       type ImageDimensions {
         width: Int!

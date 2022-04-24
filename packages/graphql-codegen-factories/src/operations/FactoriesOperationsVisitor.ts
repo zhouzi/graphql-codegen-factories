@@ -282,7 +282,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
       );
     }
 
-    return returnType;
+    return updatedReturnType;
   }
 
   private getReturnType([
@@ -295,6 +295,9 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
         selection.kind === Kind.FRAGMENT_SPREAD
       ) {
         if (isObjectType(selection.typeCondition)) {
+          // Extract is added even if the type matched by the typeCondition is not an union
+          // Ideally we would look up the parent type and detect if it's an union or not
+          // But since it does no harm and simplifies the code, we should be fine
           return `Extract<${acc}, { __typename: "${selection.typeCondition.name}" }>`;
         }
       }
@@ -358,13 +361,18 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
                   .map((childSelection) => {
                     if (childSelection.kind === Kind.FIELD) {
                       if (childSelection.selections == null) {
-                        return childSelection.name;
+                        return childSelection.alias ?? childSelection.name;
                       }
-                      return `${
-                        childSelection.name
-                      }: ${this.convertOperationFactoryName(
-                        selections.concat(childSelection)
-                      )}({})`;
+                      if (isNonNullType(childSelection.type)) {
+                        return `${
+                          childSelection.name
+                        }: ${this.convertOperationFactoryName(
+                          selections.concat(childSelection)
+                        )}({})`;
+                      }
+                      return `${childSelection.alias ?? childSelection.name}: ${
+                        isListType(childSelection.type) ? "[]" : "null"
+                      }`;
                     }
                     return `...${this.convertOperationFactoryName(
                       selections.concat(childSelection)
