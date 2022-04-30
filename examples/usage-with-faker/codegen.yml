@@ -1,0 +1,13 @@
+overwrite: true
+schema: ./schema.graphql
+generates:
+  ./generated/types.ts:
+    plugins:
+      - add:
+          content: 'import { faker } from "@faker-js/faker";'
+      - typescript
+      - graphql-codegen-factories/schema
+    config:
+      scalarDefaults:
+        ID: "faker.random.alphaNumeric(16)"
+        String: "faker.lorem.word()"
