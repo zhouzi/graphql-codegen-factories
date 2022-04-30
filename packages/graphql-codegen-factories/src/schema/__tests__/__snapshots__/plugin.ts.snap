@@ -181,6 +181,21 @@ Object {
 }
 `;
 
+exports[`plugin should support interfaces 1`] = `
+Object {
+  "content": "export function createUserMock(props: Partial<User>): User {
+  return {
+    __typename: \\"User\\",
+    id: \\"\\",
+    username: \\"\\",
+    ...props,
+  };
+}
+",
+  "prepend": Array [],
+}
+`;
+
 exports[`plugin should use enums as types 1`] = `
 Object {
   "content": "export function createUserMock(props: Partial<User> = {}): User {

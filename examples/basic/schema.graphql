@@ -1,19 +1,44 @@
-type User {
-  id: ID!
-  username: String!
-}
+scalar Date
 
-type Image {
-  src: String!
+schema {
+  query: Query
 }
-
-type Video {
-  url: String!
-}
-
-union Media = Image | Video
 
 type Query {
-  loggedInUser: User!
-  media: Media!
+  me: User!
+  user(id: ID!): User
+  allUsers: [User]
+  search(term: String!): [SearchResult!]!
+  myChats: [Chat!]!
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+interface Node {
+  id: ID!
+}
+
+union SearchResult = User | Chat | ChatMessage
+
+type User implements Node {
+  id: ID!
+  username: String!
+  email: String!
+  role: Role!
+}
+
+type Chat implements Node {
+  id: ID!
+  users: [User!]!
+  messages: [ChatMessage!]!
+}
+
+type ChatMessage implements Node {
+  id: ID!
+  content: String!
+  time: Date!
+  user: User!
 }
