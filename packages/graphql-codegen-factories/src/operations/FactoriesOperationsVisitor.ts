@@ -397,13 +397,21 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
             return [
               `case "${possibleType.name}": {`,
               [
-                `const { ${scalars
-                  .map((n) => (n.alias ? `${n.name}: ${n.alias}` : n.name))
-                  .join(", ")} } = ${
-                  this.config.namespacedSchemaFactoriesImportName
-                }.${this.convertFactoryName(possibleType.name)}({ ${scalars
-                  .map((n) => `${n.name}: props.${n.alias ?? n.name}`)
-                  .join(", ")} });`,
+                ...(scalars.length > 0
+                  ? [
+                      `const { ${scalars
+                        .map((n) =>
+                          n.alias ? `${n.name}: ${n.alias}` : n.name
+                        )
+                        .join(", ")} } = ${
+                        this.config.namespacedSchemaFactoriesImportName
+                      }.${this.convertFactoryName(
+                        possibleType.name
+                      )}({ ${scalars
+                        .map((n) => `${n.name}: props.${n.alias ?? n.name}`)
+                        .join(", ")} });`,
+                    ]
+                  : []),
                 `return { ${childSelections
                   .map((childSelection) => {
                     if (childSelection.kind === Kind.FIELD) {

@@ -5,7 +5,6 @@ Object {
   "content": "export function createCreateUserMutationMock(props: Partial<CreateUserMutation>): CreateUserMutation {
   switch(props.__typename) {
     case \\"Mutation\\": {
-      const {  } = schemaFactories.createMutationMock({  });
       return { createUser: createCreateUserMutationMock_createUser({}), ...props };
     }
     case undefined:
@@ -35,7 +34,6 @@ Object {
   "content": "export function createCreateUserMutationMock(props: Partial<CreateUserMutation>): CreateUserMutation {
   switch(props.__typename) {
     case \\"Mutation\\": {
-      const {  } = schemaFactories.createMutationMock({  });
       return { createUser: createCreateUserMutationMock_createUser({}), ...props };
     }
     case undefined:
@@ -65,7 +63,6 @@ Object {
   "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery>): GetMeQuery {
   switch(props.__typename) {
     case \\"Query\\": {
-      const {  } = schemaFactories.createQueryMock({  });
       return { me: createGetMeQueryMock_me({}), ...props };
     }
     case undefined:
@@ -76,7 +73,6 @@ Object {
 export function createGetMeQueryMock_me(props: Partial<GetMeQuery[\\"me\\"]>): GetMeQuery[\\"me\\"] {
   switch(props.__typename) {
     case \\"User\\": {
-      const {  } = schemaFactories.createUserMock({  });
       return { ...createGetMeQueryMock_me_User({}), ...props };
     }
     case undefined:
@@ -106,7 +102,6 @@ Object {
   "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery>): GetMeQuery {
   switch(props.__typename) {
     case \\"Query\\": {
-      const {  } = schemaFactories.createQueryMock({  });
       return { me: createGetMeQueryMock_me({}), ...props };
     }
     case undefined:
@@ -117,7 +112,6 @@ Object {
 export function createGetMeQueryMock_me(props: Partial<GetMeQuery[\\"me\\"]>): GetMeQuery[\\"me\\"] {
   switch(props.__typename) {
     case \\"User\\": {
-      const {  } = schemaFactories.createUserMock({  });
       return { ...createGetMeQueryMock_me_User({}), ...props };
     }
     case undefined:
@@ -147,7 +141,6 @@ Object {
   "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery>): GetMeQuery {
   switch(props.__typename) {
     case \\"Query\\": {
-      const {  } = schemaFactories.createQueryMock({  });
       return { me: createGetMeQueryMock_me({}), ...props };
     }
     case undefined:
@@ -158,7 +151,6 @@ Object {
 export function createGetMeQueryMock_me(props: Partial<GetMeQuery[\\"me\\"]>): GetMeQuery[\\"me\\"] {
   switch(props.__typename) {
     case \\"User\\": {
-      const {  } = schemaFactories.createUserMock({  });
       return { ...createGetMeQueryMock_me_User({}), ...props };
     }
     case undefined:
@@ -188,7 +180,6 @@ Object {
   "content": "export function createGetUsersQueryMock(props: Partial<GetUsersQuery>): GetUsersQuery {
   switch(props.__typename) {
     case \\"Query\\": {
-      const {  } = schemaFactories.createQueryMock({  });
       return { users: [], ...props };
     }
     case undefined:
@@ -218,7 +209,6 @@ Object {
   "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery>): GetMeQuery {
   switch(props.__typename) {
     case \\"Query\\": {
-      const {  } = schemaFactories.createQueryMock({  });
       return { me: null, ...props };
     }
     case undefined:
@@ -259,7 +249,6 @@ Object {
   "content": "export function createGetMediasQueryMock(props: Partial<GetMediasQuery>): GetMediasQuery {
   switch(props.__typename) {
     case \\"Query\\": {
-      const {  } = schemaFactories.createQueryMock({  });
       return { medias: [], ...props };
     }
     case undefined:
@@ -270,11 +259,9 @@ Object {
 export function createGetMediasQueryMock_medias(props: Partial<GetMediasQuery[\\"medias\\"][number]>): GetMediasQuery[\\"medias\\"][number] {
   switch(props.__typename) {
     case \\"Image\\": {
-      const {  } = schemaFactories.createImageMock({  });
       return { ...createGetMediasQueryMock_medias_Image({}), ...props };
     }
     case \\"Video\\": {
-      const {  } = schemaFactories.createVideoMock({  });
       return { ...createGetMediasQueryMock_medias_Video({}), ...props };
     }
     case undefined:
@@ -337,7 +324,6 @@ Object {
   "content": "export function createUnnamed_1_QueryMock(props: Partial<Unnamed_1_Query>): Unnamed_1_Query {
   switch(props.__typename) {
     case \\"Query\\": {
-      const {  } = schemaFactories.createQueryMock({  });
       return { me: null, ...props };
     }
     case undefined:
