@@ -2,7 +2,7 @@
 
 exports[`plugin should create factories for Query and Mutation 1`] = `
 Object {
-  "content": "export function createUserMock(props: Partial<User>): User {
+  "content": "export function createUserMock(props: Partial<User> = {}): User {
   return {
     __typename: \\"User\\",
     id: \\"\\",
@@ -10,7 +10,7 @@ Object {
   };
 }
 
-export function createQueryMock(props: Partial<Query>): Query {
+export function createQueryMock(props: Partial<Query> = {}): Query {
   return {
     __typename: \\"Query\\",
     users: [],
@@ -18,7 +18,7 @@ export function createQueryMock(props: Partial<Query>): Query {
   };
 }
 
-export function createMutationMock(props: Partial<Mutation>): Mutation {
+export function createMutationMock(props: Partial<Mutation> = {}): Mutation {
   return {
     __typename: \\"Mutation\\",
     createUser: createUserMock({}),
@@ -32,7 +32,7 @@ export function createMutationMock(props: Partial<Mutation>): Mutation {
 
 exports[`plugin should create factories for inputs 1`] = `
 Object {
-  "content": "export function createPostInputMock(props: Partial<PostInput>): PostInput {
+  "content": "export function createPostInputMock(props: Partial<PostInput> = {}): PostInput {
   return {
     id: null,
     title: \\"\\",
@@ -46,7 +46,7 @@ Object {
 
 exports[`plugin should create factories for unions 1`] = `
 Object {
-  "content": "export function createUserMock(props: Partial<User>): User {
+  "content": "export function createUserMock(props: Partial<User> = {}): User {
   return {
     __typename: \\"User\\",
     firstName: \\"\\",
@@ -55,7 +55,7 @@ Object {
   };
 }
 
-export function createDroidMock(props: Partial<Droid>): Droid {
+export function createDroidMock(props: Partial<Droid> = {}): Droid {
   return {
     __typename: \\"Droid\\",
     codeName: \\"\\",
@@ -81,7 +81,7 @@ export function createHumanoidMock(props: Partial<Humanoid>): Humanoid {
 
 exports[`plugin should create factories with built-in types 1`] = `
 Object {
-  "content": "export function createUserMock(props: Partial<User>): User {
+  "content": "export function createUserMock(props: Partial<User> = {}): User {
   return {
     __typename: \\"User\\",
     id: \\"\\",
@@ -101,7 +101,7 @@ Object {
   };
 }
 
-export function createGeoMock(props: Partial<Geo>): Geo {
+export function createGeoMock(props: Partial<Geo> = {}): Geo {
   return {
     __typename: \\"Geo\\",
     lat: 0,
@@ -110,7 +110,7 @@ export function createGeoMock(props: Partial<Geo>): Geo {
   };
 }
 
-export function createPostMock(props: Partial<Post>): Post {
+export function createPostMock(props: Partial<Post> = {}): Post {
   return {
     __typename: \\"Post\\",
     id: \\"\\",
@@ -124,7 +124,7 @@ export function createPostMock(props: Partial<Post>): Post {
 
 exports[`plugin should customize the factory name 1`] = `
 Object {
-  "content": "export function newUser(props: Partial<User>): User {
+  "content": "export function newUser(props: Partial<User> = {}): User {
   return {
     __typename: \\"User\\",
     id: \\"\\",
@@ -138,7 +138,7 @@ Object {
 
 exports[`plugin should import types from other file 1`] = `
 Object {
-  "content": "export function createUserMock(props: Partial<SharedTypes.User>): SharedTypes.User {
+  "content": "export function createUserMock(props: Partial<SharedTypes.User> = {}): SharedTypes.User {
   return {
     __typename: \\"User\\",
     id: \\"\\",
@@ -155,7 +155,7 @@ Object {
 
 exports[`plugin should support directives 1`] = `
 Object {
-  "content": "export function createUserMock(props: Partial<User>): User {
+  "content": "export function createUserMock(props: Partial<User> = {}): User {
   return {
     __typename: \\"User\\",
     id: null,
@@ -169,7 +169,7 @@ Object {
 
 exports[`plugin should support enums with an underscore 1`] = `
 Object {
-  "content": "export function createUserMock(props: Partial<User>): User {
+  "content": "export function createUserMock(props: Partial<User> = {}): User {
   return {
     __typename: \\"User\\",
     role: UserRole.SuperAdmin,
@@ -183,7 +183,7 @@ Object {
 
 exports[`plugin should use enums as types 1`] = `
 Object {
-  "content": "export function createUserMock(props: Partial<User>): User {
+  "content": "export function createUserMock(props: Partial<User> = {}): User {
   return {
     __typename: \\"User\\",
     status: \\"Activated\\",
@@ -197,7 +197,7 @@ Object {
 
 exports[`plugin should use the custom scalar defaults 1`] = `
 Object {
-  "content": "export function createUserMock(props: Partial<User>): User {
+  "content": "export function createUserMock(props: Partial<User> = {}): User {
   return {
     __typename: \\"User\\",
     createdAt: new Date(),
