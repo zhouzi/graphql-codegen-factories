@@ -1,19 +1,18 @@
 import path from "path";
 import { getBaseType } from "@graphql-codegen/plugin-helpers";
-import {
-  getConfigValue,
-  getPossibleTypes,
-} from "@graphql-codegen/visitor-plugin-common";
-import { pascalCase } from "change-case-all";
+import { getConfigValue } from "@graphql-codegen/visitor-plugin-common";
+import { camelCase } from "change-case-all";
 import {
   FragmentDefinitionNode,
+  GraphQLCompositeType,
   GraphQLInterfaceType,
   GraphQLObjectType,
   GraphQLOutputType,
   GraphQLSchema,
+  isInterfaceType,
   isListType,
   isNonNullType,
-  isObjectType,
+  isUnionType,
   Kind,
   OperationDefinitionNode,
   SelectionNode,
@@ -36,51 +35,17 @@ export interface FactoriesOperationsVisitorParsedConfig
   namespacedSchemaFactoriesImportName: string;
 }
 
-interface NormalizedOperation {
-  kind: Kind.OPERATION_DEFINITION;
-  factoryName: string;
-  type: GraphQLObjectType;
-  selections: NormalizedSelection[];
-}
-
-interface NormalizedInlineFragment {
-  kind: Kind.INLINE_FRAGMENT;
-  factoryName: string;
-  typeCondition: GraphQLObjectType | GraphQLInterfaceType | undefined;
-  selections: NormalizedSelection[];
-}
-
-interface NormalizedFragmentSpread {
-  kind: Kind.FRAGMENT_SPREAD;
-  factoryName: string;
-  typeCondition: GraphQLObjectType | GraphQLInterfaceType;
-  selections: NormalizedSelection[];
-}
-
-interface NormalizedObjectField {
-  kind: Kind.FIELD;
+interface NormalizedSelection {
   name: string;
   alias: string | undefined;
-  factoryName: string;
+  typeCondition: GraphQLCompositeType;
   type: GraphQLOutputType;
-  selections: NormalizedSelection[];
+  selections: Record<string, NormalizedSelection[]> | undefined;
 }
-
-interface NormalizedScalarField {
-  kind: Kind.FIELD;
-  name: string;
-  alias: string | undefined;
-  factoryName: string;
-  type: GraphQLOutputType;
-  selections: undefined;
+interface SelectionAncestor {
+  selection: NormalizedSelection;
+  typeCondition: string | undefined;
 }
-
-type NormalizedSelection =
-  | NormalizedOperation
-  | NormalizedInlineFragment
-  | NormalizedFragmentSpread
-  | NormalizedObjectField
-  | NormalizedScalarField;
 
 export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
   FactoriesOperationsVisitorRawConfig,
@@ -103,15 +68,11 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
       ),
       namespacedSchemaFactoriesImportName: getConfigValue(
         config.namespacedSchemaFactoriesImportName,
-        "schemaFactories"
+        undefined
       ),
     } as FactoriesOperationsVisitorParsedConfig;
 
-    if (!parsedConfig.schemaFactoriesPath) {
-      throw new Error(`The config schemaFactoriesPath is required.`);
-    }
-
-    if (outputFile) {
+    if (parsedConfig.schemaFactoriesPath && outputFile) {
       const outputDirectory = path.dirname(outputFile);
       const schemaFactoriesPath = path.resolve(
         process.cwd(),
@@ -121,15 +82,32 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
         outputDirectory,
         schemaFactoriesPath
       );
+
+      // If the factories are located in the same directory as the file,
+      // the path will look like "generated/factories.ts"  instead of "./generated/factories.ts".
+      // So we need to add the ./ at the beginning in this case.
       parsedConfig.schemaFactoriesPath = relativeFactoriesPath.startsWith(".")
         ? relativeFactoriesPath
         : `./${relativeFactoriesPath}`;
+    }
+
+    if (
+      parsedConfig.schemaFactoriesPath &&
+      parsedConfig.namespacedSchemaFactoriesImportName == null
+    ) {
+      parsedConfig.namespacedSchemaFactoriesImportName = "schemaFactories";
     }
 
     super(config, parsedConfig);
 
     this.schema = schema;
     this.fragments = fragments;
+  }
+
+  private convertNameWithFactoriesNamespace(name: string) {
+    return this.config.namespacedSchemaFactoriesImportName
+      ? `${this.config.namespacedSchemaFactoriesImportName}.${name}`
+      : name;
   }
 
   private handleAnonymousOperation(
@@ -155,158 +133,165 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
   public getImports() {
     const imports: string[] = [];
 
-    imports.push(
-      `import * as ${
-        this.config.namespacedSchemaFactoriesImportName
-      } from "${this.config.schemaFactoriesPath.replace(
-        /\.(js|ts|d.ts)$/,
-        ""
-      )}";`
-    );
+    if (this.config.schemaFactoriesPath) {
+      imports.push(
+        `import * as ${
+          this.config.namespacedSchemaFactoriesImportName
+        } from "${this.config.schemaFactoriesPath.replace(
+          /\.(js|ts|d.ts)$/,
+          ""
+        )}";`
+      );
+    }
 
     return imports;
   }
 
-  private convertOperationFactoryName([
-    operation,
-    ...selections
-  ]: NormalizedSelection[]): string {
-    return [
-      super.convertFactoryName(operation.factoryName),
-      ...selections.map(({ factoryName }) => factoryName),
-    ].join("_");
+  private groupSelections(
+    selections: NormalizedSelection[]
+  ): Record<string, NormalizedSelection[]> {
+    return selections
+      .filter(
+        (selection, index, selections) =>
+          selections.findIndex(
+            (otherSelection) =>
+              otherSelection.alias === selection.alias &&
+              otherSelection.name === selection.name &&
+              otherSelection.typeCondition.name === selection.typeCondition.name
+          ) === index
+      )
+      .reduce<Record<string, NormalizedSelection[]>>((acc, selection) => {
+        acc[selection.typeCondition.name] = (
+          acc[selection.typeCondition.name] ?? []
+        ).concat(selection);
+        return acc;
+      }, {});
   }
 
-  private normalizeSelectionNode(
-    parent: GraphQLObjectType | GraphQLInterfaceType,
+  private normalizeSelection(
+    parent: GraphQLCompositeType,
     selection: OperationDefinitionNode | SelectionNode
-  ): NormalizedSelection {
-    switch (selection.kind) {
-      case Kind.FRAGMENT_SPREAD: {
-        const fragment = this.fragments.find(
-          (otherFragment) => otherFragment.name.value === selection.name.value
+  ): NormalizedSelection[] {
+    if (selection.kind === Kind.OPERATION_DEFINITION) {
+      const operationSuffix = this.getOperationSuffix(selection, parent.name);
+      const name = this.convertName(this.handleAnonymousOperation(selection), {
+        suffix: operationSuffix,
+      });
+
+      return [
+        {
+          name: name,
+          alias: this.convertFactoryName(name),
+          typeCondition: parent,
+          type: parent,
+          selections: this.groupSelections(
+            selection.selectionSet.selections.flatMap((selection) =>
+              this.normalizeSelection(parent, selection)
+            )
+          ),
+        },
+      ];
+    }
+
+    if (selection.kind === Kind.FIELD) {
+      const type = (parent as GraphQLObjectType).getFields()[
+        selection.name.value
+      ].type;
+      return [
+        {
+          name: selection.name.value,
+          alias: selection.alias?.value,
+          typeCondition: parent,
+          type: type,
+          selections:
+            selection.selectionSet == null
+              ? undefined
+              : this.groupSelections(
+                  selection.selectionSet.selections.flatMap((childSelection) =>
+                    this.normalizeSelection(
+                      getBaseType(type) as GraphQLCompositeType,
+                      childSelection
+                    )
+                  )
+                ),
+        },
+      ];
+    }
+
+    let typeCondition = parent;
+    let selections: readonly SelectionNode[] = [];
+
+    if (selection.kind === Kind.FRAGMENT_SPREAD) {
+      const fragment = this.fragments.find(
+        (otherFragment) => otherFragment.name.value === selection.name.value
+      );
+
+      if (fragment == null) {
+        throw new Error(`Fragment "${selection.name.value}" not found`);
+      }
+
+      const newTypeCondition = this.schema.getType(
+        fragment.typeCondition.name.value
+      ) as GraphQLObjectType | GraphQLInterfaceType | undefined;
+
+      if (newTypeCondition == null) {
+        throw new Error(
+          `Fragment "${fragment.name.value}"'s type condition "${fragment.typeCondition.name.value}" not found`
         );
+      }
 
-        if (fragment == null) {
-          throw new Error(`Fragment not found "${selection.name.value}"`);
-        }
+      typeCondition = newTypeCondition;
+      selections = fragment.selectionSet.selections;
+    }
 
-        const typeCondition = this.schema.getType(
-          fragment.typeCondition.name.value
+    if (selection.kind === Kind.INLINE_FRAGMENT) {
+      if (selection.typeCondition) {
+        const newTypeCondition = this.schema.getType(
+          selection.typeCondition.name.value
         ) as GraphQLObjectType | GraphQLInterfaceType | undefined;
 
-        if (typeCondition == null) {
+        if (newTypeCondition == null) {
           throw new Error(
-            `Fragment "${fragment.name.value}"'s type "${fragment.typeCondition.name.value}" not found`
+            `Inline fragment's type condition "${selection.typeCondition.name.value}" not found`
           );
         }
 
-        return {
-          kind: Kind.FRAGMENT_SPREAD,
-          factoryName: typeCondition.name,
-          typeCondition: typeCondition,
-          selections: fragment.selectionSet.selections.map((childSelection) =>
-            this.normalizeSelectionNode(typeCondition, childSelection)
-          ),
-        };
+        typeCondition = newTypeCondition;
       }
-      case Kind.INLINE_FRAGMENT: {
-        let typeCondition:
-          | GraphQLObjectType
-          | GraphQLInterfaceType
-          | undefined = undefined;
 
-        if (selection.typeCondition) {
-          typeCondition = this.schema.getType(
-            selection.typeCondition.name.value
-          ) as GraphQLObjectType | GraphQLInterfaceType | undefined;
-
-          if (typeCondition == null) {
-            throw new Error(
-              `Inline fragment's type "${selection.typeCondition.name.value}" not found`
-            );
-          }
-        }
-
-        return {
-          kind: Kind.INLINE_FRAGMENT,
-          factoryName: typeCondition?.name ?? "undefined",
-          typeCondition: typeCondition,
-          selections: selection.selectionSet.selections.map((childSelection) =>
-            this.normalizeSelectionNode(typeCondition ?? parent, childSelection)
-          ),
-        };
-      }
-      case Kind.OPERATION_DEFINITION: {
-        const name = this.handleAnonymousOperation(selection);
-        const operationType = pascalCase(selection.operation);
-        const operationTypeSuffix = this.getOperationSuffix(
-          name,
-          operationType
-        );
-
-        return {
-          kind: Kind.OPERATION_DEFINITION,
-          factoryName: this.convertName(name, {
-            suffix: operationTypeSuffix,
-          }),
-          type: parent as GraphQLObjectType,
-          selections: selection.selectionSet.selections.map((childSelection) =>
-            this.normalizeSelectionNode(parent, childSelection)
-          ),
-        };
-      }
-      case Kind.FIELD:
-      default: {
-        const type = parent.getFields()[selection.name.value].type;
-        if (selection.selectionSet) {
-          return {
-            kind: Kind.FIELD,
-            name: selection.name.value,
-            alias: selection.alias?.value,
-            factoryName: selection.alias?.value ?? selection.name.value,
-            type: type,
-            selections: selection.selectionSet.selections.map(
-              (childSelection) =>
-                this.normalizeSelectionNode(
-                  getBaseType(type) as GraphQLObjectType | GraphQLInterfaceType,
-                  childSelection
-                )
-            ),
-          };
-        }
-        return {
-          kind: Kind.FIELD,
-          name: selection.name.value,
-          alias: selection.alias?.value,
-          factoryName: selection.alias?.value ?? selection.name.value,
-          type: type,
-          selections: undefined,
-        };
-      }
+      selections = selection.selectionSet.selections;
     }
+
+    let typeConditions = [typeCondition];
+
+    if (isInterfaceType(typeCondition)) {
+      typeConditions = isUnionType(parent)
+        ? parent
+            .getTypes()
+            .filter((type) =>
+              type
+                .getInterfaces()
+                .some((inter) => inter.name === typeCondition.name)
+            )
+        : [parent];
+    }
+
+    return typeConditions.flatMap((otherTypeCondition) =>
+      selections.flatMap((childSelection) =>
+        this.normalizeSelection(otherTypeCondition, childSelection)
+      )
+    );
   }
 
-  private getPossibleTypes(
-    selections: NormalizedSelection[]
-  ): GraphQLObjectType[] {
-    const selection = selections[selections.length - 1];
-    const parents = selections.slice(0, -1);
-
-    if (selection.selections) {
-      if (
-        selection.kind === Kind.FIELD ||
-        selection.kind === Kind.OPERATION_DEFINITION
-      ) {
-        return getPossibleTypes(this.schema, getBaseType(selection.type));
-      }
-
-      if (selection.typeCondition) {
-        return getPossibleTypes(this.schema, selection.typeCondition);
-      }
-    }
-
-    return this.getPossibleTypes(parents);
+  private convertOperationFactoryName(ancestors: SelectionAncestor[]): string {
+    return ancestors
+      .flatMap(({ selection, typeCondition }) => [
+        selection.alias ?? selection.name,
+        ...(isUnionType(getBaseType(selection.type)) && typeCondition
+          ? [typeCondition]
+          : []),
+      ])
+      .join("_");
   }
 
   private wrapWithModifiers(
@@ -319,7 +304,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
     }
 
     const updatedReturnType = isNullable
-      ? `NonNull<${returnType}>`
+      ? `NonNullable<${returnType}>`
       : returnType;
 
     if (isListType(type)) {
@@ -333,140 +318,148 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
   }
 
   private getReturnType([
-    operation,
+    { selection: operation },
     ...selections
-  ]: NormalizedSelection[]): string {
-    return selections.reduce((acc, selection) => {
-      if (
-        selection.kind === Kind.INLINE_FRAGMENT ||
-        selection.kind === Kind.FRAGMENT_SPREAD
-      ) {
-        if (isObjectType(selection.typeCondition)) {
-          // Extract is added even if the type matched by the typeCondition is not an union
-          // Ideally we would look up the parent type and detect if it's an union or not
-          // But since it does no harm and simplifies the code, we should be fine
-          return `Extract<${acc}, { __typename: "${selection.typeCondition.name}" }>`;
-        }
-      }
-
-      if (selection.kind === Kind.FIELD) {
-        return this.wrapWithModifiers(
-          `${acc}["${selection.factoryName}"]`,
-          selection.type
-        );
-      }
-
-      return acc;
-    }, operation.factoryName);
+  ]: SelectionAncestor[]): string {
+    return selections.reduce((acc, { selection, typeCondition }) => {
+      const withModifiers = this.wrapWithModifiers(
+        `${acc}["${selection.name}"]`,
+        selection.type
+      );
+      return isUnionType(getBaseType(selection.type)) && typeCondition
+        ? `Extract<${withModifiers} & { __typename: "${typeCondition}" }, { __typename: "${typeCondition}" }>`
+        : withModifiers;
+    }, operation.name);
   }
 
-  private generateFactories(selections: NormalizedSelection[] = []): string[] {
-    const selection = selections[selections.length - 1];
-
+  private generateFactories(
+    selection: NormalizedSelection,
+    ancestors: SelectionAncestor[] = []
+  ): string[] {
     if (selection.selections == null) {
       return [];
     }
 
-    const factoryName = this.convertOperationFactoryName(selections);
-    const possibleTypes = this.getPossibleTypes(selections);
-    const returnType = this.getReturnType(selections);
+    const factories: string[] = [];
 
-    return [
-      this.print([
-        `export function ${factoryName}(props: Partial<${returnType}>): ${returnType} {`,
-        [
-          `switch(props.__typename) {`,
-          ...possibleTypes.map((possibleType) => {
-            const childSelections = (
-              selection.selections as Array<
-                Exclude<
-                  NormalizedSelection,
-                  { kind: Kind.OPERATION_DEFINITION }
-                >
-              >
-            ).filter(
-              (selection) =>
-                selection.kind === Kind.FIELD ||
-                selection.typeCondition == null ||
-                selection.typeCondition.name === possibleType.name
-            );
-            const scalars = childSelections.filter(
-              (childSelection): childSelection is NormalizedScalarField =>
-                childSelection.selections == null
-            );
-            return [
-              `case "${possibleType.name}": {`,
-              [
-                ...(scalars.length > 0
-                  ? [
-                      `const { ${scalars
-                        .map((n) =>
-                          n.alias ? `${n.name}: ${n.alias}` : n.name
-                        )
-                        .join(", ")} } = ${
-                        this.config.namespacedSchemaFactoriesImportName
-                      }.${this.convertFactoryName(
-                        possibleType.name
-                      )}({ ${scalars
-                        .map((n) => `${n.name}: props.${n.alias ?? n.name}`)
-                        .join(", ")} });`,
-                    ]
-                  : []),
-                `return { ${childSelections
-                  .map((childSelection) => {
-                    if (childSelection.kind === Kind.FIELD) {
-                      if (childSelection.selections == null) {
-                        return childSelection.alias ?? childSelection.name;
-                      }
-                      if (isNonNullType(childSelection.type)) {
-                        return `${childSelection.name}: ${
-                          isListType(childSelection.type.ofType)
-                            ? "[]"
-                            : `${this.convertOperationFactoryName(
-                                selections.concat(childSelection)
-                              )}({})`
-                        }`;
-                      }
-                      return `${
-                        childSelection.alias ?? childSelection.name
-                      }: null`;
-                    }
-                    return `...${this.convertOperationFactoryName(
-                      selections.concat(childSelection)
-                    )}({})`;
-                  })
-                  .concat([`...props`])
-                  .join(", ")} };`,
-              ],
-              `}`,
-            ];
-          }),
+    if (isUnionType(getBaseType(selection.type))) {
+      const futureAncestors = ancestors.concat({
+        selection,
+        typeCondition: undefined,
+      });
+      const factoryName = this.convertOperationFactoryName(futureAncestors);
+      const returnType = this.getReturnType(futureAncestors);
+      const typeConditions = Object.keys(selection.selections);
+      const defaultTypeCondition = typeConditions[0];
+
+      factories.push(
+        this.print([
+          `export function ${factoryName}(props: Partial<${returnType}> = {}): ${returnType} {`,
           [
-            `case undefined:`,
-            `default:`,
+            `switch(props.__typename) {`,
+            ...typeConditions.map((typeCondition) => [
+              `case "${typeCondition}":`,
+              [
+                `return ${this.convertOperationFactoryName(
+                  ancestors.concat({ selection, typeCondition })
+                )}(props);`,
+              ],
+            ]),
             [
-              `return ${factoryName}({ ...props, __typename: "${possibleTypes[0]}" });`,
+              `case undefined:`,
+              `default:`,
+              [
+                `return ${factoryName}({ ...props, __typename: "${defaultTypeCondition}" })`,
+              ],
             ],
+            `}`,
           ],
           `}`,
-        ],
-        `}`,
-      ]),
-      ...selection.selections.flatMap((childSelection) =>
-        this.generateFactories(selections.concat(childSelection))
-      ),
-    ];
+        ])
+      );
+    }
+
+    Object.entries(selection.selections).forEach(
+      ([typeCondition, childSelections]) => {
+        const futureAncestors = ancestors.concat({ selection, typeCondition });
+        const factoryName = this.convertOperationFactoryName(futureAncestors);
+        const returnType = this.getReturnType(futureAncestors);
+        const objectVarName = camelCase(typeCondition);
+        const scalars = childSelections.filter(
+          (childSelection) => childSelection.selections == null
+        );
+
+        factories.push(
+          this.print([
+            `export function ${factoryName}(props: Partial<${returnType}> = {}): ${returnType} {`,
+            [
+              ...(scalars.length > 0
+                ? [
+                    `const ${objectVarName} = ${this.convertNameWithFactoriesNamespace(
+                      this.convertFactoryName(typeCondition)
+                    )}({`,
+                    scalars.map(
+                      (scalar) =>
+                        `${scalar.name}: props.${scalar.alias ?? scalar.name},`
+                    ),
+                    `});`,
+                  ]
+                : []),
+              `return {`,
+              [
+                `__typename: "${typeCondition}",`,
+                ...childSelections.map((childSelection) => {
+                  let value = `${objectVarName}.${childSelection.name}`;
+
+                  if (childSelection.selections) {
+                    if (isNonNullType(childSelection.type)) {
+                      value = isListType(childSelection.type.ofType)
+                        ? "[]"
+                        : `${this.convertOperationFactoryName(
+                            futureAncestors.concat({
+                              selection: childSelection,
+                              typeCondition,
+                            })
+                          )}({})`;
+                    } else {
+                      value = "null";
+                    }
+                  }
+
+                  return `${
+                    childSelection.alias ?? childSelection.name
+                  }: ${value},`;
+                }),
+                `...props,`,
+              ],
+              `};`,
+            ],
+            `}`,
+          ])
+        );
+
+        childSelections.forEach((childSelection) => {
+          if (childSelection.selections) {
+            factories.push(
+              ...this.generateFactories(childSelection, futureAncestors)
+            );
+          }
+        });
+      }
+    );
+
+    return factories;
   }
 
   OperationDefinition(node: OperationDefinitionNode): string {
-    const type = this.schema.getRootType(node.operation);
+    const rootType = this.schema.getRootType(node.operation);
 
-    if (type == null) {
-      throw new Error(`Operation root type not found for "${node.operation}"`);
+    if (rootType == null) {
+      throw new Error(`Root type "${node.operation}" not found`);
     }
 
-    return this.generateFactories([
-      this.normalizeSelectionNode(type, node),
-    ]).join("\n");
+    return this.normalizeSelection(rootType, node)
+      .flatMap((selection) => this.generateFactories(selection))
+      .join("\n\n");
   }
 }

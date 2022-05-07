@@ -1,27 +1,267 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`plugin should generate factory for a simple operation 1`] = `
+exports[`plugin should add interface's selections to the matching types 1`] = `
 Object {
-  "content": "export function createCreateUserMutationMock(props: Partial<CreateUserMutation>): CreateUserMutation {
+  "content": "export function createGetMediasQueryMock(props: Partial<GetMediasQuery> = {}): GetMediasQuery {
+  return {
+    __typename: \\"Query\\",
+    medias: [],
+    ...props,
+  };
+}
+
+export function createGetMediasQueryMock_medias(props: Partial<GetMediasQuery[\\"medias\\"][number]> = {}): GetMediasQuery[\\"medias\\"][number] {
   switch(props.__typename) {
-    case \\"Mutation\\": {
-      return { createUser: createCreateUserMutationMock_createUser({}), ...props };
-    }
+    case \\"Image\\":
+      return createGetMediasQueryMock_medias_Image(props);
+    case \\"Audio\\":
+      return createGetMediasQueryMock_medias_Audio(props);
+    case \\"Video\\":
+      return createGetMediasQueryMock_medias_Video(props);
     case undefined:
     default:
-      return createCreateUserMutationMock({ ...props, __typename: \\"Mutation\\" });
+      return createGetMediasQueryMock_medias({ ...props, __typename: \\"Image\\" })
   }
 }
-export function createCreateUserMutationMock_createUser(props: Partial<CreateUserMutation[\\"createUser\\"]>): CreateUserMutation[\\"createUser\\"] {
+
+export function createGetMediasQueryMock_medias_Image(props: Partial<Extract<GetMediasQuery[\\"medias\\"][number] & { __typename: \\"Image\\" }, { __typename: \\"Image\\" }>> = {}): Extract<GetMediasQuery[\\"medias\\"][number] & { __typename: \\"Image\\" }, { __typename: \\"Image\\" }> {
+  const image = schemaFactories.createImageMock({
+    path: props.path,
+    width: props.width,
+  });
+  return {
+    __typename: \\"Image\\",
+    path: image.path,
+    width: image.width,
+    ...props,
+  };
+}
+
+export function createGetMediasQueryMock_medias_Audio(props: Partial<Extract<GetMediasQuery[\\"medias\\"][number] & { __typename: \\"Audio\\" }, { __typename: \\"Audio\\" }>> = {}): Extract<GetMediasQuery[\\"medias\\"][number] & { __typename: \\"Audio\\" }, { __typename: \\"Audio\\" }> {
+  const audio = schemaFactories.createAudioMock({
+    path: props.path,
+    length: props.length,
+  });
+  return {
+    __typename: \\"Audio\\",
+    path: audio.path,
+    length: audio.length,
+    ...props,
+  };
+}
+
+export function createGetMediasQueryMock_medias_Video(props: Partial<Extract<GetMediasQuery[\\"medias\\"][number] & { __typename: \\"Video\\" }, { __typename: \\"Video\\" }>> = {}): Extract<GetMediasQuery[\\"medias\\"][number] & { __typename: \\"Video\\" }, { __typename: \\"Video\\" }> {
+  const video = schemaFactories.createVideoMock({
+    url: props.url,
+    length: props.length,
+  });
+  return {
+    __typename: \\"Video\\",
+    url: video.url,
+    length: video.length,
+    ...props,
+  };
+}",
+  "prepend": Array [
+    "import * as schemaFactories from \\"./factories\\";",
+  ],
+}
+`;
+
+exports[`plugin should dedupe fields 1`] = `
+Object {
+  "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery> = {}): GetMeQuery {
+  return {
+    __typename: \\"Query\\",
+    me: null,
+    ...props,
+  };
+}
+
+export function createGetMeQueryMock_me(props: Partial<NonNullable<GetMeQuery[\\"me\\"]>> = {}): NonNullable<GetMeQuery[\\"me\\"]> {
   switch(props.__typename) {
-    case \\"User\\": {
-      const { id, username } = schemaFactories.createUserMock({ id: props.id, username: props.username });
-      return { id, username, ...props };
-    }
+    case \\"User\\":
+      return createGetMeQueryMock_me_User(props);
+    case \\"Admin\\":
+      return createGetMeQueryMock_me_Admin(props);
     case undefined:
     default:
-      return createCreateUserMutationMock_createUser({ ...props, __typename: \\"User\\" });
+      return createGetMeQueryMock_me({ ...props, __typename: \\"User\\" })
   }
+}
+
+export function createGetMeQueryMock_me_User(props: Partial<Extract<NonNullable<GetMeQuery[\\"me\\"]> & { __typename: \\"User\\" }, { __typename: \\"User\\" }>> = {}): Extract<NonNullable<GetMeQuery[\\"me\\"]> & { __typename: \\"User\\" }, { __typename: \\"User\\" }> {
+  const user = schemaFactories.createUserMock({
+    id: props.id,
+    username: props.username,
+    id: props.userId,
+  });
+  return {
+    __typename: \\"User\\",
+    id: user.id,
+    username: user.username,
+    userId: user.id,
+    ...props,
+  };
+}
+
+export function createGetMeQueryMock_me_Admin(props: Partial<Extract<NonNullable<GetMeQuery[\\"me\\"]> & { __typename: \\"Admin\\" }, { __typename: \\"Admin\\" }>> = {}): Extract<NonNullable<GetMeQuery[\\"me\\"]> & { __typename: \\"Admin\\" }, { __typename: \\"Admin\\" }> {
+  const admin = schemaFactories.createAdminMock({
+    id: props.id,
+  });
+  return {
+    __typename: \\"Admin\\",
+    id: admin.id,
+    ...props,
+  };
+}",
+  "prepend": Array [
+    "import * as schemaFactories from \\"./factories\\";",
+  ],
+}
+`;
+
+exports[`plugin should generate factory for a simple operation 1`] = `
+Object {
+  "content": "export function createCreateUserMutationMock(props: Partial<CreateUserMutation> = {}): CreateUserMutation {
+  return {
+    __typename: \\"Mutation\\",
+    createUser: createCreateUserMutationMock_createUser({}),
+    ...props,
+  };
+}
+
+export function createCreateUserMutationMock_createUser(props: Partial<CreateUserMutation[\\"createUser\\"]> = {}): CreateUserMutation[\\"createUser\\"] {
+  const user = schemaFactories.createUserMock({
+    id: props.id,
+    username: props.username,
+  });
+  return {
+    __typename: \\"User\\",
+    id: user.id,
+    username: user.username,
+    ...props,
+  };
+}",
+  "prepend": Array [
+    "import * as schemaFactories from \\"./factories\\";",
+  ],
+}
+`;
+
+exports[`plugin should generate union factory even when querying one type from the union 1`] = `
+Object {
+  "content": "export function createGetMediasQueryMock(props: Partial<GetMediasQuery> = {}): GetMediasQuery {
+  return {
+    __typename: \\"Query\\",
+    medias: [],
+    ...props,
+  };
+}
+
+export function createGetMediasQueryMock_medias(props: Partial<GetMediasQuery[\\"medias\\"][number]> = {}): GetMediasQuery[\\"medias\\"][number] {
+  switch(props.__typename) {
+    case \\"Audio\\":
+      return createGetMediasQueryMock_medias_Audio(props);
+    case undefined:
+    default:
+      return createGetMediasQueryMock_medias({ ...props, __typename: \\"Audio\\" })
+  }
+}
+
+export function createGetMediasQueryMock_medias_Audio(props: Partial<Extract<GetMediasQuery[\\"medias\\"][number] & { __typename: \\"Audio\\" }, { __typename: \\"Audio\\" }>> = {}): Extract<GetMediasQuery[\\"medias\\"][number] & { __typename: \\"Audio\\" }, { __typename: \\"Audio\\" }> {
+  const audio = schemaFactories.createAudioMock({
+    length: props.length,
+  });
+  return {
+    __typename: \\"Audio\\",
+    length: audio.length,
+    ...props,
+  };
+}",
+  "prepend": Array [
+    "import * as schemaFactories from \\"./factories\\";",
+  ],
+}
+`;
+
+exports[`plugin should merge fragments and inline fragments with the same type condition 1`] = `
+Object {
+  "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery> = {}): GetMeQuery {
+  return {
+    __typename: \\"Query\\",
+    me: createGetMeQueryMock_me({}),
+    ...props,
+  };
+}
+
+export function createGetMeQueryMock_me(props: Partial<GetMeQuery[\\"me\\"]> = {}): GetMeQuery[\\"me\\"] {
+  const user = schemaFactories.createUserMock({
+    id: props.id,
+    username: props.username,
+  });
+  return {
+    __typename: \\"User\\",
+    id: user.id,
+    username: user.username,
+    ...props,
+  };
+}",
+  "prepend": Array [
+    "import * as schemaFactories from \\"./factories\\";",
+  ],
+}
+`;
+
+exports[`plugin should merge fragments with the same type condition 1`] = `
+Object {
+  "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery> = {}): GetMeQuery {
+  return {
+    __typename: \\"Query\\",
+    me: createGetMeQueryMock_me({}),
+    ...props,
+  };
+}
+
+export function createGetMeQueryMock_me(props: Partial<GetMeQuery[\\"me\\"]> = {}): GetMeQuery[\\"me\\"] {
+  const user = schemaFactories.createUserMock({
+    id: props.id,
+    username: props.username,
+  });
+  return {
+    __typename: \\"User\\",
+    id: user.id,
+    username: user.username,
+    ...props,
+  };
+}",
+  "prepend": Array [
+    "import * as schemaFactories from \\"./factories\\";",
+  ],
+}
+`;
+
+exports[`plugin should merge inline fragments with the same type condition 1`] = `
+Object {
+  "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery> = {}): GetMeQuery {
+  return {
+    __typename: \\"Query\\",
+    me: createGetMeQueryMock_me({}),
+    ...props,
+  };
+}
+
+export function createGetMeQueryMock_me(props: Partial<GetMeQuery[\\"me\\"]> = {}): GetMeQuery[\\"me\\"] {
+  const user = schemaFactories.createUserMock({
+    id: props.id,
+    username: props.username,
+  });
+  return {
+    __typename: \\"User\\",
+    id: user.id,
+    username: user.username,
+    ...props,
+  };
 }",
   "prepend": Array [
     "import * as schemaFactories from \\"./factories\\";",
@@ -31,26 +271,25 @@ export function createCreateUserMutationMock_createUser(props: Partial<CreateUse
 
 exports[`plugin should support aliases 1`] = `
 Object {
-  "content": "export function createCreateUserMutationMock(props: Partial<CreateUserMutation>): CreateUserMutation {
-  switch(props.__typename) {
-    case \\"Mutation\\": {
-      return { createUser: createCreateUserMutationMock_createUser({}), ...props };
-    }
-    case undefined:
-    default:
-      return createCreateUserMutationMock({ ...props, __typename: \\"Mutation\\" });
-  }
+  "content": "export function createCreateUserMutationMock(props: Partial<CreateUserMutation> = {}): CreateUserMutation {
+  return {
+    __typename: \\"Mutation\\",
+    createUser: createCreateUserMutationMock_createUser({}),
+    ...props,
+  };
 }
-export function createCreateUserMutationMock_createUser(props: Partial<CreateUserMutation[\\"createUser\\"]>): CreateUserMutation[\\"createUser\\"] {
-  switch(props.__typename) {
-    case \\"User\\": {
-      const { id, username: email } = schemaFactories.createUserMock({ id: props.id, username: props.email });
-      return { id, email, ...props };
-    }
-    case undefined:
-    default:
-      return createCreateUserMutationMock_createUser({ ...props, __typename: \\"User\\" });
-  }
+
+export function createCreateUserMutationMock_createUser(props: Partial<CreateUserMutation[\\"createUser\\"]> = {}): CreateUserMutation[\\"createUser\\"] {
+  const user = schemaFactories.createUserMock({
+    id: props.id,
+    username: props.email,
+  });
+  return {
+    __typename: \\"User\\",
+    id: user.id,
+    email: user.username,
+    ...props,
+  };
 }",
   "prepend": Array [
     "import * as schemaFactories from \\"./factories\\";",
@@ -60,36 +299,25 @@ export function createCreateUserMutationMock_createUser(props: Partial<CreateUse
 
 exports[`plugin should support external fragments 1`] = `
 Object {
-  "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery>): GetMeQuery {
-  switch(props.__typename) {
-    case \\"Query\\": {
-      return { me: createGetMeQueryMock_me({}), ...props };
-    }
-    case undefined:
-    default:
-      return createGetMeQueryMock({ ...props, __typename: \\"Query\\" });
-  }
+  "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery> = {}): GetMeQuery {
+  return {
+    __typename: \\"Query\\",
+    me: createGetMeQueryMock_me({}),
+    ...props,
+  };
 }
-export function createGetMeQueryMock_me(props: Partial<GetMeQuery[\\"me\\"]>): GetMeQuery[\\"me\\"] {
-  switch(props.__typename) {
-    case \\"User\\": {
-      return { ...createGetMeQueryMock_me_User({}), ...props };
-    }
-    case undefined:
-    default:
-      return createGetMeQueryMock_me({ ...props, __typename: \\"User\\" });
-  }
-}
-export function createGetMeQueryMock_me_User(props: Partial<Extract<GetMeQuery[\\"me\\"], { __typename: \\"User\\" }>>): Extract<GetMeQuery[\\"me\\"], { __typename: \\"User\\" }> {
-  switch(props.__typename) {
-    case \\"User\\": {
-      const { id, username } = schemaFactories.createUserMock({ id: props.id, username: props.username });
-      return { id, username, ...props };
-    }
-    case undefined:
-    default:
-      return createGetMeQueryMock_me_User({ ...props, __typename: \\"User\\" });
-  }
+
+export function createGetMeQueryMock_me(props: Partial<GetMeQuery[\\"me\\"]> = {}): GetMeQuery[\\"me\\"] {
+  const user = schemaFactories.createUserMock({
+    id: props.id,
+    username: props.username,
+  });
+  return {
+    __typename: \\"User\\",
+    id: user.id,
+    username: user.username,
+    ...props,
+  };
 }",
   "prepend": Array [
     "import * as schemaFactories from \\"./factories\\";",
@@ -99,36 +327,25 @@ export function createGetMeQueryMock_me_User(props: Partial<Extract<GetMeQuery[\
 
 exports[`plugin should support fragments 1`] = `
 Object {
-  "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery>): GetMeQuery {
-  switch(props.__typename) {
-    case \\"Query\\": {
-      return { me: createGetMeQueryMock_me({}), ...props };
-    }
-    case undefined:
-    default:
-      return createGetMeQueryMock({ ...props, __typename: \\"Query\\" });
-  }
+  "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery> = {}): GetMeQuery {
+  return {
+    __typename: \\"Query\\",
+    me: createGetMeQueryMock_me({}),
+    ...props,
+  };
 }
-export function createGetMeQueryMock_me(props: Partial<GetMeQuery[\\"me\\"]>): GetMeQuery[\\"me\\"] {
-  switch(props.__typename) {
-    case \\"User\\": {
-      return { ...createGetMeQueryMock_me_User({}), ...props };
-    }
-    case undefined:
-    default:
-      return createGetMeQueryMock_me({ ...props, __typename: \\"User\\" });
-  }
-}
-export function createGetMeQueryMock_me_User(props: Partial<Extract<GetMeQuery[\\"me\\"], { __typename: \\"User\\" }>>): Extract<GetMeQuery[\\"me\\"], { __typename: \\"User\\" }> {
-  switch(props.__typename) {
-    case \\"User\\": {
-      const { id, username } = schemaFactories.createUserMock({ id: props.id, username: props.username });
-      return { id, username, ...props };
-    }
-    case undefined:
-    default:
-      return createGetMeQueryMock_me_User({ ...props, __typename: \\"User\\" });
-  }
+
+export function createGetMeQueryMock_me(props: Partial<GetMeQuery[\\"me\\"]> = {}): GetMeQuery[\\"me\\"] {
+  const user = schemaFactories.createUserMock({
+    id: props.id,
+    username: props.username,
+  });
+  return {
+    __typename: \\"User\\",
+    id: user.id,
+    username: user.username,
+    ...props,
+  };
 }",
   "prepend": Array [
     "import * as schemaFactories from \\"./factories\\";",
@@ -138,36 +355,25 @@ export function createGetMeQueryMock_me_User(props: Partial<Extract<GetMeQuery[\
 
 exports[`plugin should support inline fragments 1`] = `
 Object {
-  "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery>): GetMeQuery {
-  switch(props.__typename) {
-    case \\"Query\\": {
-      return { me: createGetMeQueryMock_me({}), ...props };
-    }
-    case undefined:
-    default:
-      return createGetMeQueryMock({ ...props, __typename: \\"Query\\" });
-  }
+  "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery> = {}): GetMeQuery {
+  return {
+    __typename: \\"Query\\",
+    me: createGetMeQueryMock_me({}),
+    ...props,
+  };
 }
-export function createGetMeQueryMock_me(props: Partial<GetMeQuery[\\"me\\"]>): GetMeQuery[\\"me\\"] {
-  switch(props.__typename) {
-    case \\"User\\": {
-      return { ...createGetMeQueryMock_me_User({}), ...props };
-    }
-    case undefined:
-    default:
-      return createGetMeQueryMock_me({ ...props, __typename: \\"User\\" });
-  }
-}
-export function createGetMeQueryMock_me_User(props: Partial<Extract<GetMeQuery[\\"me\\"], { __typename: \\"User\\" }>>): Extract<GetMeQuery[\\"me\\"], { __typename: \\"User\\" }> {
-  switch(props.__typename) {
-    case \\"User\\": {
-      const { id, username } = schemaFactories.createUserMock({ id: props.id, username: props.username });
-      return { id, username, ...props };
-    }
-    case undefined:
-    default:
-      return createGetMeQueryMock_me_User({ ...props, __typename: \\"User\\" });
-  }
+
+export function createGetMeQueryMock_me(props: Partial<GetMeQuery[\\"me\\"]> = {}): GetMeQuery[\\"me\\"] {
+  const user = schemaFactories.createUserMock({
+    id: props.id,
+    username: props.username,
+  });
+  return {
+    __typename: \\"User\\",
+    id: user.id,
+    username: user.username,
+    ...props,
+  };
 }",
   "prepend": Array [
     "import * as schemaFactories from \\"./factories\\";",
@@ -177,26 +383,25 @@ export function createGetMeQueryMock_me_User(props: Partial<Extract<GetMeQuery[\
 
 exports[`plugin should support lists 1`] = `
 Object {
-  "content": "export function createGetUsersQueryMock(props: Partial<GetUsersQuery>): GetUsersQuery {
-  switch(props.__typename) {
-    case \\"Query\\": {
-      return { users: [], ...props };
-    }
-    case undefined:
-    default:
-      return createGetUsersQueryMock({ ...props, __typename: \\"Query\\" });
-  }
+  "content": "export function createGetUsersQueryMock(props: Partial<GetUsersQuery> = {}): GetUsersQuery {
+  return {
+    __typename: \\"Query\\",
+    users: [],
+    ...props,
+  };
 }
-export function createGetUsersQueryMock_users(props: Partial<GetUsersQuery[\\"users\\"][number]>): GetUsersQuery[\\"users\\"][number] {
-  switch(props.__typename) {
-    case \\"User\\": {
-      const { id, username } = schemaFactories.createUserMock({ id: props.id, username: props.username });
-      return { id, username, ...props };
-    }
-    case undefined:
-    default:
-      return createGetUsersQueryMock_users({ ...props, __typename: \\"User\\" });
-  }
+
+export function createGetUsersQueryMock_users(props: Partial<GetUsersQuery[\\"users\\"][number]> = {}): GetUsersQuery[\\"users\\"][number] {
+  const user = schemaFactories.createUserMock({
+    id: props.id,
+    username: props.username,
+  });
+  return {
+    __typename: \\"User\\",
+    id: user.id,
+    username: user.username,
+    ...props,
+  };
 }",
   "prepend": Array [
     "import * as schemaFactories from \\"./factories\\";",
@@ -206,37 +411,37 @@ export function createGetUsersQueryMock_users(props: Partial<GetUsersQuery[\\"us
 
 exports[`plugin should support nested selections 1`] = `
 Object {
-  "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery>): GetMeQuery {
-  switch(props.__typename) {
-    case \\"Query\\": {
-      return { me: null, ...props };
-    }
-    case undefined:
-    default:
-      return createGetMeQueryMock({ ...props, __typename: \\"Query\\" });
-  }
+  "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery> = {}): GetMeQuery {
+  return {
+    __typename: \\"Query\\",
+    me: null,
+    ...props,
+  };
 }
-export function createGetMeQueryMock_me(props: Partial<NonNull<GetMeQuery[\\"me\\"]>>): NonNull<GetMeQuery[\\"me\\"]> {
-  switch(props.__typename) {
-    case \\"User\\": {
-      const { id, username } = schemaFactories.createUserMock({ id: props.id, username: props.username });
-      return { id, username, followers: null, ...props };
-    }
-    case undefined:
-    default:
-      return createGetMeQueryMock_me({ ...props, __typename: \\"User\\" });
-  }
+
+export function createGetMeQueryMock_me(props: Partial<NonNullable<GetMeQuery[\\"me\\"]>> = {}): NonNullable<GetMeQuery[\\"me\\"]> {
+  const user = schemaFactories.createUserMock({
+    id: props.id,
+    username: props.username,
+  });
+  return {
+    __typename: \\"User\\",
+    id: user.id,
+    username: user.username,
+    followers: null,
+    ...props,
+  };
 }
-export function createGetMeQueryMock_me_followers(props: Partial<NonNull<NonNull<NonNull<GetMeQuery[\\"me\\"]>[\\"followers\\"]>[number]>>): NonNull<NonNull<NonNull<GetMeQuery[\\"me\\"]>[\\"followers\\"]>[number]> {
-  switch(props.__typename) {
-    case \\"User\\": {
-      const { id } = schemaFactories.createUserMock({ id: props.id });
-      return { id, ...props };
-    }
-    case undefined:
-    default:
-      return createGetMeQueryMock_me_followers({ ...props, __typename: \\"User\\" });
-  }
+
+export function createGetMeQueryMock_me_followers(props: Partial<NonNullable<NonNullable<NonNullable<GetMeQuery[\\"me\\"]>[\\"followers\\"]>[number]>> = {}): NonNullable<NonNullable<NonNullable<GetMeQuery[\\"me\\"]>[\\"followers\\"]>[number]> {
+  const user = schemaFactories.createUserMock({
+    id: props.id,
+  });
+  return {
+    __typename: \\"User\\",
+    id: user.id,
+    ...props,
+  };
 }",
   "prepend": Array [
     "import * as schemaFactories from \\"./factories\\";",
@@ -246,72 +451,70 @@ export function createGetMeQueryMock_me_followers(props: Partial<NonNull<NonNull
 
 exports[`plugin should support unions 1`] = `
 Object {
-  "content": "export function createGetMediasQueryMock(props: Partial<GetMediasQuery>): GetMediasQuery {
+  "content": "export function createGetMediasQueryMock(props: Partial<GetMediasQuery> = {}): GetMediasQuery {
+  return {
+    __typename: \\"Query\\",
+    medias: [],
+    ...props,
+  };
+}
+
+export function createGetMediasQueryMock_medias(props: Partial<GetMediasQuery[\\"medias\\"][number]> = {}): GetMediasQuery[\\"medias\\"][number] {
   switch(props.__typename) {
-    case \\"Query\\": {
-      return { medias: [], ...props };
-    }
+    case \\"Image\\":
+      return createGetMediasQueryMock_medias_Image(props);
+    case \\"Video\\":
+      return createGetMediasQueryMock_medias_Video(props);
     case undefined:
     default:
-      return createGetMediasQueryMock({ ...props, __typename: \\"Query\\" });
+      return createGetMediasQueryMock_medias({ ...props, __typename: \\"Image\\" })
   }
 }
-export function createGetMediasQueryMock_medias(props: Partial<GetMediasQuery[\\"medias\\"][number]>): GetMediasQuery[\\"medias\\"][number] {
-  switch(props.__typename) {
-    case \\"Image\\": {
-      return { ...createGetMediasQueryMock_medias_Image({}), ...props };
-    }
-    case \\"Video\\": {
-      return { ...createGetMediasQueryMock_medias_Video({}), ...props };
-    }
-    case undefined:
-    default:
-      return createGetMediasQueryMock_medias({ ...props, __typename: \\"Image\\" });
-  }
+
+export function createGetMediasQueryMock_medias_Image(props: Partial<Extract<GetMediasQuery[\\"medias\\"][number] & { __typename: \\"Image\\" }, { __typename: \\"Image\\" }>> = {}): Extract<GetMediasQuery[\\"medias\\"][number] & { __typename: \\"Image\\" }, { __typename: \\"Image\\" }> {
+  const image = schemaFactories.createImageMock({
+    src: props.src,
+  });
+  return {
+    __typename: \\"Image\\",
+    src: image.src,
+    dimensions: null,
+    ...props,
+  };
 }
-export function createGetMediasQueryMock_medias_Image(props: Partial<Extract<GetMediasQuery[\\"medias\\"][number], { __typename: \\"Image\\" }>>): Extract<GetMediasQuery[\\"medias\\"][number], { __typename: \\"Image\\" }> {
-  switch(props.__typename) {
-    case \\"Image\\": {
-      const { src } = schemaFactories.createImageMock({ src: props.src });
-      return { src, dimensions: null, ...props };
-    }
-    case undefined:
-    default:
-      return createGetMediasQueryMock_medias_Image({ ...props, __typename: \\"Image\\" });
-  }
+
+export function createGetMediasQueryMock_medias_Image_dimensions(props: Partial<NonNullable<Extract<GetMediasQuery[\\"medias\\"][number] & { __typename: \\"Image\\" }, { __typename: \\"Image\\" }>[\\"dimensions\\"]>> = {}): NonNullable<Extract<GetMediasQuery[\\"medias\\"][number] & { __typename: \\"Image\\" }, { __typename: \\"Image\\" }>[\\"dimensions\\"]> {
+  const imageDimensions = schemaFactories.createImageDimensionsMock({
+    width: props.width,
+  });
+  return {
+    __typename: \\"ImageDimensions\\",
+    width: imageDimensions.width,
+    ...props,
+  };
 }
-export function createGetMediasQueryMock_medias_Image_dimensions(props: Partial<NonNull<Extract<GetMediasQuery[\\"medias\\"][number], { __typename: \\"Image\\" }>[\\"dimensions\\"]>>): NonNull<Extract<GetMediasQuery[\\"medias\\"][number], { __typename: \\"Image\\" }>[\\"dimensions\\"]> {
-  switch(props.__typename) {
-    case \\"ImageDimensions\\": {
-      const { width } = schemaFactories.createImageDimensionsMock({ width: props.width });
-      return { width, ...props };
-    }
-    case undefined:
-    default:
-      return createGetMediasQueryMock_medias_Image_dimensions({ ...props, __typename: \\"ImageDimensions\\" });
-  }
+
+export function createGetMediasQueryMock_medias_Video(props: Partial<Extract<GetMediasQuery[\\"medias\\"][number] & { __typename: \\"Video\\" }, { __typename: \\"Video\\" }>> = {}): Extract<GetMediasQuery[\\"medias\\"][number] & { __typename: \\"Video\\" }, { __typename: \\"Video\\" }> {
+  const video = schemaFactories.createVideoMock({
+    href: props.href,
+  });
+  return {
+    __typename: \\"Video\\",
+    href: video.href,
+    dimensions: null,
+    ...props,
+  };
 }
-export function createGetMediasQueryMock_medias_Video(props: Partial<Extract<GetMediasQuery[\\"medias\\"][number], { __typename: \\"Video\\" }>>): Extract<GetMediasQuery[\\"medias\\"][number], { __typename: \\"Video\\" }> {
-  switch(props.__typename) {
-    case \\"Video\\": {
-      const { href } = schemaFactories.createVideoMock({ href: props.href });
-      return { href, dimensions: null, ...props };
-    }
-    case undefined:
-    default:
-      return createGetMediasQueryMock_medias_Video({ ...props, __typename: \\"Video\\" });
-  }
-}
-export function createGetMediasQueryMock_medias_Video_dimensions(props: Partial<NonNull<Extract<GetMediasQuery[\\"medias\\"][number], { __typename: \\"Video\\" }>[\\"dimensions\\"]>>): NonNull<Extract<GetMediasQuery[\\"medias\\"][number], { __typename: \\"Video\\" }>[\\"dimensions\\"]> {
-  switch(props.__typename) {
-    case \\"ImageDimensions\\": {
-      const { height } = schemaFactories.createImageDimensionsMock({ height: props.height });
-      return { height, ...props };
-    }
-    case undefined:
-    default:
-      return createGetMediasQueryMock_medias_Video_dimensions({ ...props, __typename: \\"ImageDimensions\\" });
-  }
+
+export function createGetMediasQueryMock_medias_Video_dimensions(props: Partial<NonNullable<Extract<GetMediasQuery[\\"medias\\"][number] & { __typename: \\"Video\\" }, { __typename: \\"Video\\" }>[\\"dimensions\\"]>> = {}): NonNullable<Extract<GetMediasQuery[\\"medias\\"][number] & { __typename: \\"Video\\" }, { __typename: \\"Video\\" }>[\\"dimensions\\"]> {
+  const imageDimensions = schemaFactories.createImageDimensionsMock({
+    height: props.height,
+  });
+  return {
+    __typename: \\"ImageDimensions\\",
+    height: imageDimensions.height,
+    ...props,
+  };
 }",
   "prepend": Array [
     "import * as schemaFactories from \\"./factories\\";",
@@ -321,26 +524,53 @@ export function createGetMediasQueryMock_medias_Video_dimensions(props: Partial<
 
 exports[`plugin should support unnamed operations 1`] = `
 Object {
-  "content": "export function createUnnamed_1_QueryMock(props: Partial<Unnamed_1_Query>): Unnamed_1_Query {
-  switch(props.__typename) {
-    case \\"Query\\": {
-      return { me: null, ...props };
-    }
-    case undefined:
-    default:
-      return createUnnamed_1_QueryMock({ ...props, __typename: \\"Query\\" });
-  }
+  "content": "export function createUnnamed_1_QueryMock(props: Partial<Unnamed_1_Query> = {}): Unnamed_1_Query {
+  return {
+    __typename: \\"Query\\",
+    me: null,
+    ...props,
+  };
 }
-export function createUnnamed_1_QueryMock_me(props: Partial<NonNull<Unnamed_1_Query[\\"me\\"]>>): NonNull<Unnamed_1_Query[\\"me\\"]> {
-  switch(props.__typename) {
-    case \\"User\\": {
-      const { id, username } = schemaFactories.createUserMock({ id: props.id, username: props.username });
-      return { id, username, ...props };
-    }
-    case undefined:
-    default:
-      return createUnnamed_1_QueryMock_me({ ...props, __typename: \\"User\\" });
-  }
+
+export function createUnnamed_1_QueryMock_me(props: Partial<NonNullable<Unnamed_1_Query[\\"me\\"]>> = {}): NonNullable<Unnamed_1_Query[\\"me\\"]> {
+  const user = schemaFactories.createUserMock({
+    id: props.id,
+    username: props.username,
+  });
+  return {
+    __typename: \\"User\\",
+    id: user.id,
+    username: user.username,
+    ...props,
+  };
+}",
+  "prepend": Array [
+    "import * as schemaFactories from \\"./factories\\";",
+  ],
+}
+`;
+
+exports[`plugin should unwrap inline fragments without a type condition 1`] = `
+Object {
+  "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery> = {}): GetMeQuery {
+  return {
+    __typename: \\"Query\\",
+    me: createGetMeQueryMock_me({}),
+    ...props,
+  };
+}
+
+export function createGetMeQueryMock_me(props: Partial<GetMeQuery[\\"me\\"]> = {}): GetMeQuery[\\"me\\"] {
+  const user = schemaFactories.createUserMock({
+    id: props.id,
+    username: props.username,
+  });
+  return {
+    __typename: \\"User\\",
+    id: user.id,
+    username: user.username,
+    ...props,
+  };
 }",
   "prepend": Array [
     "import * as schemaFactories from \\"./factories\\";",

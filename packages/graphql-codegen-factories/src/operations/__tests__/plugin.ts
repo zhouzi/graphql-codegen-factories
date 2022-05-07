@@ -89,6 +89,40 @@ describe("plugin", () => {
     expect(output).toMatchSnapshot();
   });
 
+  it("should merge fragments with the same type condition", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      type User {
+        id: ID!
+        username: String!
+      }
+
+      type Query {
+        me: User!
+      }
+    `);
+    const ast = parse(/* GraphQL */ `
+      query GetMe {
+        me {
+          ...UserIDFragment
+          ...UserUsernameFragment
+        }
+      }
+      fragment UserIDFragment on User {
+        id
+      }
+      fragment UserUsernameFragment on User {
+        username
+      }
+    `);
+
+    const output = await plugin(
+      schema,
+      [{ location: "GetMe.graphql", document: ast }],
+      { schemaFactoriesPath: "./factories" }
+    );
+    expect(output).toMatchSnapshot();
+  });
+
   it("should support inline fragments", async () => {
     const schema = buildSchema(/* GraphQL */ `
       type User {
@@ -108,6 +142,103 @@ describe("plugin", () => {
             username
           }
         }
+      }
+    `);
+
+    const output = await plugin(
+      schema,
+      [{ location: "GetMe.graphql", document: ast }],
+      { schemaFactoriesPath: "./factories" }
+    );
+    expect(output).toMatchSnapshot();
+  });
+
+  it("should merge inline fragments with the same type condition", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      type User {
+        id: ID!
+        username: String!
+      }
+
+      type Query {
+        me: User!
+      }
+    `);
+    const ast = parse(/* GraphQL */ `
+      query GetMe {
+        me {
+          ... on User {
+            id
+          }
+          ... on User {
+            username
+          }
+        }
+      }
+    `);
+
+    const output = await plugin(
+      schema,
+      [{ location: "GetMe.graphql", document: ast }],
+      { schemaFactoriesPath: "./factories" }
+    );
+    expect(output).toMatchSnapshot();
+  });
+
+  it("should unwrap inline fragments without a type condition", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      type User {
+        id: ID!
+        username: String!
+      }
+
+      type Query {
+        me: User!
+      }
+    `);
+    const ast = parse(/* GraphQL */ `
+      query GetMe {
+        me {
+          ... {
+            id
+            ... {
+              username
+            }
+          }
+        }
+      }
+    `);
+
+    const output = await plugin(
+      schema,
+      [{ location: "GetMe.graphql", document: ast }],
+      { schemaFactoriesPath: "./factories" }
+    );
+    expect(output).toMatchSnapshot();
+  });
+
+  it("should merge fragments and inline fragments with the same type condition", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      type User {
+        id: ID!
+        username: String!
+      }
+
+      type Query {
+        me: User!
+      }
+    `);
+    const ast = parse(/* GraphQL */ `
+      query GetMe {
+        me {
+          ... on User {
+            id
+          }
+          ...UserUsernameFragment
+        }
+      }
+      fragment UserUsernameFragment on User {
+        username
       }
     `);
 
@@ -294,6 +425,156 @@ describe("plugin", () => {
             dimensions {
               height
             }
+          }
+        }
+      }
+    `);
+
+    const output = await plugin(
+      schema,
+      [{ location: "GetMedias.graphql", document: ast }],
+      { schemaFactoriesPath: "./factories" }
+    );
+    expect(output).toMatchSnapshot();
+  });
+
+  it("should add interface's selections to the matching types", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      interface File {
+        path: String!
+      }
+
+      type Image implements File {
+        path: String!
+        width: Int!
+        height: Int!
+      }
+
+      type Audio implements File {
+        path: String!
+        length: Int!
+      }
+
+      interface Streamable {
+        url: String!
+      }
+
+      type Video implements Streamable {
+        url: String!
+        length: Int!
+      }
+
+      union Media = Image | Audio | Video
+
+      type Query {
+        medias: [Media!]!
+      }
+    `);
+    const ast = parse(/* GraphQL */ `
+      query GetMedias {
+        medias {
+          ... on File {
+            path
+          }
+          ... on Streamable {
+            url
+          }
+          ... on Image {
+            width
+          }
+          ... on Audio {
+            length
+          }
+          ... on Video {
+            length
+          }
+        }
+      }
+    `);
+
+    const output = await plugin(
+      schema,
+      [{ location: "GetMedias.graphql", document: ast }],
+      { schemaFactoriesPath: "./factories" }
+    );
+    expect(output).toMatchSnapshot();
+  });
+
+  it("should dedupe fields", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      interface Node {
+        id: ID!
+      }
+
+      type User implements Node {
+        id: ID!
+        username: String!
+      }
+
+      type Admin implements Node {
+        id: ID!
+        canDeleteUser: Boolean!
+      }
+
+      union Me = User | Admin
+
+      type Query {
+        me: Me
+      }
+    `);
+    const ast = parse(/* GraphQL */ `
+      query GetMe {
+        me {
+          ... on Node {
+            id
+          }
+          ... on User {
+            ...UserFragment
+            id
+            userId: id
+            username
+          }
+          ... on Admin {
+            id
+          }
+        }
+      }
+      fragment UserFragment on User {
+        id
+        username
+      }
+    `);
+
+    const output = await plugin(
+      schema,
+      [{ location: "GetMe.graphql", document: ast }],
+      { schemaFactoriesPath: "./factories" }
+    );
+    expect(output).toMatchSnapshot();
+  });
+
+  it("should generate union factory even when querying one type from the union", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      type Image {
+        width: Int!
+        height: Int!
+      }
+
+      type Audio {
+        length: Int!
+      }
+
+      union Media = Image | Audio
+
+      type Query {
+        medias: [Media!]!
+      }
+    `);
+    const ast = parse(/* GraphQL */ `
+      query GetMedias {
+        medias {
+          ... on Audio {
+            length
           }
         }
       }

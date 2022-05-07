@@ -176,4 +176,19 @@ describe("plugin", () => {
     const output = await plugin(schema, [], {});
     expect(output).toMatchSnapshot();
   });
+
+  it("should support interfaces", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      interface Node {
+        id: ID!
+      }
+      type User implements Node {
+        id: ID!
+        username: String!
+      }
+    `);
+
+    const output = await plugin(schema, [], {});
+    expect(output).toMatchSnapshot();
+  });
 });

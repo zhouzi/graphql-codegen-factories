@@ -320,7 +320,7 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
           node.name.value
         )}(props: Partial<${this.convertNameWithTypesNamespace(
           node.name.value
-        )}>): ${this.convertNameWithTypesNamespace(node.name.value)}`
+        )}> = {}): ${this.convertNameWithTypesNamespace(node.name.value)}`
       )
       .withBlock(
         [

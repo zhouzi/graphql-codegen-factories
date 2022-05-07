@@ -11,8 +11,10 @@ So for a query `GetUserQuery`, the corresponding factory will be named `createGe
 
 ## `config.schemaFactoriesPath`
 
-The operations' factories leverage the schema plugin's factories.
-So the path to the file containing the schema factories must be passed through this option.
+By default, this plugin assumes that the operations and schema factories are generated in the same file.
+The operations factories reference the schema's without importing them.
+
+If they are not generated in the same file, you need to provide the `schemaFactoriesPath`.
 
 ## `config.namespacedSchemaFactoriesImportName`
 

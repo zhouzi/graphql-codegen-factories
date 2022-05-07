@@ -10,6 +10,8 @@ generates:
       - graphql-codegen-factories/schema
     config:
       typesPath: ./types
+      scalarDefaults:
+        Date: new Date()
   ./:
     preset: near-operation-file
     presetConfig:

@@ -39,6 +39,7 @@ The next step is to add `graphql-codegen-factories/schema` to the list of plugin
 ```yml title="codegen.yml"
 overwrite: true
 schema: ./schema.graphql
+documents: ./**/*.graphql
 generates:
   ./types.ts:
     plugins:
@@ -59,22 +60,16 @@ The next step is to add `graphql-codegen-factories/operations` to the list of pl
 ```yml title="codegen.yml"
 overwrite: true
 schema: ./schema.graphql
-# highlight-start
 documents: ./**/*.graphql
-# highlight-end
 generates:
   ./types.ts:
     plugins:
       - typescript
       - graphql-codegen-factories/schema
-  # highlight-start
-  ./operations.ts:
-    config:
-      schemaFactoriesPath: ./types.ts
-    plugins:
       - typescript-operations
+      # highlight-start
       - graphql-codegen-factories/operations
-  # highlight-end
+      # highlight-end
 ```
 
 To access the full list of options, see the documentation for the [configuration](./configuration/operations.mdx).
