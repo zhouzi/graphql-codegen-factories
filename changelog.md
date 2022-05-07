@@ -2,7 +2,15 @@
 
 ## Unreleased
 
-- Add default value for factories overrides in the schema plugin
+## 1.0.0 - 2022-05-07
+
+### Added
+
+- Add a plugin that generates factories for operations
+
+### Changed
+
+- Add default value for factories overrides
 
 ## 1.0.0-beta.4 - 2022-04-24
 
