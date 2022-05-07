@@ -63,7 +63,7 @@ export function createDroidMock(props: Partial<Droid> = {}): Droid {
   };
 }
 
-export function createHumanoidMock(props: Partial<Humanoid>): Humanoid {
+export function createHumanoidMock(props: Partial<Humanoid> = {}): Humanoid {
   switch(props.__typename) {
     case \\"User\\":
       return createUserMock(props);
@@ -183,7 +183,7 @@ Object {
 
 exports[`plugin should support interfaces 1`] = `
 Object {
-  "content": "export function createUserMock(props: Partial<User>): User {
+  "content": "export function createUserMock(props: Partial<User> = {}): User {
   return {
     __typename: \\"User\\",
     id: \\"\\",
