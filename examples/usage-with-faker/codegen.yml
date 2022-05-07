@@ -11,3 +11,4 @@ generates:
       scalarDefaults:
         ID: "faker.random.alphaNumeric(16)"
         String: "faker.lorem.word()"
+        Date: "faker.date.past(1)"
