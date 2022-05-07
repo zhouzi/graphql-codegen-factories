@@ -6,7 +6,7 @@
 
 ## 1.0.0-beta.4 - 2022-04-24
 
-## Added
+### Added
 
 - Add support for unions
 - Generate factories for the root types: Query, Mutation and Subscription
@@ -14,13 +14,13 @@
 
 ## 1.0.0-beta.3 - 2022-04-11
 
-## Fixed
+### Fixed
 
 - Fix support for external fragments
 
 ## 1.0.0-beta.2 - 2022-03-27
 
-## Fixed
+### Fixed
 
 - Fix support for unnamed operations
 - Fix support for lists and nullable fields
@@ -29,22 +29,22 @@
 
 ## 1.0.0-beta.1 - 2022-03-26
 
-## Added
+### Added
 
 - Add the `graphql-codegen-factories/operations` entry point to generate factories for operations
 
-## Fixed
+### Fixed
 
 - Fix the factories output when the schema has directives
 
 ## 1.0.0-beta.0 - 2022-02-22
 
-## Added
+### Added
 
 - Add `config.typesPath` to generate the factories in a different file than the types
 - Add `config.importTypesNamespace` to customize the name of the import namespace
 
-## Removed
+### Removed
 
 - Upgrade dependencies and drop support for Node 10 in the process
 
