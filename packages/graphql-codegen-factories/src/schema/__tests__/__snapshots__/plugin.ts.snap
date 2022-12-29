@@ -136,6 +136,33 @@ Object {
 }
 `;
 
+exports[`plugin should customize the input maybe value default 1`] = `
+Object {
+  "content": "export function createPostInputMock(props: Partial<PostInput> = {}): PostInput {
+  return {
+    title: undefined,
+    ...props,
+  };
+}
+",
+  "prepend": Array [],
+}
+`;
+
+exports[`plugin should customize the input mayble value default 1`] = `
+Object {
+  "content": "export function createUserMock(props: Partial<User> = {}): User {
+  return {
+    __typename: \\"User\\",
+    id: null,
+    ...props,
+  };
+}
+",
+  "prepend": Array [],
+}
+`;
+
 exports[`plugin should import types from other file 1`] = `
 Object {
   "content": "export function createUserMock(props: Partial<SharedTypes.User> = {}): SharedTypes.User {

@@ -316,3 +316,49 @@ export function createUserMock(
 </div>
 
 </details>
+
+## `config.inputMaybeValueDefault`
+
+By default, this plugin will always generate a null value for input types that are nullable.
+This can be problematic when you customized the inputMaybeValue.
+You can customize the default value by configuring `inputMaybeValueDefault`:
+
+```yml
+overwrite: true
+schema: ./schema.graphql
+generates:
+    ./types.ts:
+      plugins:
+        - typescript
+        - graphql-codegen-factories/schema
+      config:
+        inputMaybeValue: T | undefined
+        # highlight-start
+        inputMaybeValueDefault: undefined
+        # highlight-end
+```
+
+<details>
+<summary>Example</summary>
+
+<div className="codeBlocks">
+
+```graphql title="schema.graphql"
+input PostInput {
+  title: String
+}
+```
+
+```typescript title="types.ts"
+export function createPostInputMock(
+  props: Partial<PostInput> = {}
+): PostInput {
+return {
+    title: undefined,
+    ...props,
+  };
+}
+```
+
+</div>
+</details>
