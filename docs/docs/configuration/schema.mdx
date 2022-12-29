@@ -354,7 +354,9 @@ export function createPostInputMock(
   props: Partial<PostInput> = {}
 ): PostInput {
 return {
+    // highlight-start
     title: undefined,
+    // highlight-end
     ...props,
   };
 }
