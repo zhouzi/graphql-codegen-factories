@@ -92,4 +92,6 @@ Are you using this plugin? [Let us know!](https://github.com/zhouzi/graphql-code
 
 ## Contributors
 
-[![](https://github.com/zhouzi.png?size=50)](https://github.com/zhouzi) [![](https://github.com/ertrzyiks.png?size=50)](https://github.com/ertrzyiks)
+[![](https://github.com/zhouzi.png?size=50)](https://github.com/zhouzi)
+[![](https://github.com/ertrzyiks.png?size=50)](https://github.com/ertrzyiks)
+[![](https://github.com/jongbelegen.png?size=50)](https://github.com/jongbelegen)
