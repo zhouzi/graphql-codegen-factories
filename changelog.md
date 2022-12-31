@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add inputMaybeValueDefault option to allow default input values other than null
+
 ## 1.0.0 - 2022-05-07
 
 ### Added

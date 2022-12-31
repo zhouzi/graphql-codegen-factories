@@ -50,6 +50,8 @@ export interface FactoriesSchemaVisitorRawConfig
   // the following option does the same thing as namespacedImportName
   // but it is injected automatically while this one is provided by the user
   importTypesNamespace?: string;
+
+  inputMaybeValueDefault?: string;
 }
 
 export interface FactoriesSchemaVisitorParsedConfig
@@ -59,6 +61,7 @@ export interface FactoriesSchemaVisitorParsedConfig
   namespacedImportName: string | null;
   typesPath?: string;
   importTypesNamespace?: string;
+  inputMaybeValueDefault: string | "null";
 }
 
 interface VisitedTypeNode {
@@ -116,6 +119,10 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
       importTypesNamespace: getConfigValue(
         config.importTypesNamespace,
         undefined
+      ),
+      inputMaybeValueDefault: getConfigValue(
+        config.inputMaybeValueDefault,
+        "null"
       ),
     } as FactoriesSchemaVisitorParsedConfig;
 
@@ -209,11 +216,16 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
   }
 
   protected convertField(
-    node: UnvisitedFieldDefinitionNode | UnvisitedInputValueDefinitionNode
+    node: UnvisitedFieldDefinitionNode | UnvisitedInputValueDefinitionNode,
+    nullableDefaultValue: string
   ): string {
     const { defaultValue, isNullable } = node.type;
     return indent(
-      indent(`${node.name.value}: ${isNullable ? "null" : defaultValue},`)
+      indent(
+        `${node.name.value}: ${
+          isNullable ? nullableDefaultValue : defaultValue
+        },`
+      )
     );
   }
 
@@ -283,7 +295,7 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
   }
 
   FieldDefinition(node: UnvisitedFieldDefinitionNode): string {
-    return this.convertField(node);
+    return this.convertField(node, "null");
   }
 
   InputObjectTypeDefinition(node: InputObjectTypeDefinitionNode): string {
@@ -291,7 +303,7 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
   }
 
   InputValueDefinition(node: UnvisitedInputValueDefinitionNode): string {
-    return this.convertField(node);
+    return this.convertField(node, this.config.inputMaybeValueDefault);
   }
 
   ObjectTypeDefinition(node: ObjectTypeDefinitionNode): string | undefined {

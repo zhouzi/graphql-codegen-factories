@@ -117,6 +117,19 @@ describe("plugin", () => {
     expect(output).toMatchSnapshot();
   });
 
+  it("should customize the input maybe value default", async () => {
+    const schema = buildSchema(`
+      input PostInput {
+        title: String
+      }
+    `);
+
+    const output = await plugin(schema, [], {
+      inputMaybeValueDefault: "undefined",
+    });
+    expect(output).toMatchSnapshot();
+  });
+
   it("should support enums with an underscore", async () => {
     const schema = buildSchema(`
       enum UserRole {
