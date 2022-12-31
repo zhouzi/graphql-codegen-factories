@@ -1,6 +1,6 @@
 # graphql-codegen-factories
 
-![](https://img.shields.io/github/license/zhouzi/graphql-codegen-factories?style=for-the-badge) ![](https://img.shields.io/github/workflow/status/zhouzi/graphql-codegen-factories/CI/main?style=for-the-badge) ![](https://img.shields.io/npm/v/graphql-codegen-factories?style=for-the-badge)
+![](https://img.shields.io/github/license/zhouzi/graphql-codegen-factories?style=for-the-badge) ![](https://img.shields.io/github/actions/workflow/status/zhouzi/graphql-codegen-factories/.github/workflows/ci.yml?branch=main&style=for-the-badge) ![](https://img.shields.io/npm/v/graphql-codegen-factories?style=for-the-badge)
 
 `graphql-codegen-factories` is a plugin for [GraphQL Code Generator](https://www.graphql-code-generator.com/) that generates factories from a GraphQL schema and operations.
 The factories can then be used to mock data, e.g for testing or seeding a database.
