@@ -10,7 +10,7 @@
 - Add `inputMaybeValueDefault` option to customize the nullable inputs' fields' default value
 - Add `disableDescriptions` option to toggle on/off objects and inputs' description added above the factory functions
 
-## Changed
+### Changed
 
 - Add objects' and inputs' description above the factory functions
 
