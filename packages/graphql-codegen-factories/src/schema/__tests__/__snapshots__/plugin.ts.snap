@@ -158,6 +158,34 @@ Object {
     ...props,
   };
 }
+
+export function createPostInputMock(props: Partial<PostInput> = {}): PostInput {
+  return {
+    title: undefined,
+    ...props,
+  };
+}
+",
+  "prepend": Array [],
+}
+`;
+
+exports[`plugin should customize the maybe value default and input maybe value default independently 1`] = `
+Object {
+  "content": "export function createPostMock(props: Partial<Post> = {}): Post {
+  return {
+    __typename: \\"Post\\",
+    title: undefined,
+    ...props,
+  };
+}
+
+export function createPostInputMock(props: Partial<PostInput> = {}): PostInput {
+  return {
+    title: null,
+    ...props,
+  };
+}
 ",
   "prepend": Array [],
 }

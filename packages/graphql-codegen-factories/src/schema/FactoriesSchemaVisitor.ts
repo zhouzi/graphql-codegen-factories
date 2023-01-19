@@ -110,6 +110,11 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
   >;
 
   constructor(schema: GraphQLSchema, config: FactoriesSchemaVisitorRawConfig) {
+    const maybeValueDefault = getConfigValue(config.maybeValueDefault, "null");
+    const inputMaybeValueDefault = getConfigValue(
+      config.inputMaybeValueDefault,
+      maybeValueDefault
+    );
     const parsedConfig = {
       enumsAsTypes: getConfigValue(config.enumsAsTypes, false),
       scalarDefaults: getConfigValue(config.scalarDefaults, {}),
@@ -122,11 +127,8 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
         config.importTypesNamespace,
         undefined
       ),
-      maybeValueDefault: getConfigValue(config.maybeValueDefault, "null"),
-      inputMaybeValueDefault: getConfigValue(
-        config.inputMaybeValueDefault,
-        "null"
-      ),
+      maybeValueDefault,
+      inputMaybeValueDefault,
     } as FactoriesSchemaVisitorParsedConfig;
 
     if (parsedConfig.typesPath && parsedConfig.namespacedImportName == null) {
