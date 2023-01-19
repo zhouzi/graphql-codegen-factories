@@ -3,7 +3,7 @@ import { plugin } from "../plugin";
 
 describe("plugin", () => {
   it("should create factories with built-in types", async () => {
-    const schema = buildSchema(`
+    const schema = buildSchema(/* GraphQL */ `
       type User {
         id: ID!
         organizationId: ID
@@ -45,7 +45,7 @@ describe("plugin", () => {
   });
 
   it("should use enums as types", async () => {
-    const schema = buildSchema(`
+    const schema = buildSchema(/* GraphQL */ `
       type User {
         status: UserStatus!
       }
@@ -61,7 +61,7 @@ describe("plugin", () => {
   });
 
   it("should use the custom scalar defaults", async () => {
-    const schema = buildSchema(`
+    const schema = buildSchema(/* GraphQL */ `
       type User {
         createdAt: Date!
       }
@@ -76,7 +76,7 @@ describe("plugin", () => {
   });
 
   it("should create factories for inputs", async () => {
-    const schema = buildSchema(`
+    const schema = buildSchema(/* GraphQL */ `
       input PostInput {
         id: ID
         title: String!
@@ -88,7 +88,7 @@ describe("plugin", () => {
   });
 
   it("should create factories for Query and Mutation", async () => {
-    const schema = buildSchema(`
+    const schema = buildSchema(/* GraphQL */ `
       type User {
         id: ID!
       }
@@ -107,7 +107,7 @@ describe("plugin", () => {
   });
 
   it("should customize the factory name", async () => {
-    const schema = buildSchema(`
+    const schema = buildSchema(/* GraphQL */ `
       type User {
         id: ID!
       }
@@ -118,7 +118,7 @@ describe("plugin", () => {
   });
 
   it("should customize the maybe value default", async () => {
-    const schema = buildSchema(`
+    const schema = buildSchema(/* GraphQL */ `
       type Post {
         title: String
       }
@@ -134,7 +134,7 @@ describe("plugin", () => {
   });
 
   it("should customize the maybe value default and input maybe value default independently", async () => {
-    const schema = buildSchema(`
+    const schema = buildSchema(/* GraphQL */ `
       type Post {
         title: String
       }
@@ -151,7 +151,7 @@ describe("plugin", () => {
   });
 
   it("should customize the input maybe value default", async () => {
-    const schema = buildSchema(`
+    const schema = buildSchema(/* GraphQL */ `
       input PostInput {
         title: String
       }
@@ -164,7 +164,7 @@ describe("plugin", () => {
   });
 
   it("should support enums with an underscore", async () => {
-    const schema = buildSchema(`
+    const schema = buildSchema(/* GraphQL */ `
       enum UserRole {
         SUPER_ADMIN
         ADMIN
@@ -179,7 +179,7 @@ describe("plugin", () => {
   });
 
   it("should support directives", async () => {
-    const schema = buildSchema(`
+    const schema = buildSchema(/* GraphQL */ `
       directive @test on FIELD_DEFINITION
 
       type User {
@@ -192,7 +192,7 @@ describe("plugin", () => {
   });
 
   it("should import types from other file", async () => {
-    const schema = buildSchema(`
+    const schema = buildSchema(/* GraphQL */ `
       type User {
         id: ID!
       }
@@ -206,7 +206,7 @@ describe("plugin", () => {
   });
 
   it("should create factories for unions", async () => {
-    const schema = buildSchema(`
+    const schema = buildSchema(/* GraphQL */ `
       type User {
         firstName: String!
         lastName: String!
@@ -235,6 +235,50 @@ describe("plugin", () => {
     `);
 
     const output = await plugin(schema, [], {});
+    expect(output).toMatchSnapshot();
+  });
+
+  it("should add descriptions", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      """
+      This is a description with /* characters that need to be escaped */.
+      """
+      type Post {
+        title: String
+      }
+
+      """
+      This is a description for an input.
+      """
+      input PostInput {
+        title: String
+      }
+    `);
+
+    const output = await plugin(schema, [], {});
+    expect(output).toMatchSnapshot();
+  });
+
+  it("should disable descriptions", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      """
+      This is a description with /* characters that need to be escaped */.
+      """
+      type Post {
+        title: String
+      }
+
+      """
+      This is a description for an input.
+      """
+      input PostInput {
+        title: String
+      }
+    `);
+
+    const output = await plugin(schema, [], {
+      disableDescriptions: true,
+    });
     expect(output).toMatchSnapshot();
   });
 });

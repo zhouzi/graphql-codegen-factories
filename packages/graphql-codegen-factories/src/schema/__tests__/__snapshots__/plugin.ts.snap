@@ -1,5 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`plugin should add descriptions 1`] = `
+Object {
+  "content": "/** This is a description with /* characters that need to be escaped *\\\\/. */
+export function createPostMock(props: Partial<Post> = {}): Post {
+  return {
+    __typename: \\"Post\\",
+    title: null,
+    ...props,
+  };
+}
+
+/** This is a description for an input. */
+export function createPostInputMock(props: Partial<PostInput> = {}): PostInput {
+  return {
+    title: null,
+    ...props,
+  };
+}
+",
+  "prepend": Array [],
+}
+`;
+
 exports[`plugin should create factories for Query and Mutation 1`] = `
 Object {
   "content": "export function createUserMock(props: Partial<User> = {}): User {
@@ -176,6 +199,27 @@ Object {
   return {
     __typename: \\"Post\\",
     title: undefined,
+    ...props,
+  };
+}
+
+export function createPostInputMock(props: Partial<PostInput> = {}): PostInput {
+  return {
+    title: null,
+    ...props,
+  };
+}
+",
+  "prepend": Array [],
+}
+`;
+
+exports[`plugin should disable descriptions 1`] = `
+Object {
+  "content": "export function createPostMock(props: Partial<Post> = {}): Post {
+  return {
+    __typename: \\"Post\\",
+    title: null,
     ...props,
   };
 }
