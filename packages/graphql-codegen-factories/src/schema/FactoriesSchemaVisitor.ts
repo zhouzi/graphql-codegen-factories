@@ -53,6 +53,7 @@ export interface FactoriesSchemaVisitorRawConfig
 
   maybeValueDefault?: string;
   inputMaybeValueDefault?: string;
+  disableDescriptions?: boolean;
 }
 
 export interface FactoriesSchemaVisitorParsedConfig
@@ -64,6 +65,7 @@ export interface FactoriesSchemaVisitorParsedConfig
   importTypesNamespace?: string;
   maybeValueDefault: string;
   inputMaybeValueDefault: string;
+  disableDescriptions: boolean;
 }
 
 interface VisitedTypeNode {
@@ -129,6 +131,7 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
       ),
       maybeValueDefault,
       inputMaybeValueDefault,
+      disableDescriptions: getConfigValue(config.disableDescriptions, false),
     } as FactoriesSchemaVisitorParsedConfig;
 
     if (parsedConfig.typesPath && parsedConfig.namespacedImportName == null) {
@@ -205,6 +208,7 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
           node.name.value
         )}> = {}): ${this.convertNameWithTypesNamespace(node.name.value)}`
       )
+      .withComment(node.description ?? null, this.config.disableDescriptions)
       .withBlock(
         [
           indent("return {"),
