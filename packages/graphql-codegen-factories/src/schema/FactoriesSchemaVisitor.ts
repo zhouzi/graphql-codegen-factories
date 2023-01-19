@@ -51,6 +51,7 @@ export interface FactoriesSchemaVisitorRawConfig
   // but it is injected automatically while this one is provided by the user
   importTypesNamespace?: string;
 
+  maybeValueDefault?: string;
   inputMaybeValueDefault?: string;
 }
 
@@ -61,7 +62,8 @@ export interface FactoriesSchemaVisitorParsedConfig
   namespacedImportName: string | null;
   typesPath?: string;
   importTypesNamespace?: string;
-  inputMaybeValueDefault: string | "null";
+  maybeValueDefault: string;
+  inputMaybeValueDefault: string;
 }
 
 interface VisitedTypeNode {
@@ -120,6 +122,7 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
         config.importTypesNamespace,
         undefined
       ),
+      maybeValueDefault: getConfigValue(config.maybeValueDefault, "null"),
       inputMaybeValueDefault: getConfigValue(
         config.inputMaybeValueDefault,
         "null"
@@ -295,7 +298,7 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
   }
 
   FieldDefinition(node: UnvisitedFieldDefinitionNode): string {
-    return this.convertField(node, "null");
+    return this.convertField(node, this.config.maybeValueDefault);
   }
 
   InputObjectTypeDefinition(node: InputObjectTypeDefinitionNode): string {
