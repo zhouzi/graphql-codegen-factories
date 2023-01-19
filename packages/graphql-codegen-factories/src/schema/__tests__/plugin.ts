@@ -117,6 +117,39 @@ describe("plugin", () => {
     expect(output).toMatchSnapshot();
   });
 
+  it("should customize the maybe value default", async () => {
+    const schema = buildSchema(`
+      type Post {
+        title: String
+      }
+      input PostInput {
+        title: String
+      }
+    `);
+
+    const output = await plugin(schema, [], {
+      maybeValueDefault: "undefined",
+    });
+    expect(output).toMatchSnapshot();
+  });
+
+  it("should customize the maybe value default and input maybe value default independently", async () => {
+    const schema = buildSchema(`
+      type Post {
+        title: String
+      }
+      input PostInput {
+        title: String
+      }
+    `);
+
+    const output = await plugin(schema, [], {
+      maybeValueDefault: "undefined",
+      inputMaybeValueDefault: "null",
+    });
+    expect(output).toMatchSnapshot();
+  });
+
   it("should customize the input maybe value default", async () => {
     const schema = buildSchema(`
       input PostInput {

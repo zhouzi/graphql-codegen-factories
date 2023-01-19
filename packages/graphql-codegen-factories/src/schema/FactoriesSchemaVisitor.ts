@@ -51,6 +51,7 @@ export interface FactoriesSchemaVisitorRawConfig
   // but it is injected automatically while this one is provided by the user
   importTypesNamespace?: string;
 
+  maybeValueDefault?: string;
   inputMaybeValueDefault?: string;
 }
 
@@ -61,7 +62,8 @@ export interface FactoriesSchemaVisitorParsedConfig
   namespacedImportName: string | null;
   typesPath?: string;
   importTypesNamespace?: string;
-  inputMaybeValueDefault: string | "null";
+  maybeValueDefault: string;
+  inputMaybeValueDefault: string;
 }
 
 interface VisitedTypeNode {
@@ -108,6 +110,11 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
   >;
 
   constructor(schema: GraphQLSchema, config: FactoriesSchemaVisitorRawConfig) {
+    const maybeValueDefault = getConfigValue(config.maybeValueDefault, "null");
+    const inputMaybeValueDefault = getConfigValue(
+      config.inputMaybeValueDefault,
+      maybeValueDefault
+    );
     const parsedConfig = {
       enumsAsTypes: getConfigValue(config.enumsAsTypes, false),
       scalarDefaults: getConfigValue(config.scalarDefaults, {}),
@@ -120,10 +127,8 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
         config.importTypesNamespace,
         undefined
       ),
-      inputMaybeValueDefault: getConfigValue(
-        config.inputMaybeValueDefault,
-        "null"
-      ),
+      maybeValueDefault,
+      inputMaybeValueDefault,
     } as FactoriesSchemaVisitorParsedConfig;
 
     if (parsedConfig.typesPath && parsedConfig.namespacedImportName == null) {
@@ -295,7 +300,7 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
   }
 
   FieldDefinition(node: UnvisitedFieldDefinitionNode): string {
-    return this.convertField(node, "null");
+    return this.convertField(node, this.config.maybeValueDefault);
   }
 
   InputObjectTypeDefinition(node: InputObjectTypeDefinitionNode): string {

@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Add inputMaybeValueDefault option to allow default input values other than null
+- Add `maybeValueDefault` option to customize the nullable fields' default value
+- Add `inputMaybeValueDefault` option to customize the nullable inputs' fields' default value
 
 ## 1.0.0 - 2022-05-07
 
