@@ -214,6 +214,35 @@ export function createPostInputMock(props: Partial<PostInput> = {}): PostInput {
 }
 `;
 
+exports[`plugin should customize the maybe value default with default value 1`] = `
+Object {
+  "content": "export function createPostMock(props: Partial<Post> = {}): Post {
+  return {
+    __typename: \\"Post\\",
+    author: createPostAuthorMock({}),
+    ...props,
+  };
+}
+
+export function createPostAuthorMock(props: Partial<PostAuthor> = {}): PostAuthor {
+  return {
+    __typename: \\"PostAuthor\\",
+    username: \\"\\",
+    ...props,
+  };
+}
+
+export function createPostInputMock(props: Partial<PostInput> = {}): PostInput {
+  return {
+    author: createPostAuthorMock({}),
+    ...props,
+  };
+}
+",
+  "prepend": Array [],
+}
+`;
+
 exports[`plugin should disable descriptions 1`] = `
 Object {
   "content": "export function createPostMock(props: Partial<Post> = {}): Post {

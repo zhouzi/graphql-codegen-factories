@@ -224,6 +224,13 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
       ).string;
   }
 
+  protected convertNullableDefaultValue(
+    nullableDefaultValue: string,
+    defaultValue: string
+  ) {
+    return nullableDefaultValue.replace("{defaultValue}", defaultValue);
+  }
+
   protected convertField(
     node: UnvisitedFieldDefinitionNode | UnvisitedInputValueDefinitionNode,
     nullableDefaultValue: string
@@ -232,7 +239,12 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
     return indent(
       indent(
         `${node.name.value}: ${
-          isNullable ? nullableDefaultValue : defaultValue
+          isNullable
+            ? this.convertNullableDefaultValue(
+                nullableDefaultValue,
+                defaultValue
+              )
+            : defaultValue
         },`
       )
     );

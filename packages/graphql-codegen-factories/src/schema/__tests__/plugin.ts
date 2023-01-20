@@ -150,6 +150,25 @@ describe("plugin", () => {
     expect(output).toMatchSnapshot();
   });
 
+  it("should customize the maybe value default with default value", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      type Post {
+        author: PostAuthor
+      }
+      type PostAuthor {
+        username: String
+      }
+      input PostInput {
+        author: PostAuthor
+      }
+    `);
+
+    const output = await plugin(schema, [], {
+      maybeValueDefault: "{defaultValue}",
+    });
+    expect(output).toMatchSnapshot();
+  });
+
   it("should customize the input maybe value default", async () => {
     const schema = buildSchema(/* GraphQL */ `
       input PostInput {
