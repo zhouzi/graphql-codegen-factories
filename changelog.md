@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.2.0 - 2023-01-20
+
 ### Added
 
 - Nullable fields can now be initialized by setting the `maybeValueDefault` option to `"{defaultValue}"`
