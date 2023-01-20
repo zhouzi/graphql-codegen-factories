@@ -375,6 +375,60 @@ export function createPostInputMock(props: Partial<PostInput> = {}): PostInput {
 </div>
 </details>
 
+This option can also be used to initialize nullable fields, instead of defaulting to a static value:
+
+```yml
+overwrite: true
+schema: ./schema.graphql
+generates:
+  ./types.ts:
+    plugins:
+      - typescript
+      - graphql-codegen-factories/schema
+    config:
+      # highlight-start
+      maybeValueDefault: "{defaultValue}"
+      # highlight-end
+```
+
+<details>
+<summary>Example</summary>
+
+<div className="codeBlocks">
+
+```graphql title="schema.graphql"
+type Post {
+  author: PostAuthor
+}
+
+type PostAuthor {
+  username: String
+}
+```
+
+```typescript title="types.ts"
+export function createPost(props: Partial<Post> = {}): Post {
+  return {
+    // highlight-start
+    author: createPostAuthor(),
+    // highlight-end
+    ...props,
+  };
+}
+
+export function createPostAuthor(props: Partial<PostAuthor> = {}): Post {
+  return {
+    // highlight-start
+    username: "",
+    // highlight-end
+    ...props,
+  };
+}
+```
+
+</div>
+</details>
+
 ## `config.inputMaybeValueDefault`
 
 By default, inputs' nullable fields are initialized as `config.maybeValueDefault` ("null" by default).
@@ -419,6 +473,8 @@ export function createPostInputMock(props: Partial<PostInput> = {}): PostInput {
 
 </div>
 </details>
+
+See `config.maybeValueDefault` to initialize nullable input fields by setting `config.inputMaybeValueDefault` to `"{defaultValue}"`.
 
 ## `config.disableDescriptions`
 
