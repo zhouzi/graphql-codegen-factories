@@ -297,6 +297,32 @@ export function createCreateUserMutationMock_createUser(props: Partial<CreateUse
 }
 `;
 
+exports[`plugin should support custom root Query 1`] = `
+Object {
+  "content": "export function createGetUserQueryMock(props: Partial<GetUserQuery> = {}): GetUserQuery {
+  return {
+    __typename: \\"CustomQuery\\",
+    user: null,
+    ...props,
+  };
+}
+
+export function createGetUserQueryMock_user(props: Partial<NonNullable<GetUserQuery[\\"user\\"]>> = {}): NonNullable<GetUserQuery[\\"user\\"]> {
+  const user = schemaFactories.createUserMock({
+    username: props.username,
+  });
+  return {
+    __typename: \\"User\\",
+    username: user.username,
+    ...props,
+  };
+}",
+  "prepend": Array [
+    "import * as schemaFactories from \\"./factories\\";",
+  ],
+}
+`;
+
 exports[`plugin should support external fragments 1`] = `
 Object {
   "content": "export function createGetMeQueryMock(props: Partial<GetMeQuery> = {}): GetMeQuery {

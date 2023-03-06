@@ -1,7 +1,7 @@
 import path from "path";
 import { getBaseType } from "@graphql-codegen/plugin-helpers";
 import { getConfigValue } from "@graphql-codegen/visitor-plugin-common";
-import { camelCase } from "change-case-all";
+import { camelCase, pascalCase } from "change-case-all";
 import {
   FragmentDefinitionNode,
   GraphQLCompositeType,
@@ -173,7 +173,10 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
     selection: OperationDefinitionNode | SelectionNode
   ): NormalizedSelection[] {
     if (selection.kind === Kind.OPERATION_DEFINITION) {
-      const operationSuffix = this.getOperationSuffix(selection, parent.name);
+      const operationSuffix = this.getOperationSuffix(
+        selection,
+        pascalCase(selection.operation)
+      );
       const name = this.convertName(this.handleAnonymousOperation(selection), {
         suffix: operationSuffix,
       });

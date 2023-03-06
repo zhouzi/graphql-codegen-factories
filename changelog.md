@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+- Fix operations factories name when using a custom root query #75
+
 ## 1.2.0 - 2023-01-20
 
 ### Added
