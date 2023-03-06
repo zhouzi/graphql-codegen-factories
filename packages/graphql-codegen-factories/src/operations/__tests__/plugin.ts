@@ -587,4 +587,34 @@ describe("plugin", () => {
     );
     expect(output).toMatchSnapshot();
   });
+
+  it("should support custom root Query", async () => {
+    const schema = buildSchema(/* GraphQL */ `
+      type User {
+        username: String!
+      }
+
+      type CustomQuery {
+        user: User
+      }
+
+      schema {
+        query: CustomQuery
+      }
+    `);
+    const ast = parse(/* GraphQL */ `
+      query GetUser {
+        user {
+          username
+        }
+      }
+    `);
+
+    const output = await plugin(
+      schema,
+      [{ location: "GetUser.graphql", document: ast }],
+      { schemaFactoriesPath: "./factories" }
+    );
+    expect(output).toMatchSnapshot();
+  });
 });
