@@ -115,19 +115,19 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
     const maybeValueDefault = getConfigValue(config.maybeValueDefault, "null");
     const inputMaybeValueDefault = getConfigValue(
       config.inputMaybeValueDefault,
-      maybeValueDefault
+      maybeValueDefault,
     );
     const parsedConfig = {
       enumsAsTypes: getConfigValue(config.enumsAsTypes, false),
       scalarDefaults: getConfigValue(config.scalarDefaults, {}),
       namespacedImportName: getConfigValue(
         config.namespacedImportName,
-        undefined
+        undefined,
       ),
       typesPath: getConfigValue(config.typesPath, undefined),
       importTypesNamespace: getConfigValue(
         config.importTypesNamespace,
-        undefined
+        undefined,
       ),
       maybeValueDefault,
       inputMaybeValueDefault,
@@ -181,7 +181,7 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
 
     if (this.config.typesPath) {
       imports.push(
-        `import * as ${this.config.namespacedImportName} from '${this.config.typesPath}';\n`
+        `import * as ${this.config.namespacedImportName} from '${this.config.typesPath}';\n`,
       );
     }
 
@@ -191,22 +191,22 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
   protected convertNameWithTypesNamespace(name: string) {
     return this.convertNameWithNamespace(
       name,
-      this.config.namespacedImportName ?? undefined
+      this.config.namespacedImportName ?? undefined,
     );
   }
 
   protected convertObjectType(
-    node: ObjectTypeDefinitionNode | InputObjectTypeDefinitionNode
+    node: ObjectTypeDefinitionNode | InputObjectTypeDefinitionNode,
   ): string {
     return new DeclarationBlock(this._declarationBlockConfig)
       .export()
       .asKind("function")
       .withName(
         `${this.convertFactoryName(
-          node
+          node,
         )}(props: Partial<${this.convertNameWithTypesNamespace(
-          node.name.value
-        )}> = {}): ${this.convertNameWithTypesNamespace(node.name.value)}`
+          node.name.value,
+        )}> = {}): ${this.convertNameWithTypesNamespace(node.name.value)}`,
       )
       .withComment(node.description ?? null, this.config.disableDescriptions)
       .withBlock(
@@ -220,20 +220,20 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
           indent("};"),
         ]
           .filter(Boolean)
-          .join("\n")
+          .join("\n"),
       ).string;
   }
 
   protected convertNullableDefaultValue(
     nullableDefaultValue: string,
-    defaultValue: string
+    defaultValue: string,
   ) {
     return nullableDefaultValue.replace("{defaultValue}", defaultValue);
   }
 
   protected convertField(
     node: UnvisitedFieldDefinitionNode | UnvisitedInputValueDefinitionNode,
-    nullableDefaultValue: string
+    nullableDefaultValue: string,
   ): string {
     const { defaultValue, isNullable } = node.type;
     return indent(
@@ -242,11 +242,11 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
           isNullable
             ? this.convertNullableDefaultValue(
                 nullableDefaultValue,
-                defaultValue
+                defaultValue,
               )
             : defaultValue
-        },`
-      )
+        },`,
+      ),
     );
   }
 
@@ -256,9 +256,9 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
         ? // Take the first type from an union
           this.unions[nodeName].getTypes()[0].name
         : nodeName in this.interfaces
-        ? // Take the first implementation from an interface
-          this.interfaces[nodeName].implementations[0].name
-        : nodeName;
+          ? // Take the first implementation from an interface
+            this.interfaces[nodeName].implementations[0].name
+          : nodeName;
 
     if (scalarName in this.config.scalarDefaults) {
       return this.config.scalarDefaults[scalarName];
@@ -278,12 +278,12 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
           return this.config.enumsAsTypes
             ? `"${this.enums[scalarName].getValues()[0].value}"`
             : `${this.convertNameWithTypesNamespace(
-                scalarName
+                scalarName,
               )}.${this.convertName(
                 this.enums[scalarName].getValues()[0].name,
                 {
                   transformUnderscore: true,
-                }
+                },
               )}`;
         }
 
@@ -332,7 +332,7 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
   }
 
   UnionTypeDefinition(
-    node: UnvisitedUnionTypeDefinitionNode
+    node: UnvisitedUnionTypeDefinitionNode,
   ): string | undefined {
     const types = node.types ?? [];
 
@@ -350,10 +350,10 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
       .asKind("function")
       .withName(
         `${this.convertFactoryName(
-          node.name.value
+          node.name.value,
         )}(props: Partial<${this.convertNameWithTypesNamespace(
-          node.name.value
-        )}> = {}): ${this.convertNameWithTypesNamespace(node.name.value)}`
+          node.name.value,
+        )}> = {}): ${this.convertNameWithTypesNamespace(node.name.value)}`,
       )
       .withBlock(
         [
@@ -363,9 +363,9 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
             indent(
               indent(
                 indent(
-                  `return ${this.convertFactoryName(type.typename)}(props);`
-                )
-              )
+                  `return ${this.convertFactoryName(type.typename)}(props);`,
+                ),
+              ),
             ),
           ]),
           indent(indent(`case undefined:`)),
@@ -374,15 +374,15 @@ export class FactoriesSchemaVisitor extends FactoriesBaseVisitor<
             indent(
               indent(
                 `return ${this.convertFactoryName(
-                  node.name.value
-                )}({ __typename: "${types[0].typename}", ...props });`
-              )
-            )
+                  node.name.value,
+                )}({ __typename: "${types[0].typename}", ...props });`,
+              ),
+            ),
           ),
           indent("}"),
         ]
           .filter(Boolean)
-          .join("\n")
+          .join("\n"),
       ).string;
   }
 }

@@ -59,16 +59,16 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
     schema: GraphQLSchema,
     fragments: FragmentDefinitionNode[],
     config: FactoriesOperationsVisitorRawConfig,
-    outputFile: string | undefined
+    outputFile: string | undefined,
   ) {
     const parsedConfig = {
       schemaFactoriesPath: getConfigValue(
         config.schemaFactoriesPath,
-        undefined
+        undefined,
       ),
       namespacedSchemaFactoriesImportName: getConfigValue(
         config.namespacedSchemaFactoriesImportName,
-        undefined
+        undefined,
       ),
     } as FactoriesOperationsVisitorParsedConfig;
 
@@ -76,11 +76,11 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
       const outputDirectory = path.dirname(outputFile);
       const schemaFactoriesPath = path.resolve(
         process.cwd(),
-        parsedConfig.schemaFactoriesPath
+        parsedConfig.schemaFactoriesPath,
       );
       const relativeFactoriesPath = path.relative(
         outputDirectory,
-        schemaFactoriesPath
+        schemaFactoriesPath,
       );
 
       // If the factories are located in the same directory as the file,
@@ -111,7 +111,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
   }
 
   private handleAnonymousOperation(
-    node: Pick<OperationDefinitionNode, "name">
+    node: Pick<OperationDefinitionNode, "name">,
   ): string {
     const name = node.name && node.name.value;
 
@@ -139,8 +139,8 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
           this.config.namespacedSchemaFactoriesImportName
         } from "${this.config.schemaFactoriesPath.replace(
           /\.(js|ts|d.ts)$/,
-          ""
-        )}";`
+          "",
+        )}";`,
       );
     }
 
@@ -148,7 +148,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
   }
 
   private groupSelections(
-    selections: NormalizedSelection[]
+    selections: NormalizedSelection[],
   ): Record<string, NormalizedSelection[]> {
     return selections
       .filter(
@@ -157,8 +157,9 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
             (otherSelection) =>
               otherSelection.alias === selection.alias &&
               otherSelection.name === selection.name &&
-              otherSelection.typeCondition.name === selection.typeCondition.name
-          ) === index
+              otherSelection.typeCondition.name ===
+                selection.typeCondition.name,
+          ) === index,
       )
       .reduce<Record<string, NormalizedSelection[]>>((acc, selection) => {
         acc[selection.typeCondition.name] = (
@@ -170,12 +171,12 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
 
   private normalizeSelection(
     parent: GraphQLCompositeType,
-    selection: OperationDefinitionNode | SelectionNode
+    selection: OperationDefinitionNode | SelectionNode,
   ): NormalizedSelection[] {
     if (selection.kind === Kind.OPERATION_DEFINITION) {
       const operationSuffix = this.getOperationSuffix(
         selection,
-        pascalCase(selection.operation)
+        pascalCase(selection.operation),
       );
       const name = this.convertName(this.handleAnonymousOperation(selection), {
         suffix: operationSuffix,
@@ -189,8 +190,8 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
           type: parent,
           selections: this.groupSelections(
             selection.selectionSet.selections.flatMap((selection) =>
-              this.normalizeSelection(parent, selection)
-            )
+              this.normalizeSelection(parent, selection),
+            ),
           ),
         },
       ];
@@ -213,9 +214,9 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
                   selection.selectionSet.selections.flatMap((childSelection) =>
                     this.normalizeSelection(
                       getBaseType(type) as GraphQLCompositeType,
-                      childSelection
-                    )
-                  )
+                      childSelection,
+                    ),
+                  ),
                 ),
         },
       ];
@@ -226,7 +227,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
 
     if (selection.kind === Kind.FRAGMENT_SPREAD) {
       const fragment = this.fragments.find(
-        (otherFragment) => otherFragment.name.value === selection.name.value
+        (otherFragment) => otherFragment.name.value === selection.name.value,
       );
 
       if (fragment == null) {
@@ -234,12 +235,12 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
       }
 
       const newTypeCondition = this.schema.getType(
-        fragment.typeCondition.name.value
+        fragment.typeCondition.name.value,
       ) as GraphQLObjectType | GraphQLInterfaceType | undefined;
 
       if (newTypeCondition == null) {
         throw new Error(
-          `Fragment "${fragment.name.value}"'s type condition "${fragment.typeCondition.name.value}" not found`
+          `Fragment "${fragment.name.value}"'s type condition "${fragment.typeCondition.name.value}" not found`,
         );
       }
 
@@ -250,12 +251,12 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
     if (selection.kind === Kind.INLINE_FRAGMENT) {
       if (selection.typeCondition) {
         const newTypeCondition = this.schema.getType(
-          selection.typeCondition.name.value
+          selection.typeCondition.name.value,
         ) as GraphQLObjectType | GraphQLInterfaceType | undefined;
 
         if (newTypeCondition == null) {
           throw new Error(
-            `Inline fragment's type condition "${selection.typeCondition.name.value}" not found`
+            `Inline fragment's type condition "${selection.typeCondition.name.value}" not found`,
           );
         }
 
@@ -274,15 +275,15 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
             .filter((type) =>
               type
                 .getInterfaces()
-                .some((inter) => inter.name === typeCondition.name)
+                .some((inter) => inter.name === typeCondition.name),
             )
         : [parent];
     }
 
     return typeConditions.flatMap((otherTypeCondition) =>
       selections.flatMap((childSelection) =>
-        this.normalizeSelection(otherTypeCondition, childSelection)
-      )
+        this.normalizeSelection(otherTypeCondition, childSelection),
+      ),
     );
   }
 
@@ -300,7 +301,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
   private wrapWithModifiers(
     returnType: string,
     type: GraphQLOutputType,
-    isNullable = true
+    isNullable = true,
   ): string {
     if (isNonNullType(type)) {
       return this.wrapWithModifiers(returnType, type.ofType, false);
@@ -313,7 +314,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
     if (isListType(type)) {
       return this.wrapWithModifiers(
         `${updatedReturnType}[number]`,
-        type.ofType
+        type.ofType,
       );
     }
 
@@ -327,7 +328,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
     return selections.reduce((acc, { selection, typeCondition }) => {
       const withModifiers = this.wrapWithModifiers(
         `${acc}["${selection.name}"]`,
-        selection.type
+        selection.type,
       );
       return isUnionType(getBaseType(selection.type)) && typeCondition
         ? `Extract<${withModifiers} & { __typename: "${typeCondition}" }, { __typename: "${typeCondition}" }>`
@@ -337,7 +338,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
 
   private generateFactories(
     selection: NormalizedSelection,
-    ancestors: SelectionAncestor[] = []
+    ancestors: SelectionAncestor[] = [],
   ): string[] {
     if (selection.selections == null) {
       return [];
@@ -364,7 +365,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
               `case "${typeCondition}":`,
               [
                 `return ${this.convertOperationFactoryName(
-                  ancestors.concat({ selection, typeCondition })
+                  ancestors.concat({ selection, typeCondition }),
                 )}(props);`,
               ],
             ]),
@@ -378,7 +379,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
             `}`,
           ],
           `}`,
-        ])
+        ]),
       );
     }
 
@@ -389,7 +390,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
         const returnType = this.getReturnType(futureAncestors);
         const objectVarName = camelCase(typeCondition);
         const scalars = childSelections.filter(
-          (childSelection) => childSelection.selections == null
+          (childSelection) => childSelection.selections == null,
         );
 
         factories.push(
@@ -399,11 +400,11 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
               ...(scalars.length > 0
                 ? [
                     `const ${objectVarName} = ${this.convertNameWithFactoriesNamespace(
-                      this.convertFactoryName(typeCondition)
+                      this.convertFactoryName(typeCondition),
                     )}({`,
                     scalars.map(
                       (scalar) =>
-                        `${scalar.name}: props.${scalar.alias ?? scalar.name},`
+                        `${scalar.name}: props.${scalar.alias ?? scalar.name},`,
                     ),
                     `});`,
                   ]
@@ -422,7 +423,7 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
                             futureAncestors.concat({
                               selection: childSelection,
                               typeCondition,
-                            })
+                            }),
                           )}({})`;
                     } else {
                       value = "null";
@@ -438,17 +439,17 @@ export class FactoriesOperationsVisitor extends FactoriesBaseVisitor<
               `};`,
             ],
             `}`,
-          ])
+          ]),
         );
 
         childSelections.forEach((childSelection) => {
           if (childSelection.selections) {
             factories.push(
-              ...this.generateFactories(childSelection, futureAncestors)
+              ...this.generateFactories(childSelection, futureAncestors),
             );
           }
         });
-      }
+      },
     );
 
     return factories;
