@@ -1,12 +1,13 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require("prism-react-renderer/themes/github");
-const darkCodeTheme = require("prism-react-renderer/themes/vsDark");
-const packageJson = require("../packages/graphql-codegen-factories/package.json");
+import { themes } from "prism-react-renderer";
+import path from "node:path";
+
+import packageJson from "../packages/graphql-codegen-factories/package.json";
 
 /** @type {import('@docusaurus/types').Config} */
-const config = {
+export default {
   title: packageJson.name,
   tagline: packageJson.description,
   url: "https://gabinaureche.com/",
@@ -23,11 +24,11 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         theme: {
-          customCss: [require.resolve("./src/custom.css")],
+          customCss: [path.resolve("./src/custom.css")],
         },
         docs: {
           routeBasePath: "/",
-          sidebarPath: require.resolve("./sidebars.js"),
+          sidebarPath: path.resolve("./sidebars.js"),
           // Please change this to your repo.
           editUrl: `https://github.com/zhouzi/${packageJson.name}/blob/main/docs/`,
         },
@@ -59,10 +60,8 @@ const config = {
         ],
       },
       prism: {
-        theme: lightCodeTheme,
-        darkTheme: darkCodeTheme,
+        theme: themes.vsLight,
+        darkTheme: themes.vsDark,
       },
     }),
 };
-
-module.exports = config;

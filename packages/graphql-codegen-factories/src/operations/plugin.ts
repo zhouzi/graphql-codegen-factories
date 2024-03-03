@@ -14,10 +14,10 @@ export const plugin: PluginFunction<
   Types.ComplexPluginOutput
 > = (schema, documents, config, info) => {
   const allAst = concatAST(
-    documents.map(({ document }) => document as DocumentNode)
+    documents.map(({ document }) => document as DocumentNode),
   );
   const fragments = allAst.definitions.filter(
-    (d) => d.kind === Kind.FRAGMENT_DEFINITION
+    (d) => d.kind === Kind.FRAGMENT_DEFINITION,
   ) as FragmentDefinitionNode[];
   const allFragments: FragmentDefinitionNode[] = [
     ...fragments,
@@ -30,7 +30,7 @@ export const plugin: PluginFunction<
     schema,
     allFragments,
     config,
-    info?.outputFile
+    info?.outputFile,
   );
   const content = (
     oldVisit(allAst, { leave: visitor }) as DocumentNode

@@ -18,7 +18,7 @@ type PrintLines = Array<string | PrintLines>;
 
 export class FactoriesBaseVisitor<
   RawConfig extends FactoriesBaseVisitorRawConfig,
-  ParsedConfig extends FactoriesBaseVisitorParsedConfig
+  ParsedConfig extends FactoriesBaseVisitorParsedConfig,
 > extends BaseVisitor<RawConfig, ParsedConfig> {
   constructor(config: RawConfig, parsedConfig: ParsedConfig) {
     super(config, {
@@ -35,7 +35,7 @@ export class FactoriesBaseVisitor<
 
   protected convertNameWithNamespace(
     name: string,
-    namespace: string | undefined
+    namespace: string | undefined,
   ) {
     const convertedName = this.convertName(name);
     return namespace ? `${namespace}.${convertedName}` : convertedName;

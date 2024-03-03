@@ -25,7 +25,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "CreateUser.graphql", document: ast }],
-      { schemaFactoriesPath: "./factories" }
+      { schemaFactoriesPath: "./factories" },
     );
     expect(output).toMatchSnapshot();
   });
@@ -53,7 +53,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "CreateUser.graphql", document: ast }],
-      { schemaFactoriesPath: "./factories" }
+      { schemaFactoriesPath: "./factories" },
     );
     expect(output).toMatchSnapshot();
   });
@@ -84,7 +84,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMe.graphql", document: ast }],
-      { schemaFactoriesPath: "./factories" }
+      { schemaFactoriesPath: "./factories" },
     );
     expect(output).toMatchSnapshot();
   });
@@ -118,7 +118,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMe.graphql", document: ast }],
-      { schemaFactoriesPath: "./factories" }
+      { schemaFactoriesPath: "./factories" },
     );
     expect(output).toMatchSnapshot();
   });
@@ -148,7 +148,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMe.graphql", document: ast }],
-      { schemaFactoriesPath: "./factories" }
+      { schemaFactoriesPath: "./factories" },
     );
     expect(output).toMatchSnapshot();
   });
@@ -180,7 +180,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMe.graphql", document: ast }],
-      { schemaFactoriesPath: "./factories" }
+      { schemaFactoriesPath: "./factories" },
     );
     expect(output).toMatchSnapshot();
   });
@@ -212,7 +212,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMe.graphql", document: ast }],
-      { schemaFactoriesPath: "./factories" }
+      { schemaFactoriesPath: "./factories" },
     );
     expect(output).toMatchSnapshot();
   });
@@ -245,7 +245,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMe.graphql", document: ast }],
-      { schemaFactoriesPath: "./factories" }
+      { schemaFactoriesPath: "./factories" },
     );
     expect(output).toMatchSnapshot();
   });
@@ -270,7 +270,7 @@ describe("plugin", () => {
     `);
 
     const allFragments = fragments.definitions.filter(
-      (d) => d.kind === Kind.FRAGMENT_DEFINITION
+      (d) => d.kind === Kind.FRAGMENT_DEFINITION,
     ) as FragmentDefinitionNode[];
 
     const externalFragments = allFragments.map((frag) => ({
@@ -295,7 +295,7 @@ describe("plugin", () => {
       {
         schemaFactoriesPath: "./factories",
         externalFragments,
-      }
+      },
     );
     expect(output).toMatchSnapshot();
   });
@@ -323,7 +323,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMe.graphql", document: ast }],
-      { schemaFactoriesPath: "./factories" }
+      { schemaFactoriesPath: "./factories" },
     );
     expect(output).toMatchSnapshot();
   });
@@ -351,7 +351,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetUsers.graphql", document: ast }],
-      { schemaFactoriesPath: "./factories" }
+      { schemaFactoriesPath: "./factories" },
     );
     expect(output).toMatchSnapshot();
   });
@@ -383,7 +383,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMe.graphql", document: ast }],
-      { schemaFactoriesPath: "./factories" }
+      { schemaFactoriesPath: "./factories" },
     );
     expect(output).toMatchSnapshot();
   });
@@ -433,7 +433,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMedias.graphql", document: ast }],
-      { schemaFactoriesPath: "./factories" }
+      { schemaFactoriesPath: "./factories" },
     );
     expect(output).toMatchSnapshot();
   });
@@ -495,7 +495,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMedias.graphql", document: ast }],
-      { schemaFactoriesPath: "./factories" }
+      { schemaFactoriesPath: "./factories" },
     );
     expect(output).toMatchSnapshot();
   });
@@ -548,7 +548,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMe.graphql", document: ast }],
-      { schemaFactoriesPath: "./factories" }
+      { schemaFactoriesPath: "./factories" },
     );
     expect(output).toMatchSnapshot();
   });
@@ -583,7 +583,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetMedias.graphql", document: ast }],
-      { schemaFactoriesPath: "./factories" }
+      { schemaFactoriesPath: "./factories" },
     );
     expect(output).toMatchSnapshot();
   });
@@ -613,7 +613,7 @@ describe("plugin", () => {
     const output = await plugin(
       schema,
       [{ location: "GetUser.graphql", document: ast }],
-      { schemaFactoriesPath: "./factories" }
+      { schemaFactoriesPath: "./factories" },
     );
     expect(output).toMatchSnapshot();
   });
